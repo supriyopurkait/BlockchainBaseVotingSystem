@@ -26,7 +26,3 @@ A decentralized voting platform built on Ethereum, ensuring secure, transparent,
 
 ## Smart Contracts
 All voting logic is governed by Ethereum smart contracts, ensuring security and transparency.
-
---- 
-
-This shortened version omits the repo cloning and license sections, focusing on the project’s key features, usage, and tech stack.

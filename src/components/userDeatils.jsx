@@ -1,7 +1,7 @@
 import React from "react";
 import copy_svg from "../icon/copy-icon.png";
 
-const UserDeatils = ({ showModal, handleCloseModal, walletAddress }) => {
+const UserDeatils = ({ walletAddress }) => {
   const userName = "ABCD";
 
   const eventCopy = () => {
@@ -10,55 +10,62 @@ const UserDeatils = ({ showModal, handleCloseModal, walletAddress }) => {
 
   return (
     <div
-      className={`modal fade ${showModal ? "show d-block" : ""}`}
-      tabIndex="-1"
-      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }} // Background overlay
-      role="dialog"
+      className={`absolute right-[12rem] -top-[1rem] w-[29rem] z-60 bg-white shadow-lg rounded-lg transition-all duration-1000 transform scale-100 p-4 float-left `}
+      onMouseEnter={(e) => e.stopPropagation()} // Prevent hover from closing when inside the modal
     >
-      <div className="modal-dialog" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">User Wallet Information</h5>
-            <button type="button" className="close border-white btn " onClick={handleCloseModal}>
-              <span>&times;</span>
-            </button>
-          </div>
-          <div className="modal-body">
-            <h5>Wallet Address</h5>
-            <p>
-              {walletAddress ? walletAddress : "No Wallet Connected"}
-              <button  className=" btn  ps-0 pe-1  pt-0 pb-0 mx-2" onClick={eventCopy}>
-                <img
-                  src={copy_svg}
-                  alt="Copy"
-                  style={{ width: "15px", height: "15px", marginLeft: "5px" }}
-                />
-              </button>
-            </p>
-
-            <hr />
-
-            <h5>Your Voting Status</h5>
-
-            <hr />
-
-            <h5>User Profile</h5>
-            <ul className="list-group">
-              <li className="list-group-item">
-                <strong>Full Name:</strong> {userName}
-              </li>
-            </ul>
-          </div>
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-primary rounded"
-              onClick={handleCloseModal}
-            >
-              Close
-            </button>
-          </div>
+      <div className="flex justify-between items-center mb-4">
+        <h5 className="text-lg font-semibold">User Wallet Information</h5>
+        {/* <button
+          type="button"
+          className="text-gray-500 hover:text-gray-700 focus:outline-none"
+        >
+          &times;
+        </button> */}
+      </div>
+      <div className="mb-4">
+        <h5 className="font-semibold">Wallet Address</h5>
+        <div className="flex items-center">
+          <span className="text-gray-700">
+            {walletAddress ? walletAddress : "No Wallet Connected"}
+          </span>
+          <button
+            className="ml-2 p-4 rounded-full"
+            onClick={eventCopy}
+          >
+            <img
+              src={copy_svg}
+              alt="Copy"
+              className="w-4 h-4"
+            />
+          </button>
         </div>
+      </div>
+
+      <hr className="my-2" />
+
+      <div className="mb-4">
+        <h5 className="font-semibold">Your Voting Status</h5>
+        {/* Add voting status content here */}
+      </div>
+
+      <hr className="my-2" />
+
+      <div className="mb-4">
+        <h5 className="font-semibold">User Profile</h5>
+        <ul className="list-none">
+          <li className="text-gray-700">
+            <strong>Full Name:</strong> {userName}
+          </li>
+        </ul>
+      </div>
+
+      <div className="flex justify-end">
+        {/* <button
+          type="button"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none"
+        >
+          Close
+        </button> */}
       </div>
     </div>
   );

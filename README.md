@@ -1,7 +1,3 @@
-Here's a more concise version of the **README.md** for your project:
-
----
-
 # Blockchain Voting Machine
 
 ## Overview

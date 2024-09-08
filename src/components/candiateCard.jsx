@@ -6,18 +6,16 @@ function CandiateCard() {
   let canditateName = "XYZ";
   return (
     <>
-      <div className="card" style={{ width: "100%" }}>
+      <div className="mt-10 mx-14 ">
         {" "}
         {/* Ensure card takes full width */}
         <img
           src={Image}
-          className="card-img-top"
-          alt="..."
-          style={{ width: "100%", height: "150px", objectFit: "cover" }}
+          className="h-[10rem] w-[10rem]"
         />
         <div className="card-body">
           <h5 className="card-title">Name: {canditateName}</h5>
-          <Link rel="stylesheet" to="/vodedone" className="btn btn-primary" >Vote</Link>
+          <Link rel="stylesheet" to="/vodedone" className=" bg-black text-white px-2  py-1 justify-center hover:text-black hover:bg-[#424242] rounded-md" >Vote</Link>
         </div>
       </div>
     </>

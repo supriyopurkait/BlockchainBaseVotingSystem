@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import NAV from "./components/navBar.jsx";
 import VoteBtn from "./components/voteBtn.jsx";
 import Detailsdata from "./components/Blogdata.jsx";
+import UserDeatils from "./components/userDeatils.jsx";
 import VoterCandiate from "./components/voterCanditate.jsx";
 import Home from "./components/home.jsx"; // Ensure uppercase 'H' in 'Home.jsx'
 import ThankYou from "./components/thankYou.jsx";
@@ -28,7 +29,7 @@ function App() {
   return (
     <>
       <NAV setConnected={setConnected} />
-      <div className="content">
+      <div className="h-[30rem] bg-[#c6e7e5]">
         {/* Use RouterProvider for routing */}
         <RouterProvider router={router} />
       </div>

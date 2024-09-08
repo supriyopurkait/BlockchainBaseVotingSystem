@@ -5,8 +5,7 @@ const VoteBtn = () => {
   return (
     <>
       
-      <div className="btn btn-ligth ps-4 mx-2">
-        <Link className="btn btn-grey" to="/voterCanditate">Let's vote</Link></div>
+        <Link className="me-2 justify-center bg-slate-600 text-white hover:bg-slate-50 hover:text-black py-[0.15rem]  hover:border-black hover:border-[1px]" to="/voterCanditate">Let's vote</Link>
     </>
   );
 };

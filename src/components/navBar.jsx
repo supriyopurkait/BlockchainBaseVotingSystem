@@ -11,15 +11,16 @@ const NAV = ({ setConnected }) => {
 
   return (
     <div className="app-container">
-      <nav className="navbar navbar-light bg-light" style={{ height: "60px" }}>
-        <div className="container-fluid d-flex align-items-center justify-content-between">
-          <div className="ps-2">
-            <h5 className="mb-0">Blockchain Voting Machine</h5>
+      <nav className="flex justify-between bg-[#98DED9]" >
+          <div className="ps-2 pt-4">
+            <h5 className="font-semibold ">Blockchain Voting Machine</h5>
+            <ul className="shift mt-1 ms-6">
+              <li><a href="/">Home</a></li>
+            </ul>
           </div>
-          <div className="p-1" style={{ width: "fit-content" }}>
+          <div className="" >
             <WalletConnect setWalletAddress={setWalletAddress} />
           </div>
-        </div>
       </nav>
     </div>
   );

@@ -16,6 +16,7 @@
     "react-router-dom": "^6.26.1"
   },
   "devDependencies": {
+    "@biconomy/account": "^4.6.1",
     "@eslint/js": "^9.9.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

@@ -10,12 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Check out the repository
+      uses: actions/checkout@v3  # This will check out your repository
+
     - name: Send notification to Telegram
       env:
         TELEGRAM_TOKEN: 6440588108:AAEDYXXQL7L1jYGnxtChytq4dfajZQOqVGA
         TELEGRAM_CHAT_IDS: 579397885  # Store multiple chat IDs here, comma-separated
       run: |
-        message="🚀 New push on repository *${{ github.repository }}* by *${{ github.actor }}* on branch *${{ github.ref }}*\n\nCommit Message: `$(git log -1 --pretty=%B)`"
+        # Get the latest commit message
+        commit_message=$(git log -1 --pretty=%B)
+
+        # Construct the message for Telegram
+        message="🚀 New push on repository *${{ github.repository }}* by *${{ github.actor }}* on branch *${{ github.ref }}*\n\nCommit Message: `${commit_message}`"
 
         # Convert TELEGRAM_CHAT_IDS into an array by splitting the string by comma
         IFS=',' read -r -a chat_ids <<< "$TELEGRAM_CHAT_IDS"

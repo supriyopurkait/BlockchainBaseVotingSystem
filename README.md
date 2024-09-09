@@ -7,7 +7,7 @@ A decentralized voting platform built on Ethereum, ensuring secure, transparent,
 - **Ethereum Wallet Integration** for voter authentication.
 - **Immutable Voting** on the Ethereum blockchain.
 - **Gasless Voting** via Biconomy's Smart Accounts.
-- **Responsive UI** built with React and Bootstrap.
+- **Responsive UI** built with React and tailwindcss.
 
 ## Tech Stack
 - **Frontend**: React, Bootstrap

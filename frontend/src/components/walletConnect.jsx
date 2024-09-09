@@ -3,11 +3,25 @@ import signOutIcon from "../icon/sign-out-icon.png";
 import metamask from "../icon/metamask-icon.svg";
 import UserDeatils from "./userDeatils";
 import { ethers } from "ethers";
+import { createSmartAccountClient, PaymasterMode } from "@biconomy/account";
+
 
 const WalletConnect = ({ setWalletAddress }) => {
   const [num, setNum] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false); // State to control UserDeatils component visibility
+  
+  // Config for paymaster
+  const config = {
+    biconomyPaymasterApiKey: "3L23bfz1T.d84dfba5-6c8b-408d-800a-33e2b01d7b87",
+    bundlerUrl: "https://bundler.biconomy.io/api/v2/84532/nJPK7B3ru.dd7f7861-190d-41bd-af80-6877f74b8f44",
+    chainId: "84532"
+  };
+
+  let smartWallet;
+  let saAddress;
+  let provider;
+  let signer;
 
   useEffect(() => {
     if (localStorage.getItem("isWalletConnected") === "true") {
@@ -15,44 +29,47 @@ const WalletConnect = ({ setWalletAddress }) => {
     }
   }, []);
 
-  const handleConnection = async () => {
-    if (
-      typeof window !== "undefined" &&
-      typeof window.ethereum !== "undefined"
-    ) {
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_accounts",
-        });
-        if (accounts.length > 0) {
-          setNum(accounts[0]);
-          setIsConnected(true);
-          setWalletAddress(accounts[0]);
-          localStorage.setItem("isWalletConnected", "true");
-        } else {
-          walletConnect();
-        }
-      } catch (err) {
-        console.log(err.message);
-      }
-    }
-  };
-
   const walletConnect = async () => {
-    if (
-      typeof window !== "undefined" &&
-      typeof window.ethereum !== "undefined"
-    ) {
+    if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
       try {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
         const addr = await signer.getAddress();
         setNum(addr);
         setIsConnected(true);
         setWalletAddress(addr);
-        localStorage.setItem("isWalletConnected", "true");
+        console.log("Account Address: ", addr);
       } catch (err) {
-        console.log(err.message);
+        console.error(err.message);
+      }
+      // Switching to Base Chain 
+      const selectedChainId = await window.ethereum.request({ method: "eth_chainId" })
+      console.log("Chain ID", selectedChainId)
+      let chainId = `0x${Number(config.chainId).toString(16)}`;
+      if (selectedChainId !== chainId) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: chainId }],
+          });
+        } catch (switchError) {
+          console.error("Failed to change");
+        }
+      }
+      // Creation of smart wallet
+      try {
+        smartWallet = await createSmartAccountClient({
+          signer,
+          biconomyPaymasterApiKey: config.biconomyPaymasterApiKey,
+          bundlerUrl: config.bundlerUrl,
+        });
+
+        saAddress = await smartWallet.getAccountAddress();
+        console.log("Smart wallet Address", saAddress);
+        localStorage.setItem("isWalletConnected", "true");
+        contractInteraction();
+      } catch (err) {
+        console.error("Some error occurred!", err.message);
       }
     }
   };
@@ -72,7 +89,7 @@ const WalletConnect = ({ setWalletAddress }) => {
           <button
             type="button"
             className="wallet bg-blue-500 text-white font-bold py-2 px-4 rounded flex items-center"
-            onClick={handleConnection}
+            onClick={walletConnect}
           >
             <img src={metamask} alt="Metamask" className="w-5 h-5 mr-2" />
             Connect

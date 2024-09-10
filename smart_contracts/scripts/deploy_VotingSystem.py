@@ -9,7 +9,7 @@ load_dotenv()
 # RPC URL
 RPC_URL = os.getenv('ALCHEMY_RPC')
 # path to store outputs
-output_dir = "smart-contracts/scripts/output/VotingSystemm"
+output_dir = "smart_contracts/scripts/output/VotingSystemm"
 os.makedirs(output_dir, exist_ok=True)
 
 # Install Solidity compiler version 0.8.4
@@ -59,14 +59,14 @@ def deploy_contract():
     addr = w3.to_checksum_address(w3.eth.account.from_key(private_key).address)     # Address of signer fetched from private key
     
     # Getting VoterID smart contract Address
-    file_path = "smart-contracts/scripts/output/VoterID/CA.txt"
+    file_path = "smart_contracts/scripts/output/VoterID/CA.txt"
     # Check if the file exists
     if not os.path.isfile(file_path):
         print(f"Failed to get the contract address. Please deploy VoterID contract first.")
     with open(file_path, 'r') as f:
         VID_addr = f.read().strip()
     
-    abi, byte_code = compile_code("smart-contracts/contracts/VotingSystem.sol")
+    abi, byte_code = compile_code("smart_contracts/contracts/VotingSystem.sol")
     
     # Creation of contract object
     contract = w3.eth.contract(abi=abi, bytecode=byte_code)

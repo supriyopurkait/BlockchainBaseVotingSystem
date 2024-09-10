@@ -9,7 +9,7 @@ load_dotenv()
 # RPC URL
 RPC_URL = os.getenv('ALCHEMY_RPC')
 # path to store outputs
-output_dir = "smart-contracts/scripts/output/voterID"
+output_dir = "smart_contracts/scripts/output/voterID"
 os.makedirs(output_dir, exist_ok=True)
 
 # Install Solidity compiler version 0.8.4
@@ -31,7 +31,7 @@ def compile(contract_path):
     bytecode = contract_data['bin']
 
     # Define output directory and files
-    output_dir = "smart-contracts/scripts/output/voterID"
+    output_dir = "smart_contracts/scripts/output/voterID"
     os.makedirs(output_dir, exist_ok=True)
 
     # Write ABI to file
@@ -52,7 +52,7 @@ def deploy_contract():
     
     private_key = os.getenv('PRIVATE_KEY')
     addr = w3.to_checksum_address(w3.eth.account.from_key(private_key).address)
-    abi, byte_code = compile("smart-contracts/contracts/VoterID.sol")
+    abi, byte_code = compile("smart_contracts/contracts/VoterID.sol")
     # Creation of contract object
     contract = w3.eth.contract(abi=abi, bytecode=byte_code)
     # Transaction details

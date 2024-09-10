@@ -24,13 +24,13 @@ jobs:
         commit_message=$(git log -1 --pretty=%B)
 
         # Construct the message for Telegram
-        message="🚀 New push on repository *${{ github.repository }}* by *${{ github.actor }}* on branch *${{ github.ref }}*\n\nCommit Message: \"$commit_message\""
+        message="🚀 New push on repository by <b>${{ github.actor }}</b> on branch <b>${{ github.ref }}</b><br>Commit Message: \"$commit_message\""
 
         # Send the message to the group chat
         curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
           -d chat_id="${TELEGRAM_GROUP_CHAT_ID}" \
           -d text="$message" \
-          -d parse_mode="Markdown"
+          -d parse_mode="HTML"
 
         # Sleep for 1 second to avoid rate-limiting
         sleep 1

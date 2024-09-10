@@ -16,7 +16,7 @@ jobs:
     - name: Send notification to Telegram
       env:
         TELEGRAM_TOKEN: 6440588108:AAEDYXXQL7L1jYGnxtChytq4dfajZQOqVGA
-        TELEGRAM_CHAT_IDS: 2261193147  # Store multiple chat IDs here, comma-separated
+        TELEGRAM_CHAT_IDS: -1002261193147  # Store multiple chat IDs here, comma-separated
       run: |
         # Get the latest commit message
         commit_message=$(git log -1 --pretty=%B)

@@ -14,6 +14,8 @@ contract VotingSystem {
     struct CandidateStruct {
         string candidateName;
         uint256 candidateId;
+        string area;
+        string party;
     }
 
     uint256 public voteCount;
@@ -23,8 +25,8 @@ contract VotingSystem {
     CandidateStruct[] public candidates;
     mapping(string => uint256) internal votes;
     mapping(address => bool) public hasVoted;
-    mapping(string => bool) private candidateExists;
-
+    mapping(string => bool) private candidateExists;  // Checks if a candidate name is present or not
+    mapping(string => bool) private candidateAreaExists;    // Ensures only one candidate per area
     event CandidateAdded(string candidateName, uint256 candidateId);
     event VoteCast(address voter, string candidateName);
 
@@ -61,9 +63,12 @@ contract VotingSystem {
     }
 
     // Add candinate names 
-    function addCandidate(string memory _candidateName, uint256 _candidateId) public onlyOwner {
+    function addCandidate(string memory _candidateName, uint256 _candidateId, string memory _area, string memory _party) public onlyOwner {
         require(!candidateExists[_candidateName], "Candidate already exists");
-        candidates.push(CandidateStruct(_candidateName, _candidateId));
+        require(!candidateAreaExists[_area], "A candidate already exists in this area");
+        
+        candidateAreaExists[_area] = true;
+        candidates.push(CandidateStruct(_candidateName, _candidateId, _area, _party));
         candidateExists[_candidateName] = true;
         emit CandidateAdded(_candidateName, _candidateId);  // Emit event
     }
@@ -89,7 +94,7 @@ contract VotingSystem {
        return candidateExists[_candidateName];
     }
 
-    // function to get vote count for candidates by their names 
+    // Function to get vote count of a candidate
     function getVoteCount(string memory _candidateName) public view onlyOwner returns(uint256) {
         return votes[_candidateName];
     }

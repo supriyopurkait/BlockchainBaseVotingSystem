@@ -30,7 +30,7 @@ jobs:
         curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
           -d chat_id="${TELEGRAM_GROUP_CHAT_ID}" \
           -d text="$message" \
-          -d parse_mode="HTML"
+          -d parse_mode="Markdown"
 
         # Sleep for 1 second to avoid rate-limiting
         sleep 1

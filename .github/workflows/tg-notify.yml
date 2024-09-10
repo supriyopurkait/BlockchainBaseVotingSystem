@@ -24,7 +24,7 @@ jobs:
         commit_message=$(git log -1 --pretty=%B)
 
         # Construct the message for Telegram
-        message="🚀 New push on repository by <b>${{ github.actor }}</b> on branch <b>${{ github.ref }}</b><br>Commit Message: \"$commit_message\""
+        message="🚀 New push by *${{ github.actor }}* on branch *${{ github.ref }}* \n\n ➡️ Commit Message: \"$commit_message\""
 
         # Send the message to the group chat
         curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \

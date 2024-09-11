@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import signOutIcon from "../icon/sign-out-icon.png";
-import metamask from "../icon/metamask-icon.svg";
-import UserDeatils from "./userDeatils";
+import signOutIcon from "../wallet/icon/sign-out-icon.png";
+import metamask from "./icon/metamask-icon.svg";
+import UserDeatils from "../aboutUser/userDeatils";
 import { ethers } from "ethers";
 import { createSmartAccountClient, PaymasterMode } from "@biconomy/account";
 
@@ -10,7 +10,7 @@ const WalletConnect = ({ setWalletAddress }) => {
   const [num, setNum] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false); // State to control UserDeatils component visibility
-  
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
   // Config for paymaster
   const config = {
     biconomyPaymasterApiKey: "3L23bfz1T.d84dfba5-6c8b-408d-800a-33e2b01d7b87",
@@ -82,6 +82,10 @@ const WalletConnect = ({ setWalletAddress }) => {
     console.log("Disconnected");
   };
 
+  const toggleDropdown = () => {
+    setDropdownOpen(!isDropdownOpen);
+  };
+
   return (
     <>
       <div className="flex justify-end items-center p-4">
@@ -97,38 +101,56 @@ const WalletConnect = ({ setWalletAddress }) => {
         )}
 
         {isConnected && (
-          <div className="relativehidden group-hover:block">
-            <button
-              className="wallet bg-blue-500 text-white font-bold py-2 px-4 rounded flex items-center"
-              type="button"
+          <div className="relative">
+          {/* Button displaying the connected wallet with dropdown functionality */}
+          <button
+            className="wallet bg-blue-500 text-white font-bold py-2 px-4 rounded flex items-center"
+            onClick={toggleDropdown} // Toggle dropdown on click
+          >
+            <img src={metamask} alt="Connected" className="w-5 h-5 mr-2" />
+            {`${num.substring(0, 3)}...${num.substring(38)}`}
+            <svg
+              className="w-2.5 h-2.5 ml-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 10 6"
             >
-              <img src={metamask} alt="Connected" className="w-5 h-5 mr-2" />
-              {`${num.substring(0, 3)}...${num.substring(38)}`}
-            </button>
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="m1 1 4 4 4-4"
+              />
+            </svg>
+          </button>
 
-            <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1">
-              {/* User Details button with hover to show details */}
-              <button
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onMouseEnter={() => setShowUserDetails(true)} // Show on hover
-                onMouseLeave={() => setShowUserDetails(false)} // Hide when not hovered
-              >
-                User Details
-              </button>
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-10">
+                {/* User Details button */}
+                <button
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onMouseEnter={() => setShowUserDetails(true)} // Show on hover
+                  onMouseLeave={() => setShowUserDetails(false)} // Hide when not hovered
+                >
+                  User Details
+                </button>
 
-              {/* Disconnect button */}
-              <button
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={walletDisconnect}
-              >
-                <img
-                  src={signOutIcon}
-                  alt="Sign Out"
-                  className="w-5 h-5 mr-2 inline-block"
-                />
-                Disconnect
-              </button>
-            </div>
+                {/* Disconnect button */}
+                <button
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={walletDisconnect}
+                >
+                  <img
+                    src={signOutIcon}
+                    alt="Sign Out"
+                    className="w-5 h-5 mr-2 inline-block"
+                  />
+                  Disconnect
+                </button>
+              </div>
+            )}
 
             {/* Show UserDetails component when hovered */}
             {showUserDetails && (

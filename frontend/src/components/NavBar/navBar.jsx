@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import WalletConnect from "./walletConnect";
+import WalletConnect from "../wallet/walletConnect";
 
 const NAV = ({ setConnected }) => {
   const [walletAddress, setWalletAddress] = useState("");

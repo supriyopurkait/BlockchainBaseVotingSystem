@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Image from "../icon/face_img.png";
+import Image from "./icon/face_img.png";
 
 function CandiateCard() {
   let canditateName = "XYZ";

@@ -26,3 +26,4 @@ dist-ssr
 # 
 output
 package-lock.json
+__pycache__

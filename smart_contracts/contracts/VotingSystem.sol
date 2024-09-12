@@ -23,12 +23,12 @@ contract VotingSystem {
     address public VID_Address;
 
     CandidateStruct[] public candidates;
-    mapping(string => uint256) internal votes;
+    mapping(uint256 => uint256) internal votes; // Changed to track votes by candidateId
     mapping(address => bool) public hasVoted;
-    mapping(string => bool) private candidateExists;  // Checks if a candidate name is present or not
-    mapping(string => bool) private candidateAreaExists;    // Ensures only one candidate per area
+    mapping(uint256 => bool) private candidateExists;  // Checks if a candidate ID is present or not
+    mapping(bytes32 => bool) private partyInAreaExists;    // Ensures only one candidate from a party in an area
     event CandidateAdded(string candidateName, uint256 candidateId);
-    event VoteCast(address voter, string candidateName);
+    event VoteCast(address voter, uint256 candidateId);  // Changed to reflect voting by candidateId
 
     // modifier to restrict access to only owner of this contract
     modifier onlyOwner() {
@@ -64,43 +64,51 @@ contract VotingSystem {
 
     // Add candinate names 
     function addCandidate(string memory _candidateName, uint256 _candidateId, string memory _area, string memory _party) public onlyOwner {
-        require(!candidateExists[_candidateName], "Candidate already exists");
-        require(!candidateAreaExists[_area], "A candidate already exists in this area");
-        
-        candidateAreaExists[_area] = true;
+        // Ensure candidateId does not already exist
+        require(!candidateExists[_candidateId], "Candidate with this ID already exists");
+
+        // Create a unique hash for the party and area combination
+        bytes32 partyAreaKey = keccak256(abi.encodePacked(_area, _party));
+        require(!partyInAreaExists[partyAreaKey], "This party already has a candidate in this area");
+
+        // Mark that the party now has a candidate in this area
+        partyInAreaExists[partyAreaKey] = true;
+
         candidates.push(CandidateStruct(_candidateName, _candidateId, _area, _party));
-        candidateExists[_candidateName] = true;
+        candidateExists[_candidateId] = true;
+
         emit CandidateAdded(_candidateName, _candidateId);  // Emit event
     }
 
     // Get total number of candidates
-    function totalCandidates() public  view  returns  (uint256){
+    function totalCandidates() public view returns (uint256) {
         return candidates.length;
     }
 
     // Only SBT holder can vote
-    function vote(string memory _candidateName) public onlyNftOwner {
-        require(isValidCandidate(_candidateName), "Invalid candidate name");
+    function vote(uint256 _candidateId) public onlyNftOwner returns (string memory) {  // Changed to use candidateId
+        require(isValidCandidate(_candidateId), "Invalid candidate ID");
         require(!hasVoted[msg.sender], "You have already voted");
 
-        votes[_candidateName]++;
+        votes[_candidateId]++;  // Increment the vote count for the given candidateId
         voteCount++;
         hasVoted[msg.sender] = true;
-        emit VoteCast(msg.sender, _candidateName);  // Emit event
+        emit VoteCast(msg.sender, _candidateId);  // Emit event with candidateId
+        return string(abi.encodePacked("Voted successfully"));
     }
 
-    // Checks if a candidate name is present or not
-    function isValidCandidate(string memory _candidateName) internal view returns (bool) {
-       return candidateExists[_candidateName];
+    // Checks if a candidate ID is present or not
+    function isValidCandidate(uint256 _candidateId) internal view returns (bool) {
+        return candidateExists[_candidateId];
     }
 
     // Function to get vote count of a candidate
-    function getVoteCount(string memory _candidateName) public view onlyOwner returns(uint256) {
-        return votes[_candidateName];
+    function getVoteCount(uint256 _candidateId) public view onlyOwner returns (uint256) {  // Changed to use candidateId
+        return votes[_candidateId];
     }
 
     // Function to get total vote counts for all candidates
-    function totalVotes() public view onlyOwner returns(uint256) {
+    function totalVotes() public view onlyOwner returns (uint256) {
         return voteCount;
     }
 }

@@ -11,6 +11,22 @@ const WalletConnect = ({ setWalletAddress }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false); // State to control UserDeatils component visibility
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+
+  const getData = async () =>{
+    const url = "https://catfact.ninja/fact";
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+  
+      const json = await response.json();
+      console.log("this is api response ",json.fact);
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+
   // Config for paymaster
   const config = {
     biconomyPaymasterApiKey: "3L23bfz1T.d84dfba5-6c8b-408d-800a-33e2b01d7b87",
@@ -56,6 +72,7 @@ const WalletConnect = ({ setWalletAddress }) => {
           console.error("Failed to change");
         }
       }
+
       // Creation of smart wallet
       try {
         smartWallet = await createSmartAccountClient({
@@ -67,7 +84,7 @@ const WalletConnect = ({ setWalletAddress }) => {
         saAddress = await smartWallet.getAccountAddress();
         console.log("Smart wallet Address", saAddress);
         localStorage.setItem("isWalletConnected", "true");
-        contractInteraction();
+        // contractInteraction();
       } catch (err) {
         console.error("Some error occurred!", err.message);
       }
@@ -85,7 +102,6 @@ const WalletConnect = ({ setWalletAddress }) => {
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
   };
-
   return (
     <>
       <div className="flex justify-end items-center p-4">
@@ -93,7 +109,7 @@ const WalletConnect = ({ setWalletAddress }) => {
           <button
             type="button"
             className="wallet bg-blue-500 text-white font-bold py-2 px-4 rounded flex items-center"
-            onClick={walletConnect}
+            onClick={walletConnect} onLoad={getData}
           >
             <img src={metamask} alt="Metamask" className="w-5 h-5 mr-2" />
             Connect

@@ -1,12 +1,12 @@
 import React from "react";
-import Detailsdata from "./Blogdata.jsx"; // Import Detailsdata
+import HeroText from "./heroText.jsx"; // Import Detailsdata
 import VoteBtn from "./voteBtn.jsx";
 
 export default function Home({ connected }) {
   return (
     <>
-      <div className="content ms-2 font-mono">
-        <Detailsdata /> {/* Use Detailsdata after importing */}
+      <div className="home content ms-2 font-mono">
+        <HeroText /> {/* Use Detailsdata after importing */}
         <div
           className="d-flex gap-14 ms-[10rem]"
         >

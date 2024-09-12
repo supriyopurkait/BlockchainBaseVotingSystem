@@ -9,7 +9,7 @@ load_dotenv()
 # RPC URL
 RPC_URL = os.getenv('ALCHEMY_RPC')
 # path to store outputs
-output_dir = "smart_contracts/scripts/output/VotingSystemm"
+output_dir = "smart_contracts/scripts/output/VotingSystem"
 os.makedirs(output_dir, exist_ok=True)
 
 # Install Solidity compiler version 0.8.4

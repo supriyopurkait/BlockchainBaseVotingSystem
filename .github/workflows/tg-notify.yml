@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Check out the repository
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Ensure full commit history is fetched
 
     - name: Send notification to Telegram Group
       env:
@@ -24,6 +26,14 @@ jobs:
           commit_range=$(git rev-list --max-parents=0 HEAD)..${{ github.sha }}
         else
           commit_range=${{ github.event.before }}..${{ github.sha }}
+        fi
+
+        # Check if the commit range is valid
+        if git rev-list $commit_range >/dev/null 2>&1; then
+          echo "Commit range is valid: $commit_range"
+        else
+          echo "Invalid commit range. Using last commit only."
+          commit_range=${{ github.sha }}^..${{ github.sha }}
         fi
 
         # Get the list of commits pushed in the current push

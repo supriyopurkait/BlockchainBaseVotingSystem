@@ -37,10 +37,10 @@ jobs:
         fi
 
         # Get the list of commits pushed in the current push
-        commit_messages=$(git log $commit_range --pretty=format:"- %s by %an")
+        commit_messages=$(git log $commit_range --pretty=format:"➡️ %s by %an")
 
         # Construct the message with all commit messages
-        message="🚀 New push on repository *${{ github.repository }}* by *${{ github.actor }}* on branch *${{ github.ref }}*\n\nCommits:\n$commit_messages"
+        message="🚀 New push by *${{ github.actor }}* on branch *${{ github.ref }}*       Commits: $commit_messages"
 
         # Send the message to the group chat
         curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \

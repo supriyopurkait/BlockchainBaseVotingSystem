@@ -1,5 +1,5 @@
 import React from "react";
-import BgImage from "./image.png";
+import BgImage from "../components/index_page/image.png";
 
 function Detailsdata() {
   return (

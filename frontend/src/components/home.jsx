@@ -12,7 +12,7 @@ export default function Home({ connected }) {
             {connected && <VoteBtn />} {/* Show VoteBtn only if connected */}
             <button
               type="button"
-              className=" bg-slate-600 text-white hover:bg-slate-50 hover:text-black hover:border-black hover:border-[1px]"
+              className="py-[0.15rem] bg-slate-600 text-white hover:bg-slate-50 hover:text-black hover:border-black hover:border-[1px]"
             >
               Know more
             </button>

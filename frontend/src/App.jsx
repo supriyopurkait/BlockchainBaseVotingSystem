@@ -25,7 +25,7 @@ function App() {
   return (
     <>
       <NAV setConnected={setConnected} />
-      <div className="h-[30rem] bg-[#c6e7e5]">
+      <div className="h-[30rem] ">
         {/* Use RouterProvider for routing */}
         <RouterProvider router={router} />
       </div>

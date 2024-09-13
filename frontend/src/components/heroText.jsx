@@ -1,24 +1,21 @@
 import React from "react";
+import BgImage from "./image.png";
 
 function Detailsdata() {
   return (
-    <div className="p-5">
-      <ul className="list-unstyled align-center">
-        <li>This is a list.</li>
-        <li>It appears completely unstyled.</li>
-        <li>Structurally, it's still a list.</li>
-        <li>However, this style only applies to immediate child elements.</li>
-        <li>
-          Nested lists:
-          <ul>
-            <li>are unaffected by this style</li>
-            <li>will still show a bullet</li>
-            <li>and have appropriate left margin</li>
-          </ul>
-        </li>
-        <li>This may still come in handy in some situations.</li>
-      </ul>
+    <div>
+      <div className="p-5  flex h-[20rem]  ">
+      <ul className="list-unstyled align-center w-[60rem]">
+        <li className=" text-3xl">Secure, Transparent, and Decentralized Voting.</li>
+        <li>Our blockchain-based voting system ensures trust and transparency in elections by recording every vote on a tamper-proof ledger. Votes are secure, anonymous, and easily verifiable, guaranteeing fairness and integrity in the democratic process. </li>
+        <li>Participate from anywhere with confidence in the security of your vote.</li>
+        </ul>
+      <div className="relative   w-[40rem]  justify-end ">
+          <img src={BgImage} className="image_properties h-[26rem]  mx-20 my-10 justify-center border-4" />
+        </div>
     </div>
+    </div>
+    
   );
 }
 

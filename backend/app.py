@@ -59,5 +59,32 @@ def get_abi(contract):
         data = {"error": "Contract not found"}
     return data
 
+# API endpoint to get candidate details based on the address
+@app.route('/api/get-candidates', methods=['POST'])
+def get_candidates():
+    try:
+        # Get the JSON data from the request
+        data = request.json
+
+        # Extract the address from the JSON data
+        address = data.get('address').lower()
+        
+        if not address:
+            return jsonify({'status': 'error', 'message': 'Address is required'}), 400
+        # Fetch the candidate details using the area
+        candidates = get_candidates_by_area(address)
+        # Check if the area was found
+        if not candidates:
+            return jsonify({'status': 'error', 'message': 'Area not found for the given address'}), 404
+
+
+
+        # Return the candidate details
+        return jsonify({'status': 'success', 'candidates': candidates}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    
 if __name__ == '__main__':
     app.run(debug=True)

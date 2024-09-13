@@ -3,9 +3,7 @@ name: Notify Telegram on Push
 on:
   push:
     branches:
-      - '**'  # Monitor all branches
-    tags:
-      - '**'  # Monitor all tags
+      - '**'
 
 jobs:
   notify:
@@ -20,17 +18,19 @@ jobs:
         TELEGRAM_TOKEN: 6440588108:AAEDYXXQL7L1jYGnxtChytq4dfajZQOqVGA
         TELEGRAM_GROUP_CHAT_ID: -1002261193147
       run: |
-        # Get the latest commit message
-        commit_message=$(git log -1 --pretty=%B)
+        # Get the list of commits in the current push
+        commits=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:"%h %s by %an")
 
-        # Construct the message for Telegram
-        message="🚀 New push by *${{ github.actor }}* on branch *${{ github.ref }}* \n\n ➡️ Commit Message: \"$commit_message\""
+        # Loop through each commit and send a separate message
+        while IFS= read -r commit; do
+          message="🚀 New commit pushed by *${{ github.actor }}* on branch *${{ github.ref }}*   ➡️Commit: $commit"
 
-        # Send the message to the group chat
-        curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-          -d chat_id="${TELEGRAM_GROUP_CHAT_ID}" \
-          -d text="$message" \
-          -d parse_mode="Markdown"
+          # Send the message for each commit
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_GROUP_CHAT_ID}" \
+            -d text="$message" \
+            -d parse_mode="Markdown"
 
-        # Sleep for 1 second to avoid rate-limiting
-        sleep 1
+          # Sleep for a second between messages to avoid rate limits
+          sleep 1
+        done <<< "$commits"

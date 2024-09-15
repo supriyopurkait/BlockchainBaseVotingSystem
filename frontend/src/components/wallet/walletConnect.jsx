@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import signOutIcon from "../wallet/icon/sign-out-icon.png";
-import metamask from "./icon/metamask-icon.svg";
+import signOutIcon from "/picture/sign-out-icon.png";
+import metamask from "/icons/metamask-icon.svg";
 import UserDeatils from "../aboutUser/userDeatils";
 import { ethers } from "ethers";
 import { createSmartAccountClient, PaymasterMode } from "@biconomy/account";

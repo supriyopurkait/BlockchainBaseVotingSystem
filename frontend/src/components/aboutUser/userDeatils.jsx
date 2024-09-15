@@ -1,5 +1,5 @@
 import React from "react";
-import copy_svg from "./icon/copy-icon.png";
+import copy_svg from "/picture/copy-icon.png";
 
 const UserDeatils = ({ walletAddress }) => {
   const userName = "ABCD";

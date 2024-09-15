@@ -1,5 +1,5 @@
 import React from "react";
-import BgImage from "../components/index_page/image.png";
+import VoteBoxIcon from "/picture/VoteBoxIcon.png";
 
 function Detailsdata() {
   return (
@@ -11,7 +11,7 @@ function Detailsdata() {
         <li>Participate from anywhere with confidence in the security of your vote.</li>
         </ul>
       <div className="relative   w-[40rem]  justify-end ">
-          <img src={BgImage} className="image_properties h-[26rem]  mx-20 my-10 justify-center border-4" />
+          <img src={VoteBoxIcon} className="image_properties h-[26rem]  mx-20 my-10 justify-center border-4" />
         </div>
     </div>
     </div>

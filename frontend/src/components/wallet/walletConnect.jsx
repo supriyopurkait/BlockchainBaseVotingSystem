@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import signOutIcon from "/picture/sign-out-icon.png";
-import metamask from "/icons/metamask-icon.svg";
-import UserDeatils from "../aboutUser/userDeatils";
 import { ethers } from "ethers";
 import { createSmartAccountClient, PaymasterMode } from "@biconomy/account";
+import UserDeatils from "../aboutUser/userDeatils";
+import signOutIcon from "/picture/sign-out-icon.png";
+import metamask from "/icons/metamask-icon.svg";
 
-
+const width = window.innerWidth;
 const WalletConnect = ({ setWalletAddress }) => {
   const [num, setNum] = useState("");
   const [isConnected, setIsConnected] = useState(false);
@@ -104,11 +104,11 @@ const WalletConnect = ({ setWalletAddress }) => {
   };
   return (
     <>
-      <div className="flex justify-end items-center p-4">
+      <div className="flex items-center p-4 w-fit">
         {!isConnected && (
           <button
             type="button"
-            className="wallet bg-blue-500 text-white font-bold py-2 px-4 rounded flex items-center"
+            className="wallet bg-blue-500 text-white font-bold py-2 px-4 rounded flex items-center w-max"
             onClick={walletConnect} onLoad={getData}
           >
             <img src={metamask} alt="Metamask" className="w-5 h-5 mr-2" />
@@ -120,7 +120,7 @@ const WalletConnect = ({ setWalletAddress }) => {
           <div className="relative">
           {/* Button displaying the connected wallet with dropdown functionality */}
           <button
-            className="wallet bg-blue-500 text-white font-bold py-2 px-4 rounded flex items-center"
+            className="wallet bg-blue-500 text-white font-bold py-2 px-4 rounded flex items-center w-max"
             onClick={toggleDropdown} // Toggle dropdown on click
           >
             <img src={metamask} alt="Connected" className="w-5 h-5 mr-2" />
@@ -171,7 +171,7 @@ const WalletConnect = ({ setWalletAddress }) => {
             {/* Show UserDetails component when hovered */}
             {showUserDetails && (
               <div
-                className="absolute right-0 mt-2"
+                className=" sm:absolute sm:right-0 sm:mt-2"
                 onMouseEnter={() => setShowUserDetails(true)} // Keep modal visible when hovering over it
                 onMouseLeave={() => setShowUserDetails(false)} // Hide modal when the mouse leaves
               >

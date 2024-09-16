@@ -10,11 +10,11 @@ const UserDeatils = ({ walletAddress }) => {
 
   return (
     <div
-      className={`absolute right-[12rem] -top-[1rem] w-[29rem] z-60 bg-white shadow-lg rounded-lg transition-all duration-1000 transform scale-100 p-4 float-left `}
+      className={`absolute right-[12rem] -top-[1rem] w-[30rem] z-60 bg-white shadow-lg rounded-lg transition-all duration-1000 transform scale-100 p-4 float-left `}
       onMouseEnter={(e) => e.stopPropagation()} // Prevent hover from closing when inside the modal
     >
       <div className="flex justify-between items-center mb-4">
-        <h5 className="text-lg font-semibold">User Wallet Information</h5>
+        <h5 className="text-lg font-semibold w-min sm:w-fit">User Wallet Information</h5>
         {/* <button
           type="button"
           className="text-gray-500 hover:text-gray-700 focus:outline-none"

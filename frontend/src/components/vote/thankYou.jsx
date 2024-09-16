@@ -5,7 +5,7 @@ export default function thankYou() {
     <>
     <div className="container">
         Thank You !
-        You have Successfully give a vote
+        You have Successfully given a vote
     </div>
     </>
   )

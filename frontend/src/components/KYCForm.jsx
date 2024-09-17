@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, MapPin, Phone, FileText, Upload, ArrowRight } from 'lucide-react';
 
-const KYCForm = ({ onSubmit, onCancel }) => {
+const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
     phoneNumber: '',
     documentNumber: '',
-    documentImage: null
+    documentImage: null,
+    walletAddress: ''
   });
+
+  // Set the wallet address on component mount or when walletAddress changes
+  useEffect(() => {
+    if (walletAddress) {
+      setFormData(prevData => ({ ...prevData, walletAddress }));  // Set wallet address silently
+    }
+  }, [walletAddress]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,15 +29,49 @@ const KYCForm = ({ onSubmit, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the form data to your backend API
-    console.log('Submitting KYC data:', formData);
-    // Simulating API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    onSubmit(formData);
+  
+    // Prepare form data for submission
+    const formDataToSend = new FormData();
+    formDataToSend.append('name', formData.name);
+    formDataToSend.append('address', formData.address);
+    formDataToSend.append('phoneNumber', formData.phoneNumber);
+    formDataToSend.append('documentNumber', formData.documentNumber);
+    formDataToSend.append('documentImage', formData.documentImage);
+    formDataToSend.append('walletAddress', formData.walletAddress);
+  
+    try {
+      const response = await fetch('http://127.0.0.1:5000/api/kyc', {
+        method: 'POST',
+        body: formDataToSend,
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        console.log('KYC submitted successfully:', data);
+        if (data.status === 'success') {
+          onSubmit({ ...formData, txHash: data.tx_hash });
+        } else {
+          console.error('Unexpected success response:', data);
+        }
+      } else {
+        console.error('Error submitting KYC:', data.error);
+        // Handle specific error cases
+        if (data.error === "A KYC record already exists for this wallet address.") {
+          // Handle duplicate KYC record
+        } else if (data.error === "SBT already minted by this address.") {
+          // Handle already minted SBT
+        }
+        // You might want to show these errors to the user
+      }
+    } catch (error) {
+      console.error('Error during API call:', error);
+      // Handle network errors or unexpected exceptions
+    }
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center">Complete KYC Process</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>

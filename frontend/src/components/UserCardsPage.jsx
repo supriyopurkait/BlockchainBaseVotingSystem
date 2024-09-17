@@ -28,8 +28,8 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
     }
   }, [wallet]);
 
-  const handleVote = async (userId) => {
-    console.log('Voting for user:', userId);
+  const handleVote = async (candidateId) => {
+    console.log('Voting for user:', candidateId);
     const { provider, signer, smartWallet } = wallet;
   
     // Log these values to ensure they are set
@@ -45,7 +45,7 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
   
     try {
       // Assuming you have a vote function in your contract
-      const tx = await contract.vote(userId);  // Replace 'vote' with your actual function name
+      const tx = await contract.vote(candidateId);  // Replace 'vote' with your actual function name
       console.log('Transaction sent:', tx);
   
       // Wait for transaction to be mined
@@ -65,7 +65,7 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
       <h2 className="text-3xl font-bold mb-8 text-center">Vote for Your Favorite User</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {users.map(user => (
-          <UserCard key={user.id} user={user} onVote={handleVote} />
+          <UserCard key={user.candidate_id} user={user} onVote={handleVote} />
         ))}
       </div>
     </div>

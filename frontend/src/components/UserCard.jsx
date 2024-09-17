@@ -6,7 +6,7 @@ const UserCard = ({ user, onVote }) => (
     <img src={user.photo} alt={user.name} className="w-24 h-24 rounded-full mb-4" />
     <h3 className="text-xl font-semibold mb-2">{user.name}</h3>
     <button
-      onClick={() => onVote(user.id)}
+      onClick={() => onVote(user.candidate_id)}
       className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-full flex items-center"
     >
       Vote

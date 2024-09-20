@@ -3,6 +3,7 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import UserCardsPage from './components/UserCardsPage';
 import KYCForm from './components/KYCForm';
+import AdminControlModal from './components/Admin';
 import WalletConnectionModal from './components/WalletConnectionModal';
 import { connectWallet, checkNFTOwnership } from './utils/web3Utils';
 import { ethers } from 'ethers';
@@ -18,6 +19,7 @@ const App = () => {
   const [VoterIDContractAddress, setContractAddress] = useState(null);
   const [VotingSystemABI, setVotingSystemABI] = useState(null);
   const [VotingSystemContractAddress, setVotingSystemContractAddress] = useState(null);
+  const [AdminControlModal, setAdminControlModal] = useState(false);
 
   const handleConnectWallet = async () => {
     const connectedWallet = await connectWallet();
@@ -57,7 +59,10 @@ const App = () => {
       setShowWalletModal(true);
       return;
     }
-
+    if (wallet.address = import.meta.env.ADMINADDRESS) {
+      setAdminControlModal(true);
+      return;
+    }
     const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, wallet);
     if (!hasNFT) {
       setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned

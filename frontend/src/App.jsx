@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'; 
 import Header from './components/Header';
 import Hero from './components/Hero';
-import UserCardsPage from './components/UserCardsPage';
+import UserCardsPage from './components/canditateCardPage';
 import KYCForm from './components/KYCForm';
 import WalletConnectionModal from './components/WalletConnectionModal';
 import { connectWallet, checkNFTOwnership } from './utils/web3Utils';
@@ -85,6 +85,7 @@ const App = () => {
         walletAddress={wallet?.address || null} 
         onConnect={handleConnectWallet} 
         onDisconnect={() => setIsWalletConnected(false)} // Handling disconnect
+        wallet={wallet}
       />
       <main className="flex-grow mx-36">
         {showUserCards ? (

@@ -4,7 +4,7 @@ import UserDeatils from "./userDeatils"; // Assuming you have this component for
 import signOutIcon from "/picture/sign-out-icon.png";
 import metamask from "/icons/metamask-icon.svg";
 
-const Header = ({ isConnected, onConnect, walletAddress, onDisconnect }) => {
+const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false); // State to control UserDetails visibility
 
@@ -87,7 +87,7 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect }) => {
           onMouseEnter={() => setShowUserDetails(true)} // Keep modal visible when hovering over it
           onMouseLeave={() => setShowUserDetails(false)} // Hide modal when the mouse leaves
         >
-          <UserDeatils walletAddress={walletAddress} />
+          <UserDeatils walletAddress={walletAddress} wallet={wallet}/>
         </div>
       )}
     </header>

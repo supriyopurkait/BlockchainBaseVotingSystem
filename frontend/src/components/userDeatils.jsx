@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import copy_svg from "/picture/copy-icon.png";
 import copy_check from "/icons/copy-check.svg";
+import { fetchUsers } from '../utils/getDetails';
 
 // CopyComponent for handling clipboard copy
-const CopyComponent = ({ walletAddress }) => {
+const CopyComponent = ({ walletAddress, wallet }) => {
   const [copySuccess, setCopySuccess] = useState(false); // State to track copy success
 
   const eventCopy = () => {
@@ -16,6 +17,26 @@ const CopyComponent = ({ walletAddress }) => {
       }, 1000);
     });
   };
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        setLoading(true);
+        const fetchedUsers = await fetchUsers(wallet);
+        console.error('Fetched users:', fetchedUsers);
+        setUsers(fetchedUsers);
+      } catch (err) {
+        setError('Failed to load users. Please try again later.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (wallet) {
+      loadUsers();
+    }
+  }, [wallet]);
 
   return (
     <button

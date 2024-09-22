@@ -34,7 +34,8 @@ def get_candidates_by_area(address):
             'name': candidate[1],
             'candidate_id': candidate[2],
             'area': candidate[3],
-            'party': candidate[4]
+            'party': candidate[4],
+            'photo': 'https://xsgames.co/randomusers/avatar.php?g=pixel'
         })
 
     return candidates

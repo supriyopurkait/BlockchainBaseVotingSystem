@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react'; 
+import { ethers } from 'ethers';
+import { connectWallet, checkNFTOwnership } from './utils/web3Utils';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import UserCardsPage from './components/canditateCardPage';
 import KYCForm from './components/KYCForm';
-import AdminControlModal from './components/Admin';
+import KYCModal from './components/KYCModal';
+import AdminControl from './components/Admin';
 import WalletConnectionModal from './components/WalletConnectionModal';
-import { connectWallet, checkNFTOwnership } from './utils/web3Utils';
-import { ethers } from 'ethers';
+
 
 const App = () => {
   const [showUserCards, setShowUserCards] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [showKYCModal, setShowKYCModal] = useState(false);
+  const [showKYCFormModal, setshowKYCFormModal] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showKYCConfirm, setShowKYCConfirm] = useState(false); // New state for KYC prompt
   const [wallet, setWallet] = useState(null);
@@ -33,13 +35,13 @@ const App = () => {
   };
 
   const handleGetABI = async () => {
-    const VoterIDabi = await fetch('http://127.0.0.1:5000/api/get_abi/VoterID');
+    const VoterIDabi = await fetch('http://'+'127.0.0.1'+':5000/api/get_abi/VoterID');
     const VoterIDjson = await VoterIDabi.json();
     console.log("Json", VoterIDjson);
     setVoterIdABI(VoterIDjson.abi);
     setContractAddress(VoterIDjson.ca);
 
-    const votingSystemAbi = await fetch('http://127.0.0.1:5000/api/get_abi/VotingSystem');
+    const votingSystemAbi = await fetch('http://'+'127.0.0.1'+':5000/api/get_abi/VotingSystem');
     const votingSystemJson = await votingSystemAbi.json();
     setVotingSystemABI(votingSystemJson.abi);
     setVotingSystemContractAddress(votingSystemJson.ca);
@@ -60,28 +62,29 @@ const App = () => {
       setShowWalletModal(true);
       return;
     }
-    if (wallet.address = import.meta.env.ADMINADDRESS) {
-      setAdminControlModal(true);
-      console.log("Admin address:", wallet.address, "is connected");
+    if ( true || !(wallet.address == import.meta.env.VITE_ADMINADDRESS)) {
+      const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, wallet);
+      if (!hasNFT) {
+        setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
+      } else {
+        setShowUserCards(true); // Show user cards page if NFT is owned
+      }
       return;
     }
-    const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, wallet);
-    if (!hasNFT) {
-      setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
-    } else {
-      setShowUserCards(true); // Show user cards page if NFT is owned
-    }
+    console.log(import.meta.env.VITE_ADMINADDRESS)
+    setAdminControlModal(true);
+    console.log("Admin address:", wallet.address, "is connected");
   };
 
   // Show KYC form when "Complete KYC" button is clicked
   const handleCompleteKYCConfirm = () => {
     setShowKYCConfirm(false);  // Hide the KYC prompt
-    setShowKYCModal(true);     // Show the KYC form modal
+    setshowKYCFormModal(true);     // Show the KYC form modal
   };
 
   const handleCompleteKYC = (formData) => {
     console.log("KYC data submitted:", formData);
-    setShowKYCModal(false);
+    setshowKYCFormModal(false);
     setShowUserCards(true); // Show user cards page after KYC is completed
   };
 
@@ -89,12 +92,12 @@ const App = () => {
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Header 
         isConnected={isWalletConnected} 
-        walletAddress={wallet.address || null} 
+        walletAddress={isWalletConnected ? wallet.address : null} 
         onConnect={handleConnectWallet} 
         onDisconnect={() => setIsWalletConnected(false)} // Handling disconnect
         wallet={wallet}
       />
-      <main className="flex-grow mx-36">
+      <main className="w-svw flex flex-grow items-center">
         {showUserCards ? (
           <UserCardsPage wallet={wallet} VotingSystemContractAddress={VotingSystemContractAddress} VotingSystemABI={VotingSystemABI} />
         ) : (
@@ -108,29 +111,24 @@ const App = () => {
       {/* KYC Confirmation Prompt */}
       {showKYCConfirm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-xl font-bold mb-4">KYC Required</h2>
-            <p className="mb-6">You need to complete the KYC process to access this feature.</p>
-            <button
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
-              onClick={handleCompleteKYCConfirm}
-            >
-              Complete KYC
-            </button>
-          </div>
+          <KYCModal onComplete={handleCompleteKYCConfirm} onClose={() => setShowKYCConfirm(false)} />
         </div>
       )}
 
       {/* KYC Form Modal */}
-      {showKYCModal && (
+      {showKYCFormModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
-          <KYCForm onSubmit={handleCompleteKYC} onCancel={() => setShowKYCModal(false)} walletAddress={wallet.address} />
+          <KYCForm onSubmit={handleCompleteKYC} onCancel={() => setshowKYCFormModal(false)} walletAddress={wallet.address} />
         </div>
       )}
 
       {/* Wallet Connection Modal */}
       {showWalletModal && (
         <WalletConnectionModal onClose={() => setShowWalletModal(false)} onConnect={handleConnectWallet} />
+      )}
+      {/* Admin Control Modal */}
+      {AdminControlModal && (
+        <AdminControl onClose={() => setAdminControlModal(false)} />
       )}
     </div>
   );

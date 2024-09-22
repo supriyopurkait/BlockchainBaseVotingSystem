@@ -4,12 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "vite --host 0.0.0.0",
+    "start": "npx @dotenvx/dotenvx run -- vite --host 0.0.0.0",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dotenvx/dotenvx": "^1.14.1",
+    "dotenv-reader": "^1.0.1-b",
     "ethers": "^6.13.2",
     "lucide-react": "^0.439.0",
     "prop-types": "^15.8.1",

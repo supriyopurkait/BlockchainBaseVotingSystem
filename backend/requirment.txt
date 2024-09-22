@@ -1,0 +1,5 @@
+web3
+pytz
+datetime
+dotenv
+flask_cors

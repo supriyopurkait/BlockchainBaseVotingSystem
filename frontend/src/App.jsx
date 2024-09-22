@@ -51,8 +51,9 @@ const App = () => {
       console.log("Voter ID Contract Address:", VoterIDContractAddress);
       console.log("VotingSystemABI", VotingSystemABI);
       console.log("VotingSystemContractAddress", VotingSystemContractAddress);
+      console.log("Addr ", wallet.address)
     }
-  }, [VoterIdABI, VoterIDContractAddress, VotingSystemABI, VotingSystemContractAddress]);
+  }, [VoterIdABI, VoterIDContractAddress, VotingSystemABI, VotingSystemContractAddress, wallet]);
 
   const handleEnterDApp = async () => {
     if (!isWalletConnected) {
@@ -61,6 +62,7 @@ const App = () => {
     }
     if (wallet.address = import.meta.env.ADMINADDRESS) {
       setAdminControlModal(true);
+      console.log("Admin address:", wallet.address, "is connected");
       return;
     }
     const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, wallet);
@@ -87,7 +89,7 @@ const App = () => {
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Header 
         isConnected={isWalletConnected} 
-        walletAddress={wallet?.address || null} 
+        walletAddress={wallet.address || null} 
         onConnect={handleConnectWallet} 
         onDisconnect={() => setIsWalletConnected(false)} // Handling disconnect
         wallet={wallet}

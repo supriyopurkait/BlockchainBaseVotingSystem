@@ -1,14 +1,11 @@
 import { ethers } from "ethers";
 
+// Configuration for connecting to the Base Chain
 const config = {
-  biconomyPaymasterApiKey: "3L23bfz1T.d84dfba5-6c8b-408d-800a-33e2b01d7b87",
-  bundlerUrl: "https://bundler.biconomy.io/api/v2/84532/nJPK7B3ru.dd7f7861-190d-41bd-af80-6877f74b8f44",
-  chainId: "84532"
+  rpcUrl: "https://base-sepolia.blockpi.network/v1/rpc/public",
+  chainId: "0x14a34",
+  blockExplorerUrl: "https://base-sepolia.blockscout.com"
 };
-
-
-let signer;
-let provider; // Added provider variable here
 
 // Connect Wallet using ethers.js and setup the provider and signer
 export const connectWallet = async () => {
@@ -16,10 +13,8 @@ export const connectWallet = async () => {
     try {
       // Initialize ethers provider using window.ethereum (MetaMask or other provider)
       const provider = new ethers.BrowserProvider(window.ethereum);
-      
       // Prompt user to connect their MetaMask account
       await window.ethereum.request({ method: "eth_requestAccounts" });
-      
       // Get signer from the provider
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
@@ -27,28 +22,65 @@ export const connectWallet = async () => {
 
       // Switching to the correct chain (Base Chain in this case)
       const selectedChainId = await window.ethereum.request({ method: "eth_chainId" });
+
       console.log("Connected Chain ID:", selectedChainId);
-      let chainId = `0x${Number(config.chainId).toString(16)}`;
-      
-      if (selectedChainId !== chainId) {
+
+      if (selectedChainId !== config.chainId) {
+        try {
+          // Attempt to add the desired chain if it isn't already added
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: config.chainId,
+                chainName: "Base Sepolia Testnet",
+                rpcUrls: [config.rpcUrl],
+                nativeCurrency: {
+                  name: "ETH",
+                  symbol: "ETH",
+                  decimals: 18,
+                },
+                blockExplorerUrls: [config.blockExplorerUrl],
+              },
+            ],
+          });
+          console.log("Base Sepolia Testnet added successfully.");
+        } catch (addChainError) {
+          // If the chain is already added, switch to it or handle errors
+          if (addChainError.code === 4001) {
+            console.error("User rejected the chain addition.");
+            return null;
+          } else {
+            console.error("Failed to add the chain:", addChainError.message);
+            return null;
+          }
+        }
+
+        // After adding the chain, or if it's already added, switch to it
         try {
           await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: chainId }],
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: config.chainId }],
           });
-          console.log("Switched to Base Chain");
+          console.log("Switched to Base Sepolia Testnet.");
         } catch (switchError) {
-          console.error("Failed to switch chain:", switchError);
+          if (switchError.code === 4001) {
+            console.error("User rejected the chain switch.");
+            return null;
+          } else {
+            console.error("Failed to switch chain:", switchError.message);
+            return null;
+          }
         }
       }
 
       return { provider, signer, address };
 
-
     } catch (err) {
       console.error("Failed to connect wallet:", err.message);
       return null;
     }
+
   } else {
     console.log("Ethereum provider not found. Please install MetaMask.");
     return null;
@@ -66,7 +98,7 @@ export const checkNFTOwnership = async (VoterIdABI, VoterIDContractAddress, wall
     // Check NFT balance
     const balance = await contract.balanceOf(walletAddress);
     console.log("Balance:", balance.toString());  // Convert to string for logging
-  
+
     // Convert balance to a number and check if it's greater than zero
     const balanceNumber = Number(balance);
     return balanceNumber > 0;
@@ -92,13 +124,13 @@ export const fetchUsers = async (wallet) => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    
+
     // Get the full response
     const data = await response.json();
     // console.log(data.candidates);
     // Return only the candidates array
     return data.candidates;
-    
+
   } catch (error) {
     console.error('Error fetching users:', error);
     return [];

@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { createSmartAccountClient, PaymasterMode } from "@biconomy/account";
 
 const config = {
   biconomyPaymasterApiKey: "3L23bfz1T.d84dfba5-6c8b-408d-800a-33e2b01d7b87",
@@ -43,22 +42,9 @@ export const connectWallet = async () => {
         }
       }
 
-      // Create Smart Wallet using Biconomy SDK
-      try {
-        const smartWallet = await createSmartAccountClient({
-          signer,
-          biconomyPaymasterApiKey: config.biconomyPaymasterApiKey,
-          bundlerUrl: config.bundlerUrl,
-        });
+      return { provider, signer, address };
 
-        const saAddress = await smartWallet.getAccountAddress();
-        console.log("Smart Wallet Address:", saAddress);
-        localStorage.setItem("isWalletConnected", "true");
-        return { provider, signer, smartWallet, address };
-      } catch (err) {
-        console.error("Error creating smart wallet:", err.message);
-        return null;
-      }
+
     } catch (err) {
       console.error("Failed to connect wallet:", err.message);
       return null;
@@ -70,8 +56,7 @@ export const connectWallet = async () => {
 };
 
 export const checkNFTOwnership = async (VoterIdABI, VoterIDContractAddress, wallet) => {
-  const { provider, signer, smartWallet } = wallet;
-  console.log("Smart wallet:", smartWallet);
+  const { provider, signer } = wallet;
   console.log("Provider:", provider);
   console.log("Signer:", signer);
   const contract = new ethers.Contract(VoterIDContractAddress, VoterIdABI, signer);

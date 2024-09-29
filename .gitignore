@@ -25,7 +25,6 @@ dist-ssr
 
 # 
 frontend/.env
-output
 package-lock.json
 __pycache__
 db

@@ -29,3 +29,4 @@ output
 package-lock.json
 __pycache__
 db
+frontend/src/components/loadingModal.jsx

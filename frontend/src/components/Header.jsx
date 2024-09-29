@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Wallet, Vote } from "lucide-react";
 import UserDeatils from "./userDeatils"; // Assuming you have this component for displaying user details
 import signOutIcon from "/picture/sign-out-icon.png";
@@ -11,6 +11,23 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
   };
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (showUserDetails) {
+        const userDetailsContainer = document.querySelector(".user-details-container");
+        if (!userDetailsContainer.contains(event.target)) {
+          setShowUserDetails(false);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [showUserDetails]);
 
   return (
     <header className="flex justify-between items-center p-4 bg-gray-900">
@@ -74,8 +91,7 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
               {/* User Details button */}
               <button
                 className="block w-fit text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onMouseEnter={() => setShowUserDetails(true)} // Show on hover
-                onMouseLeave={() => setShowUserDetails(false)} // Hide when not hovered
+                onClick={() => showUserDetails == true?setShowUserDetails(false):setShowUserDetails(true)}
               >
                 User Details
               </button>
@@ -83,14 +99,21 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
         )}
       </div>
 
-      {/* Show UserDetails component when hovered */}
+      {/* Show UserDetails component when clicked */}
       {showUserDetails && isConnected && (
         <div
-          className="absolute right-0 mt-2"
-          onMouseEnter={() => setShowUserDetails(true)} // Keep modal visible when hovering over it
-          onMouseLeave={() => setShowUserDetails(false)} // Hide modal when the mouse leaves
+          className="absolute right-0 mt-2 user-details-container"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              showUserDetails == true?setShowUserDetails(false):setShowUserDetails(true)
+            }
+          }}
         >
-          <UserDeatils walletAddress={walletAddress} wallet={wallet} onEnter={(e) => {setShowUserDetails(true);e.stopPropagation();}} onClose={() => {setShowUserDetails(false);}}/>
+          <UserDeatils
+            walletAddress={walletAddress}
+            wallet={wallet}
+            onClose={() => setShowUserDetails(false)}
+          />
         </div>
       )}
     </header>

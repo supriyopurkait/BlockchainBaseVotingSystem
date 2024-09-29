@@ -6,19 +6,19 @@
 ---
 
 ## 📜 Overview
-Welcome to the **Blockchain Voting Machine**!  This decentralized voting platform is built on Ethereum layer 2 [Base](https://www.base.org/), offering a secure, transparent, gasless, and tamper-proof election experience. With seamless Ethereum wallet integration like Metamask and gasless voting powered by Biconomy, this platform is designed for the future of voting. 🔒✨
+Welcome to the **Blockchain Voting Machine**!  This decentralized voting platform is built on Ethereum layer 2 [Base](https://www.base.org/), offering a secure, transparent, gasless, and tamper-proof election experience. With seamless Ethereum wallet integration like Metamask and gasless voting, this platform is designed for the future of voting. 🔒✨
 
 ## 🌟 Features
 - **Ethereum Wallet Integration**: Decentralize your voting with ease. 🛡️
 - **Immutable Voting**: Your votes are recorded on the Ethereum blockchain, ensuring they can't be altered. 📜
-- **Gasless Voting**: No need to worry about transaction fees, thanks to Biconomy's Smart Accounts. 🚫💸
+- **Gasless Voting**: No need to worry about transaction fees, thanks to relayer to pay on behalf of the user. 🚫💸
 - **Special [SBT](https://www.ledger.com/academy/topics/blockchain/what-is-a-soulbound-token)** *(Soulbound Token)*: Authenticate voters while maintaining privacy. 🔐
-- **Responsive UI**: Enjoy a sleek interface built with React and Bootstrap. 📱💻
+- **Responsive UI**: Enjoy a sleek interface built with React and tailwind. 📱💻
 
 ## 🛠️ Tech Stack
 - **Frontend**: React, Bootstrap 🌐
 - **Blockchain Interaction**: ethers.js, MetaMask 🔗
-- **Gasless Transactions**: Biconomy 💰
+- **Gasless Transactions**: EIP-2771: Meta-Transaction Forwarder 💰
 - **Backend**: Ethereum Smart Contracts, Flask 🔒
 - **Database**: SQLite3 🗃️
 

@@ -28,5 +28,8 @@
   "bugs": {
     "url": "https://github.com/OpenZeppelin/openzeppelin-contracts/issues"
   },
-  "homepage": "https://openzeppelin.com/contracts/"
+  "homepage": "https://openzeppelin.com/contracts/",
+  "dependencies": {
+    "@openzeppelin/contracts": "file:"
+  }
 }

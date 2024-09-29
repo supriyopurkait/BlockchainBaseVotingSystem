@@ -1,40 +1,137 @@
-import React, { useState } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import NAV from "./components/navBar.jsx";
-import VoteBtn from "./components/voteBtn.jsx";
-import Detailsdata from "./components/Blogdata.jsx";
-import UserDeatils from "./components/userDeatils.jsx";
-import VoterCandiate from "./components/voterCanditate.jsx";
-import Home from "./components/home.jsx"; // Ensure uppercase 'H' in 'Home.jsx'
-import ThankYou from "./components/thankYou.jsx";
+import React, { useState, useEffect } from 'react'; 
+import { ethers } from 'ethers';
+import { connectWallet, checkNFTOwnership } from './utils/web3Utils';
+import Header from './components/Header';
+import Hero from './components/Hero';
+import UserCardsPage from './components/canditateCardPage';
+import KYCForm from './components/KYCForm';
+import KYCModal from './components/KYCModal';
+import AdminControl from './components/Admin';
+import WalletConnectionModal from './components/WalletConnectionModal';
 
-function App() {
-  const [connected, setConnected] = useState(false); // Initialize as false (not connected)
 
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Home connected={connected} />, // Correct case for 'Home'
-    },
-    {
-      path: "/voterCanditate",
-      element: <VoterCandiate />,
-    },
-    {
-      path: "/vodedone",
-      element: <ThankYou />,
-    },
-  ]);
+const App = () => {
+  const [showUserCards, setShowUserCards] = useState(false);
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [showKYCFormModal, setshowKYCFormModal] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
+  const [showKYCConfirm, setShowKYCConfirm] = useState(false); // New state for KYC prompt
+  const [wallet, setWallet] = useState(null);
+  const [VoterIdABI, setVoterIdABI] = useState(null);
+  const [VoterIDContractAddress, setContractAddress] = useState(null);
+  const [VotingSystemABI, setVotingSystemABI] = useState(null);
+  const [VotingSystemContractAddress, setVotingSystemContractAddress] = useState(null);
+  const [AdminControlModal, setAdminControlModal] = useState(false);
+
+  const handleConnectWallet = async () => {
+    const connectedWallet = await connectWallet();
+    if (connectedWallet) {
+      console.log(connectedWallet);
+      setWallet(connectedWallet);
+      setIsWalletConnected(true);
+      setShowWalletModal(false);
+      handleGetABI();
+    }
+  };
+
+  const handleGetABI = async () => {
+    const VoterIDabi = await fetch('http://'+'127.0.0.1'+':5000/api/get_abi/VoterID');
+    const VoterIDjson = await VoterIDabi.json();
+    console.log("Json", VoterIDjson);
+    setVoterIdABI(VoterIDjson.abi);
+    setContractAddress(VoterIDjson.ca);
+
+    const votingSystemAbi = await fetch('http://'+'127.0.0.1'+':5000/api/get_abi/VotingSystem');
+    const votingSystemJson = await votingSystemAbi.json();
+    setVotingSystemABI(votingSystemJson.abi);
+    setVotingSystemContractAddress(votingSystemJson.ca);
+  };
+
+  useEffect(() => {
+    if (VoterIdABI && VoterIDContractAddress && VotingSystemABI && VotingSystemContractAddress) {
+      console.log("Voter ID ABI:", VoterIdABI);
+      console.log("Voter ID Contract Address:", VoterIDContractAddress);
+      console.log("VotingSystemABI", VotingSystemABI);
+      console.log("VotingSystemContractAddress", VotingSystemContractAddress);
+      console.log("Addr ", wallet.address)
+    }
+  }, [VoterIdABI, VoterIDContractAddress, VotingSystemABI, VotingSystemContractAddress, wallet]);
+
+  const handleEnterDApp = async () => {
+    if (!isWalletConnected) {
+      setShowWalletModal(true);
+      return;
+    }
+    if ( true || !(wallet.address == import.meta.env.VITE_ADMINADDRESS)) {
+      const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, wallet);
+      if (!hasNFT) {
+        setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
+      } else {
+        setShowUserCards(true); // Show user cards page if NFT is owned
+      }
+      return;
+    }
+    console.log(import.meta.env.VITE_ADMINADDRESS)
+    setAdminControlModal(true);
+    console.log("Admin address:", wallet.address, "is connected");
+  };
+
+  // Show KYC form when "Complete KYC" button is clicked
+  const handleCompleteKYCConfirm = () => {
+    setShowKYCConfirm(false);  // Hide the KYC prompt
+    setshowKYCFormModal(true);     // Show the KYC form modal
+  };
+
+  const handleCompleteKYC = (formData) => {
+    console.log("KYC data submitted:", formData);
+    setshowKYCFormModal(false);
+    setShowUserCards(true); // Show user cards page after KYC is completed
+  };
 
   return (
-    <>
-      <NAV setConnected={setConnected} />
-      <div className="h-[30rem] bg-[#c6e7e5]">
-        {/* Use RouterProvider for routing */}
-        <RouterProvider router={router} />
-      </div>
-    </>
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      <Header 
+        isConnected={isWalletConnected} 
+        walletAddress={isWalletConnected ? wallet.address : null} 
+        onConnect={handleConnectWallet} 
+        onDisconnect={() => setIsWalletConnected(false)} // Handling disconnect
+        wallet={wallet}
+      />
+      <main className="w-svw flex flex-grow items-center">
+        {showUserCards ? (
+          <UserCardsPage wallet={wallet} VotingSystemContractAddress={VotingSystemContractAddress} VotingSystemABI={VotingSystemABI} />
+        ) : (
+          <Hero onEnterDApp={handleEnterDApp} />
+        )}
+      </main>
+      <footer className="bg-gray-900 text-white text-center py-4">
+        © 2024 OnChainVote. All rights reserved.
+      </footer>
+
+      {/* KYC Confirmation Prompt */}
+      {showKYCConfirm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <KYCModal onComplete={handleCompleteKYCConfirm} onClose={() => setShowKYCConfirm(false)} />
+        </div>
+      )}
+
+      {/* KYC Form Modal */}
+      {showKYCFormModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
+          <KYCForm onSubmit={handleCompleteKYC} onCancel={() => setshowKYCFormModal(false)} walletAddress={wallet.address} />
+        </div>
+      )}
+
+      {/* Wallet Connection Modal */}
+      {showWalletModal && (
+        <WalletConnectionModal onClose={() => setShowWalletModal(false)} onConnect={handleConnectWallet} />
+      )}
+      {/* Admin Control Modal */}
+      {AdminControlModal && (
+        <AdminControl onClose={() => setAdminControlModal(false)} />
+      )}
+    </div>
   );
-}
+};
 
 export default App;

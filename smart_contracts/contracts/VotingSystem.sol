@@ -80,9 +80,34 @@ contract VotingSystem {
         emit CandidateAdded(_candidateName, _candidateId);  // Emit event
     }
 
+    // Delete a candidate
+    function deleteCandidate(uint256 _candidateId) public onlyOwner {
+        require(candidateExists[_candidateId], "Candidate with this ID does not exist");
+
+        for (uint256 i = 0; i < candidates.length; i++) {
+            if (candidates[i].candidateId == _candidateId) {
+                // Recreate the partyAreaKey to mark the party as no longer having a candidate in this area
+                bytes32 partyAreaKey = keccak256(abi.encodePacked(candidates[i].area, candidates[i].party));
+                partyInAreaExists[partyAreaKey] = false;  // Update the partyInAreaExists mapping
+
+                // Remove the candidate
+                candidates[i] = candidates[candidates.length - 1];
+                candidateExists[_candidateId] = false;
+
+                candidates.pop();
+                break;
+            }
+        }
+    }
+
+
     // Get total number of candidates
     function totalCandidates() public view returns (uint256) {
         return candidates.length;
+    }
+
+    function getAllCandidates() public view returns (CandidateStruct[] memory allCandidates) {
+        return candidates;
     }
 
     // Only SBT holder can vote

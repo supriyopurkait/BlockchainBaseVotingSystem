@@ -87,5 +87,26 @@ def get_candidates():
         print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
     
+@app.route('/api/execute-meta-tx', methods=['POST'])
+def execute_meta_transaction():
+    try:
+        data = request.json
+        
+        # Execute the meta transaction and capture the result
+        result = execute_meta_tx(data)
+    
+        # Check if the transaction was successful
+        if result.get('success'):
+            # On success, return the transaction hash
+            return jsonify({'status': 'success', 'txHash': result.get('tx_hash')}), 200
+        else:
+            # On failure, return the error message
+            return jsonify({'status': 'error', 'message': result.get('error')}), 400
+    
+    except Exception as e:
+        # Catch any other exceptions and return an internal server error
+        print(e)
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -29,30 +29,52 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
   }, [wallet]);
 
   const handleVote = async (candidateId) => {
-    console.log('Voting for user:', candidateId);
-    const { provider, signer, smartWallet } = wallet;
-  
-    // Log these values to ensure they are set
-    console.log('VotingSystemContractAddress:', VotingSystemContractAddress);
-    console.log('VotingSystemABI:', VotingSystemABI);
-  
-    if (!VotingSystemContractAddress || !VotingSystemABI || !provider || !signer) {
-      console.error('Invalid contract address, ABI, or wallet provider/signers.');
-      return;
-    }
-  
-    const contract = new ethers.Contract(VotingSystemContractAddress, VotingSystemABI, signer);
-  
     try {
-      // Assuming you have a vote function in your contract
-      const tx = await contract.vote(candidateId);  // Replace 'vote' with your actual function name
-      console.log('Transaction sent:', tx);
+      const RELAYER_URL = 'http://127.0.0.1:5000/api';
+      console.log('Voting for user:', candidateId);
+      const { provider, signer } = wallet;
+      const address = await signer.getAddress();
+      console.log('Wallet address:', address);
+      console.log('VotingSystemContractAddress:', VotingSystemContractAddress);
+      
+      if (!VotingSystemContractAddress || !VotingSystemABI || !provider || !signer) {
+        console.error('Invalid contract address, ABI, or wallet provider/signers.');
+        return;
+      }
+    
+      const contract = new ethers.Contract(VotingSystemContractAddress, VotingSystemABI, signer);
   
-      // Wait for transaction to be mined
-      const receipt = await tx.wait();
-      console.log('Transaction confirmed:', receipt);
+      const nonce = await contract.nonces(address);
+      const functionSignature = contract.interface.encodeFunctionData('vote', [candidateId]);
+      
+      const messageHash = ethers.solidityPackedKeccak256(
+        ['address', 'uint256', 'bytes'],
+        [address, nonce, functionSignature]
+      );
+      const messageHashBinary = ethers.getBytes(messageHash);
+      const signature = await signer.signMessage(messageHashBinary);
+
+      const { r, s, v } = ethers.Signature.from(signature);
+      console.log('Signature:', { r, s, v });
+      const response = await fetch(`${RELAYER_URL}/execute-meta-tx`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userAddress: address, functionSignature, r, s, v })
+      });
+      const data = await response.json();
+
+      console.log('Response data:', data);
+      
+      if(data.status === 'success') {
+        console.log("Voted successfully for user:", candidateId ,"\ntxHash:", data.txHash);
+      }
+      else {
+        console.error("Error in voting:", data.error);
+      }
+  
     } catch (error) {
-      console.error('Error in handleVote:', error);
+      console.error('Error in handleVote:', error.message);
+      console.error('Full error object:', error);
     }
   };
   

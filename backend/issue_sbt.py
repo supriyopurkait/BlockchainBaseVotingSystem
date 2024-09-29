@@ -15,7 +15,7 @@ private_key = os.getenv('PRIVATE_KEY')
 w3 = Web3(Web3.HTTPProvider(RPC_URL))
 voter_id = 0
 # Metadata for Voter ID
-def metadata():
+def metadata(area):
 
     # Get current time in IST
     ist = timezone('Asia/Kolkata')
@@ -42,6 +42,10 @@ def metadata():
                 "value"     : year
             },
             {
+                "trait_type": "Area",
+                "value"     : area  
+            },
+            {
                 "trait_type": "Validity",
                 "value"     : "Permanent"
             }
@@ -54,7 +58,7 @@ def metadata():
     return metadata_json
 
 # Issue SBT to a user
-def issue_sbt(reciever_addr):
+def issue_sbt(reciever_addr, area):
     if(not w3.is_connected()):
         return jsonify({"error": "Some error occurred. Please try again later."})
     data = get_abi_voterID()
@@ -63,14 +67,14 @@ def issue_sbt(reciever_addr):
         print("========================================")
         print("Pls deploy VoterID contract first...")
         print("========================================")
-        return jsonify({"error": "Contract not deployed yet. Please try again later."})
+        return ""
     # contract object creation
     contract = w3.eth.contract(address=contract_addr ,abi=data['abi'])
     reciever_addr = w3.to_checksum_address(reciever_addr)
-    if(contract.functions.balanceOf(reciever_addr).call() == 1):
-        print("SBT already minted to this wallet address...")
-        return jsonify({"error": "SBT already minted to this wallet address..."})
-    meta_data = metadata()
+    if(contract.functions.balanceOf(reciever_addr).call() == 1):    
+        return "Minted"
+    
+    meta_data = metadata(area)
     sender = w3.eth.account.from_key(private_key).address
     # build and sign transaction
     tx = contract.functions.safeMint(reciever_addr, meta_data).build_transaction({
@@ -82,6 +86,6 @@ def issue_sbt(reciever_addr):
     signed = w3.eth.account.sign_transaction(tx, private_key=private_key)
     tx_hash = w3.to_hex(w3.eth.send_raw_transaction(signed.raw_transaction))
     w3.eth.wait_for_transaction_receipt(tx_hash)    # wait for tx to be mined
-    
-    return jsonify({"tx_hash": tx_hash})
+    print("hash of transaction: ", tx_hash)
+    return str(tx_hash)
     

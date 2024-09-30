@@ -14,6 +14,8 @@ dist-ssr
 .env
 # Editor directories and files
 .vscode/*
+.mypy_cache/*
+.mypy_cache/
 !.vscode/extensions.json
 .idea
 .DS_Store
@@ -24,6 +26,8 @@ dist-ssr
 *.sw?
 
 # 
-output
+frontend/.env
 package-lock.json
 __pycache__
+db
+frontend/src/components/loadingModal.jsx

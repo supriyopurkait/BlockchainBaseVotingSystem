@@ -7,6 +7,7 @@ import UserCardsPage from './components/canditateCardPage';
 import KYCForm from './components/KYCForm';
 import KYCModal from './components/KYCModal';
 import AdminControl from './components/Admin';
+import AdminControlsPage from './components/AdminControls';
 import WalletConnectionModal from './components/WalletConnectionModal';
 
 
@@ -22,6 +23,7 @@ const App = () => {
   const [VotingSystemABI, setVotingSystemABI] = useState(null);
   const [VotingSystemContractAddress, setVotingSystemContractAddress] = useState(null);
   const [AdminControlModal, setAdminControlModal] = useState(false);
+  const [showAdminControlsPage, setAdminControlsPage] = useState(false);
 
   const handleConnectWallet = async () => {
     const connectedWallet = await connectWallet();
@@ -62,7 +64,9 @@ const App = () => {
       setShowWalletModal(true);
       return;
     }
-    if ( true || !(wallet.address == import.meta.env.VITE_ADMINADDRESS)) {
+    console.log("ENV Admin address:", import.meta.env.VITE_ADMINADDRESS)
+    // if (!(wallet.address == import.meta.env.VITE_ADMINADDRESS)) { // Use for Admin Debug
+    if ( true || !(wallet.address == import.meta.env.VITE_ADMINADDRESS)) { // Use for KYC Debug
       const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, wallet);
       if (!hasNFT) {
         setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
@@ -71,7 +75,6 @@ const App = () => {
       }
       return;
     }
-    console.log(import.meta.env.VITE_ADMINADDRESS)
     setAdminControlModal(true);
     console.log("Admin address:", wallet.address, "is connected");
   };
@@ -88,6 +91,11 @@ const App = () => {
     setShowUserCards(true); // Show user cards page after KYC is completed
   };
 
+  const handleAdminControls = () => {
+    setAdminControlModal(false);
+    setAdminControlsPage(true); // Show user cards page after KYC is completed
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Header 
@@ -98,11 +106,22 @@ const App = () => {
         wallet={wallet}
       />
       <main className="w-svw flex flex-grow items-center">
-        {showUserCards ? (
-          <UserCardsPage wallet={wallet} VotingSystemContractAddress={VotingSystemContractAddress} VotingSystemABI={VotingSystemABI} />
-        ) : (
-          <Hero onEnterDApp={handleEnterDApp} />
-        )}
+        {(() => {
+          if (showUserCards) {
+            return (
+              <UserCardsPage 
+                wallet={wallet} 
+                VotingSystemContractAddress={VotingSystemContractAddress} 
+                VotingSystemABI={VotingSystemABI} 
+              />
+            );
+          }
+          if (showAdminControlsPage) {
+            return <AdminControlsPage />;
+          }
+          if ((!showUserCards) && (!showAdminControlsPage))
+          return <Hero onEnterDApp={handleEnterDApp} />;
+        })()}
       </main>
       <footer className="bg-gray-900 text-white text-center py-4">
         © 2024 OnChainVote. All rights reserved.
@@ -128,7 +147,7 @@ const App = () => {
       )}
       {/* Admin Control Modal */}
       {AdminControlModal && (
-        <AdminControl onClose={() => setAdminControlModal(false)} />
+        <AdminControl onLoad={handleAdminControls} onClose={() => setAdminControlModal(false)} />
       )}
     </div>
   );

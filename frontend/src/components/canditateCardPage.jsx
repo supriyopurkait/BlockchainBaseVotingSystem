@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import UserCard from './candidateCard';
-import { fetchCandidate } from '../utils/getDetails';
+import UserCard from '@/components/candidateCard';
+import { fetchCandidate } from '@/utils/getDetails';
 import { ethers } from 'ethers';
 
 const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI }) => {

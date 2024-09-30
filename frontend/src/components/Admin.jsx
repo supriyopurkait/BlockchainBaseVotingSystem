@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
-import Modal from './Modal';
+import Modal from '@/components/Modal';
 
 const AdminControl = ({ onLoad,onClose }) => (
   <Modal title="Admin Controls" onClose={onClose}>

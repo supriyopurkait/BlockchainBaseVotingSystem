@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'; 
 import { ethers } from 'ethers';
-import { connectWallet, checkNFTOwnership } from './utils/web3Utils';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import UserCardsPage from './components/canditateCardPage';
-import KYCForm from './components/KYCForm';
-import KYCModal from './components/KYCModal';
-import AdminControl from './components/Admin';
-import AdminControlsPage from './components/AdminControls';
-import WalletConnectionModal from './components/WalletConnectionModal';
+import { connectWallet, checkNFTOwnership } from '@/utils/web3Utils';
+import Header from '@/components/Header';
+import Hero from '@/components/Hero';
+import UserCardsPage from '@/components/canditateCardPage';
+import KYCForm from '@/components/KYCForm';
+import KYCModal from '@/components/KYCModal';
+import AdminControl from '@/components/Admin';
+import AdminControlsPage from '@/components/AdminControls';
+import WalletConnectionModal from '@/components/WalletConnectionModal';
 
 
 const App = () => {

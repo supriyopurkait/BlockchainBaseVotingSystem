@@ -27,4 +27,4 @@ const AdminControl = ({ onLoad,onClose }) => (
   </Modal>
 );
 
-export default AdminControlModal;
+export default AdminControl;

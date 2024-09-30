@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
  
-import "smart_contracts/openzeppelin/contracts@4.7.0/token/ERC721/extensions/ERC721URIStorage.sol";
-import "smart_contracts/openzeppelin/contracts@4.7.0/access/Ownable.sol";
-import "smart_contracts/openzeppelin/contracts@4.7.0/utils/Counters.sol"; 
+import "smart_contracts/contracts/openzeppelin/contracts@4.7.0/token/ERC721/extensions/ERC721URIStorage.sol";
+import "smart_contracts/contracts/openzeppelin/contracts@4.7.0/access/Ownable.sol";
+import "smart_contracts/contracts/openzeppelin/contracts@4.7.0/utils/Counters.sol"; 
 
 contract VoterID is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;

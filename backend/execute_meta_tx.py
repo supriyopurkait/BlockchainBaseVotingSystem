@@ -2,13 +2,18 @@ from web3 import Web3
 from dotenv import load_dotenv
 from get_abi import get_abi_votingSystem
 import os
-
+from has_voted import has_voted
 load_dotenv()
 
 def execute_meta_tx(data):
     try:
         w3 = Web3(Web3.HTTPProvider(os.getenv('ALCHEMY_RPC')))
-        user_address = w3.to_checksum_address(data['userAddress'])
+        user_address = w3.to_checksum_address(data['userAddress'])\
+            
+        # Check if the user has already voted
+        if(has_voted(user_address)):
+            return {"success": False, "error": "You have already voted"}
+        
         function_signature = data['functionSignature']
         r = data['r']
         s = data['s']

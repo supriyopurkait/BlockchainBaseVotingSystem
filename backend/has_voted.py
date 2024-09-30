@@ -1,4 +1,3 @@
-from cv2 import add
 from get_abi import get_abi_votingSystem
 from web3 import Web3
 from dotenv import load_dotenv

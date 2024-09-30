@@ -3,7 +3,9 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import UserCardsPage from './components/canditateCardPage';
 import KYCForm from './components/KYCForm';
-import AdminControlModal from './components/Admin';
+import KYCModal from './components/KYCModal';
+import AdminControl from './components/Admin';
+import AdminControlsPage from './components/AdminControls';
 import WalletConnectionModal from './components/WalletConnectionModal';
 import { connectWallet, checkNFTOwnership } from './utils/web3Utils';
 import { ethers } from 'ethers';
@@ -20,6 +22,7 @@ const App = () => {
   const [VotingSystemABI, setVotingSystemABI] = useState(null);
   const [VotingSystemContractAddress, setVotingSystemContractAddress] = useState(null);
   const [AdminControlModal, setAdminControlModal] = useState(false);
+  const [showAdminControlsPage, setAdminControlsPage] = useState(false);
 
   const handleConnectWallet = async () => {
     const connectedWallet = await connectWallet();
@@ -60,17 +63,19 @@ const App = () => {
       setShowWalletModal(true);
       return;
     }
-    if (wallet.address = import.meta.env.ADMINADDRESS) {
-      setAdminControlModal(true);
-      console.log("Admin address:", wallet.address, "is connected");
+    console.log("ENV Admin address:", import.meta.env.VITE_ADMINADDRESS)
+    // if (!(wallet.address == import.meta.env.VITE_ADMINADDRESS)) { // Use for Admin Debug
+    if ( true || !(wallet.address == import.meta.env.VITE_ADMINADDRESS)) { // Use for KYC Debug
+      const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, wallet);
+      if (!hasNFT) {
+        setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
+      } else {
+        setShowUserCards(true); // Show user cards page if NFT is owned
+      }
       return;
     }
-    const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, wallet);
-    if (!hasNFT) {
-      setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
-    } else {
-      setShowUserCards(true); // Show user cards page if NFT is owned
-    }
+    setAdminControlModal(true);
+    console.log("Admin address:", wallet.address, "is connected");
   };
 
   // Show KYC form when "Complete KYC" button is clicked
@@ -85,6 +90,11 @@ const App = () => {
     setShowUserCards(true); // Show user cards page after KYC is completed
   };
 
+  const handleAdminControls = () => {
+    setAdminControlModal(false);
+    setAdminControlsPage(true); // Show user cards page after KYC is completed
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Header 
@@ -94,12 +104,23 @@ const App = () => {
         onDisconnect={() => setIsWalletConnected(false)} // Handling disconnect
         wallet={wallet}
       />
-      <main className="flex-grow mx-36">
-        {showUserCards ? (
-          <UserCardsPage wallet={wallet} VotingSystemContractAddress={VotingSystemContractAddress} VotingSystemABI={VotingSystemABI} />
-        ) : (
-          <Hero onEnterDApp={handleEnterDApp} />
-        )}
+      <main className="w-svw flex flex-grow items-center">
+        {(() => {
+          if (showUserCards) {
+            return (
+              <UserCardsPage 
+                wallet={wallet} 
+                VotingSystemContractAddress={VotingSystemContractAddress} 
+                VotingSystemABI={VotingSystemABI} 
+              />
+            );
+          }
+          if (showAdminControlsPage) {
+            return <AdminControlsPage />;
+          }
+          if ((!showUserCards) && (!showAdminControlsPage))
+          return <Hero onEnterDApp={handleEnterDApp} />;
+        })()}
       </main>
       <footer className="bg-gray-900 text-white text-center py-4">
         © 2024 OnChainVote. All rights reserved.
@@ -131,6 +152,10 @@ const App = () => {
       {/* Wallet Connection Modal */}
       {showWalletModal && (
         <WalletConnectionModal onClose={() => setShowWalletModal(false)} onConnect={handleConnectWallet} />
+      )}
+      {/* Admin Control Modal */}
+      {AdminControlModal && (
+        <AdminControl onLoad={handleAdminControls} onClose={() => setAdminControlModal(false)} />
       )}
     </div>
   );

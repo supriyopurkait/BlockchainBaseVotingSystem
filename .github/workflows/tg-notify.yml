@@ -8,7 +8,7 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
-
+    
     steps:
     - name: Check out the repository
       uses: actions/checkout@v3
@@ -37,13 +37,24 @@ jobs:
         fi
 
         # Get the list of commits pushed in the current push
-        commit_messages=$(git log $commit_range --pretty=format:"➡️ %s by %an")
+        commit_list=$(git rev-list --reverse $commit_range)
 
-        # Construct the message with all commit messages
-        message="🚀 New push by *${{ github.actor }}* on branch *${{ github.ref }}*       Commits: $commit_messages"
+        # Loop through each commit and send a separate message
+        for commit in $commit_list; do
+          commit_message=$(git log -1 --pretty=format:"➡️ %s" $commit)
+          commit_author=$(git log -1 --pretty=format:"%an" $commit)
+          commit_hash=$(git rev-parse --short $commit)
 
-        # Send the message to the group chat
-        curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-          -d chat_id="${TELEGRAM_GROUP_CHAT_ID}" \
-          -d text="$message" \
-          -d parse_mode="Markdown"
+          message="🚀 New commit by *$commit_author* on branch *${{ github.ref_name }}*
+        Commit: $commit_message
+        Hash: \`$commit_hash\`"
+
+          # Send the message to the group chat
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_GROUP_CHAT_ID}" \
+            -d text="$message" \
+            -d parse_mode="Markdown"
+
+          # Add a small delay to avoid hitting rate limits
+          sleep 1
+        done

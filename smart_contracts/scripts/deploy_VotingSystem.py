@@ -57,6 +57,7 @@ def deploy_contract():
     
     private_key = os.getenv('PRIVATE_KEY')
     addr = w3.to_checksum_address(w3.eth.account.from_key(private_key).address)     # Address of signer fetched from private key
+    relayer_addr = w3.to_checksum_address(input("Enter the relayer address: "))
     
     # Getting VoterID smart contract Address
     file_path = "smart_contracts/scripts/output/VoterID/CA.txt"
@@ -71,7 +72,7 @@ def deploy_contract():
     # Creation of contract object
     contract = w3.eth.contract(abi=abi, bytecode=byte_code)
     # Transaction details
-    tx = contract.constructor(VID_addr).build_transaction({
+    tx = contract.constructor(VID_addr, relayer_addr).build_transaction({
         "from" : addr,
         "nonce" : w3.eth.get_transaction_count(addr),
         "gas" : 5000000,

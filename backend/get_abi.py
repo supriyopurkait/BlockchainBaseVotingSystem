@@ -1,24 +1,25 @@
+import json
 import os
 import sys
 
-from flask import jsonify
-script_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'smart_contracts', 'scripts'); sys.path.append(script_path)
-from abi import get_abi_bytecode_voterID, get_abi_bytecode_votingSystem
+path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'smart_contracts', 'artifacts'); sys.path.append(path)
 
-path = os.path.join(os.path.dirname(__file__), '..',  'smart_contracts')
-
+# Get the ABI, Bytecode, and Contract Address of the VoterID contract
 def get_abi_voterID():
-    abi, bytecode = get_abi_bytecode_voterID()
     try:
-        ca = open(path + "/scripts/output/VoterID/CA.txt", "r").read()
+        abi = json.load(open(path + "/voterID/abi.json", "r"))
+        bytecode = open(path + "/voterID/byte_code.txt", "r").read()
+        ca = open(path + "/voterID/CA.txt", "r").read()
     except FileNotFoundError:
-        ca = {"Error: Contract is not deployed yet."}
-    return ({"contract": "VoterID", "abi": abi, "bytecode": bytecode, "ca": ca})
+        return {"Error: Contract is not deployed yet."}
+    return {"contract": "VoterID", "abi": abi, "bytecode": bytecode, "ca": ca}
 
+# Get the ABI, Bytecode, and Contract Address of the VotingSystem contract
 def get_abi_votingSystem():
-    abi, bytecode = get_abi_bytecode_votingSystem()
     try:
-        ca = open(path + "/scripts/output/VotingSystem/CA.txt", "r").read()
+        abi = json.load(open(path + "/VotingSystem/abi.json", "r"))
+        bytecode = open(path + "/VotingSystem/byte_code.txt", "r").read()
+        ca = open(path + "/VotingSystem/CA.txt", "r").read()
     except FileNotFoundError:
-        ca = {"Error: Contract is not deployed yet."}
-    return ({"contract": "VoterID", "abi": abi, "bytecode": bytecode, "ca": ca})
+        return {"Error: Contract is not deployed yet."}
+    return {"contract": "VotingSystem", "abi": abi, "bytecode": bytecode, "ca": ca}

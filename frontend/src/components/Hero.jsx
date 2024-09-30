@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Info } from 'lucide-react';
-import VoterBoxicon from "/picture/VoteBoxIcon.png";
+import VoterBoxicon from "/picture/Mascot.png";
 
 const Hero = ({ onEnterDApp }) => (
   <div className="hero centre h-fit w-fit flex flex-col min-[970px]:flex-row items-center justify-center px-4">

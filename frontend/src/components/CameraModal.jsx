@@ -34,8 +34,9 @@ const CameraModal = ({ isOpen, onClose, onCapture }) => {
               height={720}
               screenshotFormat="image/jpeg"
               width={1280}
+              style={{ borderRadius: "1rem"}}
             />
-            <div className="flex justify-between">
+            <div className="flex justify-between mt-4">
               <button
                 className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
                 onClick={() => {

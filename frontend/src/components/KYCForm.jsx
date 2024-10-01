@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { User, MapPin, Phone, FileText, Upload, ArrowRight } from 'lucide-react';
+import WebcamStreamCapture from '@/components/Camera';
 
 const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     documentNumber: '',
     documentImage: null,
     walletAddress: ''
+    // video: null
   });
 
   // Set the wallet address on component mount or when walletAddress changes
@@ -27,6 +29,10 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     setFormData(prevData => ({ ...prevData, documentImage: e.target.files[0] }));
   };
 
+  const handleCamera = (data) => {
+    setFormData(prevData => ({ ...prevData, video: data }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -38,6 +44,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     formDataToSend.append('documentNumber', formData.documentNumber);
     formDataToSend.append('documentImage', formData.documentImage);
     formDataToSend.append('walletAddress', formData.walletAddress);
+    // formDataToSend.append('video', formData.video);
   
     try {
       const response = await fetch('http://127.0.0.1:5000/api/kyc', {
@@ -72,8 +79,9 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-6 text-center">Complete KYC Process</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <h2 className="text-2xl font-bold mb-2 text-center">Complete KYC Process</h2>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div className=""><WebcamStreamCapture sendData={handleCamera}/></div>
         <div>
           <label htmlFor="name" className="flex items-center text-sm font-medium text-gray-700 mb-1">
             <User size={18} className="mr-2" /> Full Name

@@ -19,10 +19,7 @@ const Hero = ({ onEnterDApp }) => (
         </button>
       </div>
     </div>
-    {/* <div className="px-20 py-4"></div> */}
-    <div className="min-[970px]:size-1/3">
-      <img src={VoterBoxicon} alt="Crypto DApp Illustration" className="" />
-    </div>
+    <img src={VoterBoxicon} alt="Crypto DApp Illustration" className="min-[970px]:size-1/3" />
   </div>
 );
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
-import Modal from './Modal';
+import Modal from '@/components/Modal';
 
 const WalletConnectionModal = ({ onClose, onConnect }) => (
   <Modal title="Wallet Connection Required" onClose={onClose}>

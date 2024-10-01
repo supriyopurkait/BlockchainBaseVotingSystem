@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
-import Modal from './Modal';
+import Modal from '@/components/Modal';
 import { ExternalLink } from 'lucide-react';
 
 const Message = ({ onClose, data, txhash}) => {

@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react'; 
 import { ethers } from 'ethers';
-import { connectWallet, checkNFTOwnership } from './utils/web3Utils';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import UserCardsPage from './components/canditateCardPage';
-import KYCForm from './components/KYCForm';
-import KYCModal from './components/KYCModal';
-import AdminControl from './components/Admin';
-import AdminControlsPage from './components/AdminControls';
-import WalletConnectionModal from './components/WalletConnectionModal';
+import { connectWallet, checkNFTOwnership } from '@/utils/web3Utils';
+import Header from '@/components/Header';
+import Hero from '@/components/Hero';
+import UserCardsPage from '@/components/canditateCardPage';
+import KYCForm from '@/components/KYCForm';
+import KYCModal from '@/components/KYCModal';
+import AdminControl from '@/components/Admin';
+import AdminCandidateControlsPage from '@/components/AdminCandidateControlsPage';
+import AdminUserControlsPage from '@/components/AdminUserControlsPage';
+import WalletConnectionModal from '@/components/WalletConnectionModal';
 
 
 const App = () => {
@@ -23,7 +24,8 @@ const App = () => {
   const [VotingSystemABI, setVotingSystemABI] = useState(null);
   const [VotingSystemContractAddress, setVotingSystemContractAddress] = useState(null);
   const [AdminControlModal, setAdminControlModal] = useState(false);
-  const [showAdminControlsPage, setAdminControlsPage] = useState(false);
+  const [showAdminCandidateControlsPage, setAdminCandidateControlsPage] = useState(false);
+  const [showAdminUserControlsPage, setAdminUserControlsPage] = useState(false);
 
   const handleConnectWallet = async () => {
     const connectedWallet = await connectWallet();
@@ -65,8 +67,7 @@ const App = () => {
       return;
     }
     console.log("ENV Admin address:", import.meta.env.VITE_ADMINADDRESS)
-    // if (!(wallet.address == import.meta.env.VITE_ADMINADDRESS)) { // Use for Admin Debug
-    if ( true || !(wallet.address == import.meta.env.VITE_ADMINADDRESS)) { // Use for KYC Debug
+    if (!(wallet.address == import.meta.env.VITE_ADMINADDRESS)) { // Use for Admin Debug
       const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, wallet);
       if (!hasNFT) {
         setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
@@ -91,9 +92,14 @@ const App = () => {
     setShowUserCards(true); // Show user cards page after KYC is completed
   };
 
-  const handleAdminControls = () => {
+  const handleAdminCandidateControls = () => {
     setAdminControlModal(false);
-    setAdminControlsPage(true); // Show user cards page after KYC is completed
+    setAdminCandidateControlsPage(true);
+  };
+
+  const handleAdminUserControls = () => {
+    setAdminControlModal(false);
+    setAdminUserControlsPage(true);
   };
 
   return (
@@ -105,7 +111,7 @@ const App = () => {
         onDisconnect={() => setIsWalletConnected(false)} // Handling disconnect
         wallet={wallet}
       />
-      <main className="w-svw flex flex-grow items-center">
+      <main className="w-svw flex flex-grow justify-center items-center">
         {(() => {
           if (showUserCards) {
             return (
@@ -116,10 +122,13 @@ const App = () => {
               />
             );
           }
-          if (showAdminControlsPage) {
-            return <AdminControlsPage />;
+          if (showAdminCandidateControlsPage) {
+            return <AdminCandidateControlsPage onClose={() => setAdminCandidateControlsPage(false)} />;
           }
-          if ((!showUserCards) && (!showAdminControlsPage))
+          if (showAdminUserControlsPage) {
+            return <AdminUserControlsPage onClose={() => setAdminUserControlsPage(false)} />;
+          }
+          if ((!showUserCards) && (!showAdminCandidateControlsPage) && (!showAdminUserControlsPage))
           return <Hero onEnterDApp={handleEnterDApp} />;
         })()}
       </main>
@@ -147,7 +156,7 @@ const App = () => {
       )}
       {/* Admin Control Modal */}
       {AdminControlModal && (
-        <AdminControl onLoad={handleAdminControls} onClose={() => setAdminControlModal(false)} />
+        <AdminControl onCandidate={handleAdminCandidateControls} onUser={handleAdminUserControls} onClose={() => setAdminControlModal(false)} />
       )}
     </div>
   );

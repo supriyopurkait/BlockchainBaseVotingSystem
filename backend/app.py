@@ -66,6 +66,7 @@ def get_candidates():
     try:
         # Get the JSON data from the request
         data = request.json
+        print("Received address:", data.get('address'))  
 
         # Extract the address from the JSON data
         address = data.get('address').lower()
@@ -74,6 +75,7 @@ def get_candidates():
             return jsonify({'status': 'error', 'message': 'Address is required'}), 400
         # Fetch the candidate details using the area
         candidates = get_candidates_by_area(address)
+        print("Candidates:", candidates)  
         # Check if the area was found
         if not candidates:
             return jsonify({'status': 'error', 'message': 'Area not found for the given address'}), 404

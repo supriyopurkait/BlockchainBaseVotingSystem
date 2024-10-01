@@ -10,6 +10,7 @@ export const fetchCandidate = async (wallet) => {
           address: wallet.address
         })
       });
+      console.log("Sent data:", JSON.stringify({ address: wallet.address }));
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }

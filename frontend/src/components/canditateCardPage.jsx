@@ -81,6 +81,7 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
     setVotingLoading(true);
     try {
       const RELAYER_URL = 'http://127.0.0.1:5000/api';
+      console.log('Voting for user:', candidateId);
       const { provider, signer } = wallet;
       const address = await signer.getAddress();
 
@@ -97,9 +98,9 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
         ['address', 'uint256', 'bytes'],
         [address, nonce, functionSignature]
       );
-
-      const signature = await signer.signMessage(ethers.getBytes(messageHash));
-      const { r, s, v } = ethers.utils.splitSignature(signature);
+      const messageHashBinary = ethers.getBytes(messageHash);
+      const signature = await signer.signMessage(messageHashBinary);
+      const { r, s, v } = ethers.Signature.from(signature);
 
       const response = await fetch( `${RELAYER_URL}/execute-meta-tx`, {
         method: 'POST',
@@ -109,6 +110,7 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
 
       const data = await response.json();
       if (data.status === 'success') {
+        console.log('Voting successful:', data.txHash);
         setMessageData(`Congratulations! You successfully voted.`);
         setTxHash(data.txHash);
       } else {

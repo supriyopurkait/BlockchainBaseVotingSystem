@@ -191,23 +191,23 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
         <div className="ps-2">
           {/* Show captured photo if available */}
           {capturedPhoto ? (
-            <div className="mb-4">
-              <h2 className="flex items-center text-sm font-medium text-gray-700 mb-1">Captured Photo</h2>
+            <div className="flex flex-col justify-between items-start">
+              <h2 className="text-sm font-medium text-gray-700 mb-1">Captured Photo</h2>
               <img
                 src={capturedPhoto}
                 alt="Captured"
-                className="mt-2 rounded-md w-10 h-8"
+                className="m-2 object-contain rounded-md w-20 h-18"
               />
             </div>
           ) : (
-            <p>No photo captured yet</p>
+            <p className="mb-4">No photo captured yet</p>
           )}
 
           {/* Your custom button embedded inside a container */}
           {showModalOption && (
             <div className="container">
               <button
-                className="flex gap-2 border-gray-700 rounded-md px-3 py-[0.1rem] bg-blue-500 hover:bg-blue-600 text-white"
+                className="flex gap-2 items-center border-gray-700 rounded-md h-10 px-3 py-[0.1rem] bg-blue-500 hover:bg-blue-600 text-white"
                 onClick={handleOpenCamera}
               >
                 <Camera /> {/* Camera icon */}

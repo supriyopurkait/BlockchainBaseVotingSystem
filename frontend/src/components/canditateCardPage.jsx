@@ -4,7 +4,7 @@ import { fetchCandidate } from '@/utils/getDetails';
 import { ethers } from 'ethers';
 import Message from '@/components/AfterVoteMessage';
 import LoadingModal from '@/components/LoadingModal';
-import Face from 'pub/picture/face_img.png'
+import Face from 'pub/picture/face_img.png';
 
 const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI }) => {
   const [users, setUsers] = useState([]);
@@ -63,7 +63,7 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
       try {
         const fetchedUsers = await fetchCandidate(wallet);
         setUsers(fetchedUsers);
-        setUsers(dummyusers); // Using Dummy data for testing
+        // setUsers(dummyusers); // Using Dummy data for testing
       } catch (err) {
         setError('Failed to load users. Please try again later.');
         console.error(err);

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import UserCard from '@/components/candidateCard';
 import { fetchCandidate } from '@/utils/getDetails';
 import { ethers } from 'ethers';
-import Message from './AfterVoteMessage';
-import LoadingModal from './LoadingModal';
+import Message from '@/components/AfterVoteMessage';
+import LoadingModal from '@/components/LoadingModal';
 
 const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI }) => {
   const [users, setUsers] = useState([]);

@@ -83,6 +83,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [showModalOption, setShowModalOption] = useState(true);
+  const [take,setTake] = useState(0);
 
   const handleOpenCamera = () => {
     setIsCameraModalOpen(true);
@@ -94,7 +95,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
 
   const handleCapture = (photoData) => {
     setCapturedPhoto(photoData);
-    setShowModalOption(false);
+    setTake(1);
   };
 
   return (
@@ -211,7 +212,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
                 onClick={handleOpenCamera}
               >
                 <Camera /> {/* Camera icon */}
-                Capture Face
+                {take==0? "Capture Face":"Retake"}
               </button>
 
               {/* Camera Modal */}

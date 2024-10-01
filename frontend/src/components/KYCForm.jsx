@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 import {
   User,
@@ -10,12 +9,6 @@ import {
   Camera,
 } from "lucide-react";
 import CameraModal from "./CameraModal";
-=======
-import React, { useState, useEffect } from 'react';
-import { User, MapPin, Phone, FileText, Upload, ArrowRight } from 'lucide-react';
-import WebcamStreamCapture from '@/components/Camera';
-
->>>>>>> db936bad47678112c4ce99ffa0b0cab17ca05aa2
 const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -23,12 +16,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     phoneNumber: "",
     documentNumber: "",
     documentImage: null,
-<<<<<<< HEAD
     walletAddress: "",
-=======
-    walletAddress: ''
-    // video: null
->>>>>>> db936bad47678112c4ce99ffa0b0cab17ca05aa2
   });
 
   // Set the wallet address on component mount or when walletAddress changes
@@ -52,7 +40,6 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
 
     // Prepare form data for submission
     const formDataToSend = new FormData();
-<<<<<<< HEAD
     formDataToSend.append("name", formData.name);
     formDataToSend.append("address", formData.address);
     formDataToSend.append("phoneNumber", formData.phoneNumber);
@@ -60,16 +47,6 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     formDataToSend.append("documentImage", formData.documentImage);
     formDataToSend.append("walletAddress", formData.walletAddress);
 
-=======
-    formDataToSend.append('name', formData.name);
-    formDataToSend.append('address', formData.address);
-    formDataToSend.append('phoneNumber', formData.phoneNumber);
-    formDataToSend.append('documentNumber', formData.documentNumber);
-    formDataToSend.append('documentImage', formData.documentImage);
-    formDataToSend.append('walletAddress', formData.walletAddress);
-    // formDataToSend.append('video', formData.video);
-  
->>>>>>> db936bad47678112c4ce99ffa0b0cab17ca05aa2
     try {
       const response = await fetch("http://127.0.0.1:5000/api/kyc", {
         method: "POST",
@@ -121,18 +98,11 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   };
 
   return (
-<<<<<<< HEAD
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg overflow-y-auto h-[38rem]">
       <h2 className="text-2xl font-bold mb-6 text-center">
         Complete KYC Process
       </h2>
       <form onSubmit={handleSubmit} className="space-y-6">
-=======
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-2 text-center">Complete KYC Process</h2>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <div className=""><WebcamStreamCapture sendData={handleCamera}/></div>
->>>>>>> db936bad47678112c4ce99ffa0b0cab17ca05aa2
         <div>
           <label
             htmlFor="name"

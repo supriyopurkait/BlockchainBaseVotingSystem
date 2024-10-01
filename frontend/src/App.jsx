@@ -123,7 +123,11 @@ const App = () => {
             );
           }
           if (showAdminCandidateControlsPage) {
-            return <AdminCandidateControlsPage onClose={() => setAdminCandidateControlsPage(false)} />;
+            return <AdminCandidateControlsPage
+                wallet={wallet} 
+                VotingSystemContractAddress={VotingSystemContractAddress} 
+                VotingSystemABI={VotingSystemABI} 
+                onClose={() => setAdminCandidateControlsPage(false)} />;
           }
           if (showAdminUserControlsPage) {
             return <AdminUserControlsPage onClose={() => setAdminUserControlsPage(false)} />;

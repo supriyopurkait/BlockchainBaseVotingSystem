@@ -3,7 +3,7 @@ import React from 'react';
 import Modal from '@/components/Modal';
 import { ExternalLink } from 'lucide-react';
 
-const Message = ({ onClose, data, Txhash}) => {
+const Message = ({ onClose, data, txhash}) => {
   const [show, setShow] = useState(true);
 
   // Using useEffect to handle side effects like updating state when `data` changes
@@ -18,7 +18,7 @@ const Message = ({ onClose, data, Txhash}) => {
       {show ? (
         <Modal title="Notification" onClose={onClose}>
           {/* Display the message content dynamically */}
-          <p className="mb-6">{data} <ExternalLink Txhash={Txhash} /></p>
+          <p className="mb-6">{data} <ExternalLink txhash={txhash} /></p>
         </Modal>
       ) : (
         <Modal title="Notification" onClose={onClose}>

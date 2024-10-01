@@ -4,41 +4,47 @@ import { fetchCandidate } from '@/utils/getDetails';
 import { ethers } from 'ethers';
 import Message from '@/components/AfterVoteMessage';
 import LoadingModal from '@/components/LoadingModal';
+import Face from 'pub/picture/face_img.png'
 
 const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI }) => {
   const [users, setUsers] = useState([]);
   const [dummyusers, setDummyUsers] = useState([
     {
       id: 1,
-      candidate_name: 'Alice Johnson',
+      photo: Face,
+      name: 'Alice Johnson',
       candidate_id: '1',
       area: 'area1',
       party: 'Progressive Party'
     },
     {
       id: 2,
-      candidate_name: 'Bob Smith',
+      photo: Face,
+      name: 'Bob Smith',
       candidate_id: '2',
       area: 'area2',
       party: 'Liberal Party'
     },
     {
       id: 3,
-      candidate_name: 'Charlie Brown',
+      photo: Face,
+      name: 'Charlie Brown',
       candidate_id: '3',
       area: 'area3',
       party: 'Conservative Party'
     },
     {
       id: 4,
-      candidate_name: 'Diana Prince',
+      photo: Face,
+      name: 'Diana Prince',
       candidate_id: '4',
       area: 'area4',
       party: 'Libertarian Party'
     },
     {
       id: 5,
-      candidate_name: 'Ethan Hunt',
+      photo: Face,
+      name: 'Ethan Hunt',
       candidate_id: '5',
       area: 'area5',
       party: 'Independent'

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { X } from 'lucide-react';
-import copy_svg from "/picture/copy-icon.png";
-import copy_check from "/icons/copy-check.svg";
-import { fetchUsers } from '../utils/getDetails';
+import copy_svg from "pub/picture/copy-icon.png";
+import copy_check from "pub/icons/copy-check.svg";
+import { fetchUsers } from '@/utils/getDetails';
 
 // CopyComponent for handling clipboard copy
 const CopyComponent = ({ walletAddress, wallet }) => {

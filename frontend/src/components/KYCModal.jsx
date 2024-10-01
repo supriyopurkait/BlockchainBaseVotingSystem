@@ -1,5 +1,5 @@
 import React from 'react';
-import Modal from './Modal';
+import Modal from '@/components/Modal';
 
 const KYCModal = ({ onClose, onComplete }) => (
   <Modal title="KYC Required" onClose={onClose}>

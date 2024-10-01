@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Wallet, Vote } from "lucide-react";
-import UserDeatils from "./userDeatils"; // Assuming you have this component for displaying user details
-import signOutIcon from "/picture/sign-out-icon.png";
-import metamask from "/icons/metamask-icon.svg";
+import UserDeatils from "@/components/userDeatils"; // Assuming you have this component for displaying user details
+import signOutIcon from "pub/picture/sign-out-icon.png";
+import metamask from "pub/icons/metamask-icon.svg";
 
 const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);

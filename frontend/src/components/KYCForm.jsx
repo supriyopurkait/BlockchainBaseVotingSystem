@@ -9,6 +9,7 @@ import {
   Camera,
 } from "lucide-react";
 import CameraModal from "./CameraModal";
+
 const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -18,6 +19,10 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     documentImage: null,
     walletAddress: "",
   });
+
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
+  const [capturedPhoto, setCapturedPhoto] = useState(null);
+  const [take, setTake] = useState(0);
 
   // Set the wallet address on component mount or when walletAddress changes
   useEffect(() => {
@@ -32,11 +37,17 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   };
 
   const handleFileChange = (e) => {
-    setFormData(prevData => ({ ...prevData, documentImage: e.target.files[0] }));
+    setFormData((prevData) => ({ ...prevData, documentImage: e.target.files[0] }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Prevent submission if no photo has been captured
+    if (!capturedPhoto) {
+      alert("Please capture your photo to complete the KYC process.");
+      return;
+    }
 
     // Prepare form data for submission
     const formDataToSend = new FormData();
@@ -64,26 +75,11 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
         }
       } else {
         console.error("Error submitting KYC:", data.error);
-        // Handle specific error cases
-        if (
-          data.error === "A KYC record already exists for this wallet address."
-        ) {
-          // Handle duplicate KYC record
-        } else if (data.error === "SBT already minted by this address.") {
-          // Handle already minted SBT
-        }
-        // You might want to show these errors to the user
       }
     } catch (error) {
       console.error("Error during API call:", error);
-      // Handle network errors or unexpected exceptions
     }
   };
-
-  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
-  const [capturedPhoto, setCapturedPhoto] = useState(null);
-  const [showModalOption, setShowModalOption] = useState(true);
-  const [take,setTake] = useState(0);
 
   const handleOpenCamera = () => {
     setIsCameraModalOpen(true);
@@ -204,27 +200,25 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
             <p className="mb-4">No photo captured yet</p>
           )}
 
-          {/* Your custom button embedded inside a container */}
-          {showModalOption && (
-            <div className="container">
-              <button
-                className="flex gap-2 items-center border-gray-700 rounded-md h-10 px-3 py-[0.1rem] bg-blue-500 hover:bg-blue-600 text-white"
-                onClick={handleOpenCamera}
-              >
-                <Camera /> {/* Camera icon */}
-                {take==0? "Capture Face":"Retake"}
-              </button>
+          <div className="container">
+            <button
+              type="button"
+              className="flex gap-2 items-center border-gray-700 rounded-md h-10 px-3 py-[0.1rem] bg-blue-500 hover:bg-blue-600 text-white"
+              onClick={handleOpenCamera}
+            >
+              <Camera /> {/* Camera icon */}
+              {take === 0 ? "Capture Face" : "Retake"}
+            </button>
 
-              {/* Camera Modal */}
-              {isCameraModalOpen && (
-                <CameraModal
-                  isOpen={isCameraModalOpen}
-                  onClose={handleCloseCamera}
-                  onCapture={handleCapture}
-                />
-              )}
-            </div>
-          )}
+            {/* Camera Modal */}
+            {isCameraModalOpen && (
+              <CameraModal
+                isOpen={isCameraModalOpen}
+                onClose={handleCloseCamera}
+                onCapture={handleCapture}
+              />
+            )}
+          </div>
         </div>
         <div className="flex justify-between">
           <button

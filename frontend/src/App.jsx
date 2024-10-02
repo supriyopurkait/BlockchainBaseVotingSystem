@@ -6,9 +6,9 @@ import Hero from '@/components/Hero';
 import UserCardsPage from '@/components/canditateCardPage';
 import KYCForm from '@/components/KYCForm';
 import KYCModal from '@/components/KYCModal';
-import AdminControl from '@/components/Admin';
-import AdminCandidateControlsPage from '@/components/AdminCandidateControlsPage';
-import AdminUserControlsPage from '@/components/AdminUserControlsPage';
+import AdminControl from '@/components/Admin/Admin';
+import AdminCandidateControlsPage from '@/components/Admin/AdminCandidateControlsPage';
+import AdminUserControlsPage from '@/components/Admin/AdminUserControlsPage';
 import WalletConnectionModal from '@/components/WalletConnectionModal';
 
 

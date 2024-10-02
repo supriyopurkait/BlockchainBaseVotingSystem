@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, X } from 'lucide-react';
-import AdminAddCandidateCard from '@/components/AdminAddCandidateCard';
+import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 
 const AdminControl = ({ onCandidate, onUser, onClose }) => {
   const handleAddCandidate = async (candidateId) => {

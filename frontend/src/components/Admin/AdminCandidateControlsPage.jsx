@@ -5,8 +5,8 @@ import { ethers } from 'ethers';
 import Message from '@/components/AfterVoteMessage';
 import LoadingModal from '@/components/LoadingModal';
 import Face from 'pub/picture/face_img.png';
-import AdminCandidateCard from '@/components/AdminCandidateCard';
-import AdminAddCandidateCard from '@/components/AdminAddCandidateCard';
+import AdminCandidateCard from '@/components/Admin/AdminCandidateCard';
+import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 
 const AdminCandidateControlsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI, onClose }) => {
   const [Candidates, setCandidates] = useState([]);

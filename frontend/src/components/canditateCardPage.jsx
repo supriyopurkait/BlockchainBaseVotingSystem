@@ -142,7 +142,7 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <Message
             data={messageData}
-            txhash={txHash ? `https://base-sepolia.blockscout.com/tx/${txHash}` : null}
+            txhash={txHash ? `${txHash}` : null}
             onClose={() => setShowAftervoteMessage(false)}
           />
         </div>

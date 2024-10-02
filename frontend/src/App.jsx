@@ -35,6 +35,10 @@ const App = () => {
       setIsWalletConnected(true);
       setShowWalletModal(false);
       handleGetABI();
+      if ((connectedWallet.address == import.meta.env.VITE_ADMINADDRESS)) {
+        setAdminControlModal(true);
+        console.log("Admin address:", wallet.address, "is connected");
+      }
     }
   };
 
@@ -122,6 +126,12 @@ const App = () => {
               />
             );
           }
+          if (AdminControlModal) {
+            return <AdminControl
+                onCandidate={handleAdminCandidateControls} 
+                onUser={handleAdminUserControls} 
+                onClose={() => setAdminControlModal(false)} />;
+          }
           if (showAdminCandidateControlsPage) {
             return <AdminCandidateControlsPage
                 wallet={wallet} 
@@ -132,7 +142,7 @@ const App = () => {
           if (showAdminUserControlsPage) {
             return <AdminUserControlsPage onClose={() => setAdminUserControlsPage(false)} />;
           }
-          if ((!showUserCards) && (!showAdminCandidateControlsPage) && (!showAdminUserControlsPage))
+          if ((!showUserCards) && (!AdminControlModal) && (!showAdminCandidateControlsPage) && (!showAdminUserControlsPage))
           return <Hero onEnterDApp={handleEnterDApp} />;
         })()}
       </main>
@@ -157,10 +167,6 @@ const App = () => {
       {/* Wallet Connection Modal */}
       {showWalletModal && (
         <WalletConnectionModal onClose={() => setShowWalletModal(false)} onConnect={handleConnectWallet} />
-      )}
-      {/* Admin Control Modal */}
-      {AdminControlModal && (
-        <AdminControl onCandidate={handleAdminCandidateControls} onUser={handleAdminUserControls} onClose={() => setAdminControlModal(false)} />
       )}
     </div>
   );

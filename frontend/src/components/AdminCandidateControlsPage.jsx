@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CandidateCard from '@/components/AdminCandidateCard';
+import { X } from 'lucide-react';
 import { fetchCandidate } from '@/utils/getDetails';
 import { ethers } from 'ethers';
 import Message from '@/components/AfterVoteMessage';
@@ -8,7 +8,7 @@ import Face from 'pub/picture/face_img.png';
 import AdminCandidateCard from '@/components/AdminCandidateCard';
 import AdminAddCandidateCard from '@/components/AdminAddCandidateCard';
 
-const AdminCandidateControlsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI }) => {
+const AdminCandidateControlsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI, onClose }) => {
   const [Candidates, setCandidates] = useState([]);
   const [dummyCandidates, setDummyCandidates] = useState([
     {
@@ -187,6 +187,9 @@ const AdminCandidateControlsPage = ({ wallet, VotingSystemContractAddress, Votin
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold mb-8 text-center">Candidates:</h2>
+      <button onClick={onClose} className="absolute right-2 top-20">
+        <X className="bg-red-500 hover:bg-red-600 text-white hover:text-gray-700 rounded-full" size={24} />
+      </button>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {Candidates.map(candidate => (
           <AdminCandidateCard key={candidate.candidate_id} candidate={candidate} onRemove={handleRemoveCandidate} />

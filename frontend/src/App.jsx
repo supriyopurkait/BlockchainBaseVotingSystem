@@ -37,7 +37,7 @@ const App = () => {
       handleGetABI();
       if ((connectedWallet.address == import.meta.env.VITE_ADMINADDRESS)) {
         setAdminControlModal(true);
-        console.log("Admin address:", wallet.address, "is connected");
+        console.log("Admin address:", connectedWallet.address, "is connected");
       }
     }
   };
@@ -137,7 +137,10 @@ const App = () => {
                 wallet={wallet} 
                 VotingSystemContractAddress={VotingSystemContractAddress} 
                 VotingSystemABI={VotingSystemABI} 
-                onClose={() => setAdminCandidateControlsPage(false)} />;
+                onClose={() => {
+                  setAdminCandidateControlsPage(false);
+                  setAdminControlModal(true);
+                }} />;
           }
           if (showAdminUserControlsPage) {
             return <AdminUserControlsPage onClose={() => setAdminUserControlsPage(false)} />;

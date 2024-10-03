@@ -13,7 +13,7 @@ const Hero = ({ onEnterDApp }) => (
           <ArrowRight className="ml-2" size={20} />
         </button>
         <div className="p-2"></div>
-        <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-full flex items-center text-nowrap">
+        <button onClick={() => {window.location.assign("https://github.com/supriyopurkait/BlockchainBaseVotingSystem/blob/main/README.md");}} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-full flex items-center text-nowrap">
           Learn More
           <Info className="ml-2" size={20} />
         </button>

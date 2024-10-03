@@ -1,8 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 
 const AdminControl = ({ onCandidate, onUser, onClose }) => {
+  const [Candidate, setCandidate] = useState([{
+      id: 9999,
+      photo: X,
+      name: 'Add Candidate',
+      candidate_id: '',
+      area: '',
+      party: ''
+  }]);
   const handleAddCandidate = async (candidateId) => {
     setVotingLoading(true);
     try {
@@ -52,9 +60,9 @@ const AdminControl = ({ onCandidate, onUser, onClose }) => {
     }
   };
   return (
-    <div className="w-svw flex flex-col justify-self-start bg-gray-300">
+    <div className="w-svw flex flex-col justify-self-start">
       <div className="flex flex-row justify-between justify-items-center">
-        <h1 className="text-xl md:text-4xl font-bold my-2 py-2 px-4">Admin Controls</h1>
+        <h1 className="text-xl md:text-4xl font-bold md:my-2 md:py-2 md:px-4 m-4 pt-2">Admin Controls</h1>
         <div className="flex flex-row justify-items-center space-x-3 my-2 py-2 px-4">
           <button
             onClick={onCandidate}
@@ -73,28 +81,33 @@ const AdminControl = ({ onCandidate, onUser, onClose }) => {
           </button>
         </div>
       </div>
-      <div className="flex flex-row bg-blue-200">
-        <div className="w-1/5 bg-blue-300">Pie Chart</div>
-        <div className="w-4/5 bg-blue-400">
-          <div className="flex flex-row bg-blue-500">
-            <div className="w-1/4 bg-blue-600">
-              {<AdminAddCandidateCard onAdd={handleAddCandidate} />}
-            </div>
-            <div className="w-3/4 bg-blue-700">stat</div>
+      <div className="DashBoard">
+        <div className="PieChart h-fit">
+          {/* Candidate % */}
+          <h1 className="text-2xl font-bold m-4">Candidate Progress</h1>
+          <div className="h-fit grid grid-cols-2 md:grid-cols-5 justify-items-stretch gap-4 m-4">
+            {Array.from({ length: 5 }, (_, idx) => (
+              <div key={idx} className="bg-gray-200 p-4 text-center rounded-lg shadow-sm">
+                <p className="text-lg font-semibold">Candidate {idx + 1}</p>
+                <p className="text-xl font-bold text-blue-600">20%</p>
+              </div>
+            ))}
           </div>
-          <div className="flex flex-row bg-blue-800">
-            <div className="w-2/4 bg-green-300">per area vote</div>
-            <div className="w-2/4 bg-green-400">per Candidate vote</div>
+          {/* Area % */}
+          <h1 className="text-2xl font-bold m-4">Area Progress</h1>
+          <div className="h-fit grid grid-cols-2 md:grid-cols-5 justify-items-stretch gap-4 m-4">
+            {Array.from({ length: 5 }, (_, idx) => (
+              <div key={idx + 5} className="bg-gray-200 p-4 text-center rounded-lg shadow-sm">
+                <p className="text-lg font-semibold">Area {idx + 1}</p>
+                <p className="text-xl font-bold text-blue-600">20%</p>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-      {/* <div className="flex items-center mb-4 text-yellow-500">
-        <AlertTriangle size={24} className="mr-2" />
-        <p className="font-semibold">Proceed With Caution</p>
-      </div>
-      <p className="mb-2">You Have ADMIN PRIVILEGES</p>
-      <p className="mb-6 text-red-500">Controls Beyond This Point Are Critical</p> */}
-      
+        {/* End Of Pie Chart */}
+        <div></div>
+      </div> 
+    {/*  end of component */}
     </div>
   );
 };

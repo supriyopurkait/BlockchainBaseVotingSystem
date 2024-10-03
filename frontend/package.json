@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^6.1.2",
+    "@mui/x-charts": "^7.18.0",
     "dotenv-reader": "^1.0.1-b",
     "ethers": "^6.13.2",
     "lucide-react": "^0.439.0",

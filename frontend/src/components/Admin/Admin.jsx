@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PieChart, pieArcLabelClasses } from '@mui/x-charts/PieChart';
 import { Rss, X } from 'lucide-react';
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 
@@ -14,8 +15,8 @@ const AdminControl = ({ onAdd, onCandidate, onUser, onClose }) => {
   
   return (
     <div className="w-svw flex flex-col justify-self-start">
-      <div className="TopBar m-6 flex flex-row justify-between justify-items-center">
-        <h1 className="text-xl md:text-4xl font-bold md:my-2 md:py-2 md:px-4 m-4 pt-2">Admin Controls</h1>
+      <div className="TopBar mx-6 flex flex-row justify-between justify-items-center">
+        <h1 className="text-xl md:text-4xl font-bold md:my-2 md:py-2 md:px-4 m-4 pt-4">Admin Controls</h1>
         <div className="flex flex-row justify-items-center space-x-3 my-2 py-2">
           <button
             onClick={onCandidate}
@@ -34,75 +35,169 @@ const AdminControl = ({ onAdd, onCandidate, onUser, onClose }) => {
           </button>
         </div>
       </div>
-      <div className="DashBoard">
-        <div className="PieChart h-fit m-6">
-          {/* Candidate % */}
-          <h1 className="text-2xl font-bold m-4">Candidate Progress</h1>
-          <div className="h-fit grid grid-cols-2 md:grid-cols-5 justify-items-stretch gap-4 m-4">
-            {Array.from({ length: 5 }, (_, idx) => (
-              <div key={idx} className="bg-gray-200 p-4 text-center rounded-lg shadow-sm">
-                <p className="text-lg font-semibold">Candidate {idx + 1}</p>
-                <p className="text-xl font-bold text-blue-600">20%</p>
-              </div>
-            ))}
-          </div>
-          {/* Area % */}
-          <h1 className="text-2xl font-bold m-4">Area Progress</h1>
-          <div className="h-fit grid grid-cols-2 md:grid-cols-5 justify-items-stretch gap-4 m-4">
-            {Array.from({ length: 5 }, (_, idx) => (
-              <div key={idx + 5} className="bg-gray-200 p-4 text-center rounded-lg shadow-sm">
-                <p className="text-lg font-semibold">Area {idx + 1}</p>
-                <p className="text-xl font-bold text-blue-600">20%</p>
-              </div>
-            ))}
+      <div className="DashBoard flex flex-col md:flex-row">
+        <div className="PieChart m-6">
+          {/* Pie Chart % */}
+          <h1 className="text-2xl font-bold flex-shrink m-4">Statistics</h1>
+          <div className="grid grid-cols-1">
+            <div className="justify-self-center bg-white rounded-lg shadow-md m-2 p-4">
+              <h2 className="text-justify text-2xl font-bold">Area 1</h2>
+            <PieChart
+              series={[
+                {
+                  data: [
+                    { id: 0, value: 10, label: 'Candidate 1', color: '#1BE7FF' },
+                    { id: 1, value: 15, label: 'Candidate 2', color: '#6EEB83' },
+                    { id: 2, value: 20, label: 'Candidate 3', color: '#E4FF1A' },
+                  ],
+                  arcLabel: (item) => `${item.value}%  ${item.label}`,
+                  arcLabelsRadiusOffset: 10,
+                  arcLabelMinAngle: 10,
+                  arcLabelRadius: '90%',
+                  highlightScope: { fade: 'global', highlight: 'item' },
+                  faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
+                  innerRadius: 10,
+                  outerRadius: 120,
+                  paddingAngle: 5,
+                  cornerRadius: 10,
+                  startAngle: 0,
+                  endAngle: 360,
+                  cx: 150,
+                  cy: 150,
+                  animate: true,
+                },
+              ]}
+              sx={{
+                [`& .${pieArcLabelClasses.root}`]: {
+                  fontWeight: 'bold',
+                  fill: '#000000',
+                  
+                  fontSize: 15,
+                },
+              }}
+              height={300}
+              width={300}
+              legend={{ hidden: true }}
+            />
+            </div>
+            <div className="justify-self-center bg-white rounded-lg shadow-md m-2 p-4">
+              <h2 className="text-justify text-2xl font-bold">Area 2</h2>
+            <PieChart
+              series={[
+                {
+                  data: [
+                    { id: 0, value: 10, label: 'Candidate 1', color: '#E18335' },
+                    { id: 1, value: 15, label: 'Candidate 2', color: '#E4CC37' },
+                    { id: 2, value: 20, label: 'Candidate 3', color: '#8FC93A' },
+                  ],
+                  arcLabel: (item) => `${item.value}%  ${item.label}`,
+                  arcLabelsRadiusOffset: 10,
+                  arcLabelMinAngle: 10,
+                  arcLabelRadius: '90%',
+                  highlightScope: { fade: 'global', highlight: 'item' },
+                  faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
+                  innerRadius: 10,
+                  outerRadius: 120,
+                  paddingAngle: 5,
+                  cornerRadius: 10,
+                  startAngle: 0,
+                  endAngle: 360,
+                  cx: 150,
+                  cy: 150,
+                  animate: true,
+                },
+              ]}
+              sx={{
+                [`& .${pieArcLabelClasses.root}`]: {
+                  fontWeight: 'bold',
+                  fill: '#000000',
+                  
+                  fontSize: 15,
+                },
+              }}
+              height={300}
+              width={300}
+              legend={{ hidden: true }}
+            />
+            </div>
+            <div className="justify-self-center bg-white rounded-lg shadow-md m-2 p-4">
+              <h2 className="text-justify text-2xl font-bold">Area 3</h2>
+            <PieChart
+              series={[
+                {
+                  data: [
+                    { id: 0, value: 10, label: 'Candidate 1', color: '#EE7B30' },
+                    { id: 1, value: 15, label: 'Candidate 2', color: '#D1B490' },
+                    { id: 2, value: 20, label: 'Candidate 3', color: '#CBCBD4' },
+                  ],
+                  arcLabel: (item) => `${item.value}%  ${item.label}`,
+                  arcLabelsRadiusOffset: 10,
+                  arcLabelMinAngle: 10,
+                  arcLabelRadius: '90%',
+                  highlightScope: { fade: 'global', highlight: 'item' },
+                  faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
+                  innerRadius: 10,
+                  outerRadius: 120,
+                  paddingAngle: 5,
+                  cornerRadius: 10,
+                  startAngle: 0,
+                  endAngle: 360,
+                  cx: 150,
+                  cy: 150,
+                  animate: true,
+                },
+              ]}
+              sx={{
+                [`& .${pieArcLabelClasses.root}`]: {
+                  fontWeight: 'bold',
+                  fill: '#000000',
+                  
+                  fontSize: 15,
+                },
+              }}
+              height={300}
+              width={300}
+              legend={{ hidden: true }}
+            />
+            </div>
           </div>
         </div>
         {/* End Of Pie Chart */}
-        <div className="Stats h-max flex flex-col md:flex-row justify-around m-4">
-          {/* Add Candidate Button */}
-          <div className="md:w-fit m-4 flex justify-center"><AdminAddCandidateCard onAdd={onAdd} /></div>
-          {/* Total Vote */}
-          <div className="m-4 p-4 bg-white rounded-lg shadow-md flex flex-col justify-center items-center">
-            <h3 className="text-xl font-bold">Total Vote</h3>
-            <p className="text-2xl text-blue-600 font-bold">9,884,153</p>
-            <p className="text-2xl text-green-600 font-bold">Winner:</p>
-            <p className="text-2xl text-green-600 font-bold">Candidate 1</p>
-            <button
-              onClick={onAdd}
-              className="w-fit bg-green-500 hover:bg-green-600 text-white font-bold my-2 py-2 px-4 rounded-full flex items-center"
-            >
-              Declare
-              <Rss className="ml-2" size={16} />
-            </button>
+        <div className="Stats h-max flex flex-col md:flex-col flex-grow m-4">
+          <div className="flex flex-col md:flex-row justify-around">
+            {/* Add Candidate Button */}
+            <div className="md:w-fit m-4 flex justify-center"><AdminAddCandidateCard onAdd={onAdd} /></div>
+            {/* Total Vote */}
+            <div className="m-4 p-4 bg-white rounded-lg shadow-md flex flex-col flex-grow justify-around items-center">
+              <h3 className="text-xl font-bold">Total Vote</h3>
+              <p className="text-2xl text-blue-600 font-bold">9,884,153</p>
+              <button
+                onClick={onAdd}
+                className="w-fit bg-green-500 hover:bg-green-600 text-white font-bold my-2 py-2 px-4 rounded-full flex items-center"
+              >
+                Declare Results
+                <Rss className="ml-2" size={16} />
+              </button>
+            </div>
           </div>
           {/* Area Votes */}
           <div className="m-4 p-4 bg-white rounded-lg shadow-md text-center">
             <h3 className="text-xl font-bold pb-2">Area Votes:</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between space-x-10 bg-gray-200 hover:bg-gray-100 p-4 rounded">
-                <span>Area 1</span>
-                <span>5453</span>
+            <div className="text-center">
+              <div className="flex justify-around bg-gray-400 hover:bg-gray-100 m-4 rounded">
+                <span className="p-2 ml-8 font-bold">Area </span>
+                <span className="p-2 ml-6 font-bold">Votes Per Area</span>
+                <span className="p-2 ml-4 font-bold">Winner of Area</span>
+                <span className="p-2 ml-2 font-bold">Won By Votes</span>
               </div>
-              <div className="flex justify-between space-x-10 bg-gray-200 hover:bg-gray-100 p-4 rounded">
-                <span>Area 1</span>
-                <span>451</span>
+            {Array.from({ length: 5 }, (_, idx) => (
+              <div key={idx} className="flex justify-around bg-gray-200 hover:bg-gray-100 m-4 rounded">
+                <span className="p-2">Area {idx + 1}: </span>
+                <span className="p-2 font-bold">5453</span>
+                <span className="p-2">Candidate {idx + 1}: </span>
+                <span className="p-2 font-bold">567</span>
               </div>
-              <div className="flex justify-between space-x-10 bg-gray-200 hover:bg-gray-100 p-4 rounded">
-                <span>Area 1</span>
-                <span>645</span>
-              </div>
-            </div>
-          </div>
-          {/* Winner Declaration */}
-          <div className="m-4 p-4 bg-white rounded-lg shadow-md text-center">
-            <h3 className="text-xl font-bold pb-4">Declarer Winner:</h3>
-            <div className="space-y-4">
-              {Array.from({ length: 3 }, (_, idx) => (
-                <div key={idx} className="flex justify-between space-x-4 bg-gray-200 hover:bg-gray-100 p-4 rounded">
-                  <span>Candidate Name</span>
-                  <span className="font-bold">Total Vote: 468</span>
-                </div>
-              ))}
+            ))}
             </div>
           </div>
         </div>

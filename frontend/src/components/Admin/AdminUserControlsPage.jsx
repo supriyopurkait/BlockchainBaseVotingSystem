@@ -84,7 +84,11 @@ const AdminUserControlsPage = ({ wallet, onRemove, onClose }) => {
   }, [wallet]);
 
   if (loading) return <div>Loading users...</div>;
-  if (error) return <div>{error}</div>;
+  if (error) return <div>{error}{
+    <button onClick={onClose} className="absolute right-2 top-20">
+      <X className="bg-red-500 hover:bg-red-600 text-white hover:text-gray-700 rounded-full" size={24} />
+    </button>}
+    </div>;
 
   return (
     <div className="container mx-auto px-4 py-8">

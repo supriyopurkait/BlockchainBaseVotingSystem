@@ -8,6 +8,7 @@ import KYCForm from '@/components/KYCForm';
 import KYCModal from '@/components/KYCModal';
 import AdminControl from '@/components/Admin/Admin';
 import AdminCandidateControlsPage from '@/components/Admin/AdminCandidateControlsPage';
+import AdminAddCandidateForm from '@/components/Admin/AdminAddCandidateForm';
 import AdminUserControlsPage from '@/components/Admin/AdminUserControlsPage';
 import WalletConnectionModal from '@/components/WalletConnectionModal';
 
@@ -25,6 +26,7 @@ const App = () => {
   const [VotingSystemContractAddress, setVotingSystemContractAddress] = useState(null);
   const [AdminControlModal, setAdminControlModal] = useState(false);
   const [showAdminCandidateControlsPage, setAdminCandidateControlsPage] = useState(false);
+  const [showAdminAddCandidateForm, setshowAdminAddCandidateForm] = useState(false);
   const [showAdminUserControlsPage, setAdminUserControlsPage] = useState(false);
 
   const handleConnectWallet = async () => {
@@ -164,6 +166,12 @@ const App = () => {
       {showKYCFormModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
           <KYCForm onSubmit={handleCompleteKYC} onCancel={() => setshowKYCFormModal(false)} walletAddress={wallet.address} />
+        </div>
+      )}
+      {/* Admin Add Candidate Form */}
+      {showAdminAddCandidateForm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
+          <AdminAddCandidateForm onSubmit={alert("added candidate")} onCancel={() => setshowAdminAddCandidateForm(false)} />
         </div>
       )}
 

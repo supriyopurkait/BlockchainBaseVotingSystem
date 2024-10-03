@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { Rss, X } from 'lucide-react';
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 
 const AdminControl = ({ onAdd, onCandidate, onUser, onClose }) => {
@@ -60,12 +60,20 @@ const AdminControl = ({ onAdd, onCandidate, onUser, onClose }) => {
         {/* End Of Pie Chart */}
         <div className="Stats h-max flex flex-col md:flex-row justify-around m-4">
           {/* Add Candidate Button */}
-          <div className="md:w-fit m-4 flex justify-center"><AdminAddCandidateCard candidate={Candidate} onAdd={onAdd} /></div>
+          <div className="md:w-fit m-4 flex justify-center"><AdminAddCandidateCard onAdd={onAdd} /></div>
           {/* Total Vote */}
-          <div className="m-4 p-4 bg-white rounded-lg shadow-md text-center flex flex-col justify-center">
+          <div className="m-4 p-4 bg-white rounded-lg shadow-md flex flex-col justify-center items-center">
             <h3 className="text-xl font-bold">Total Vote</h3>
             <p className="text-2xl text-blue-600 font-bold">9,884,153</p>
-            <p className="text-2xl text-green-600 font-bold">Winner: Candidate 1</p>
+            <p className="text-2xl text-green-600 font-bold">Winner:</p>
+            <p className="text-2xl text-green-600 font-bold">Candidate 1</p>
+            <button
+              onClick={onAdd}
+              className="w-fit bg-green-500 hover:bg-green-600 text-white font-bold my-2 py-2 px-4 rounded-full flex items-center"
+            >
+              Declare
+              <Rss className="ml-2" size={16} />
+            </button>
           </div>
           {/* Area Votes */}
           <div className="m-4 p-4 bg-white rounded-lg shadow-md text-center">

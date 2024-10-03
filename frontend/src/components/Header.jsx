@@ -74,7 +74,7 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
             <div className="z-3 absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-10">
               {/* Disconnect button */}
               <button
-                className="block w-fit text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
                 onClick={() => {
                   onDisconnect();
                   setDropdownOpen(false); // Close the dropdown after disconnecting
@@ -90,7 +90,7 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
 
               {/* User Details button */}
               <button
-                className="block w-fit text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
                 onClick={() => showUserDetails == true?setShowUserDetails(false):setShowUserDetails(true)}
               >
                 User Details

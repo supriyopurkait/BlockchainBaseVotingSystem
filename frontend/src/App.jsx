@@ -41,6 +41,11 @@ const App = () => {
         setAdminControlModal(true);
         console.log("Admin address:", connectedWallet.address, "is connected");
       }
+      // write condition to check if NFT is owned then go to voting page -- Supriyo
+      // const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, connectedWallet);
+      // if (!hasNFT) {
+      //    setShowUserCards(true);
+      // }
     }
   };
 
@@ -116,6 +121,7 @@ const App = () => {
         onConnect={handleConnectWallet} 
         onDisconnect={() => {
           setIsWalletConnected(false);
+          setShowUserCards(false);
           setAdminControlModal(false);
           setAdminCandidateControlsPage(false);
           setAdminUserControlsPage(false);

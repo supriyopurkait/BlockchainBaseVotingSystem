@@ -114,7 +114,12 @@ const App = () => {
         isConnected={isWalletConnected} 
         walletAddress={isWalletConnected ? wallet.address : null} 
         onConnect={handleConnectWallet} 
-        onDisconnect={() => setIsWalletConnected(false)} // Handling disconnect
+        onDisconnect={() => {
+          setIsWalletConnected(false);
+          setAdminControlModal(false);
+          setAdminCandidateControlsPage(false);
+          setAdminUserControlsPage(false);
+        }} // Handling disconnect
         wallet={wallet}
       />
       <main className="w-svw flex flex-grow justify-center items-center">
@@ -130,6 +135,7 @@ const App = () => {
           }
           if (AdminControlModal) {
             return <AdminControl
+                onAdd={() => {alert("Added candidate");}} 
                 onCandidate={handleAdminCandidateControls} 
                 onUser={handleAdminUserControls} 
                 onClose={() => setAdminControlModal(false)} />;
@@ -139,15 +145,24 @@ const App = () => {
                 wallet={wallet} 
                 VotingSystemContractAddress={VotingSystemContractAddress} 
                 VotingSystemABI={VotingSystemABI} 
+                onAdd={() => {alert("Added candidate");}} 
+                onRemove={() => {alert("Removed candidate");}} 
                 onClose={() => {
                   setAdminCandidateControlsPage(false);
                   setAdminControlModal(true);
                 }} />;
           }
           if (showAdminUserControlsPage) {
-            return <AdminUserControlsPage onClose={() => setAdminUserControlsPage(false)} />;
+            return <AdminUserControlsPage 
+                wallet={wallet} 
+                VotingSystemContractAddress={VotingSystemContractAddress} 
+                VotingSystemABI={VotingSystemABI} 
+                onRemove={() => {alert("Removed User");}} 
+                onClose={() => {
+                  setAdminUserControlsPage(false);
+                  setAdminControlModal(true);
+                }} />;
           }
-          if ((!showUserCards) && (!AdminControlModal) && (!showAdminCandidateControlsPage) && (!showAdminUserControlsPage))
           return <Hero onEnterDApp={handleEnterDApp} />;
         })()}
       </main>

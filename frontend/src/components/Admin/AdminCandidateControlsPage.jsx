@@ -5,10 +5,11 @@ import { ethers } from 'ethers';
 import Message from '@/components/AfterVoteMessage';
 import LoadingModal from '@/components/LoadingModal';
 import Face from 'pub/picture/face_img.png';
+import Add from 'pub/picture/Add_Candidate.png';
 import AdminCandidateCard from '@/components/Admin/AdminCandidateCard';
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 
-const AdminCandidateControlsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI, onClose }) => {
+const AdminCandidateControlsPage = ({ wallet, onAdd, onRemove, onClose }) => {
   const [Candidates, setCandidates] = useState([]);
   // const [dummyCandidates, setDummyCandidates] = useState([
   //   {
@@ -70,9 +71,9 @@ const AdminCandidateControlsPage = ({ wallet, VotingSystemContractAddress, Votin
     const loadCandidates = async () => {
       setLoading(true);
       try {
-        // const fetchedCandidates = await fetchCandidate(wallet);
-        // setUsers(fetchedCandidates);
-        setCandidates(dummyCandidates); // Using Dummy data for testing
+        const fetchedCandidates = await fetchCandidate(wallet);
+        setUsers(fetchedCandidates);
+        // setCandidates(dummyCandidates); // Using Dummy data for testing
       } catch (err) {
         setError('Failed to load Candidates. Please try again later.');
         console.error(err);
@@ -98,7 +99,6 @@ const AdminCandidateControlsPage = ({ wallet, VotingSystemContractAddress, Votin
         ))}
         {<AdminAddCandidateCard onAdd={onAdd} />}
       </div>
-      {votingLoading && <LoadingModal modalVisible={votingLoading} task="Submitting your vote..." />}
       {showAftervoteMessage && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <Message

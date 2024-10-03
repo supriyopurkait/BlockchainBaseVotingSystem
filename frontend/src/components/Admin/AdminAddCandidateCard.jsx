@@ -7,7 +7,7 @@ const AdminAddCandidateCard = ({ candidate, onAdd }) => (
         <img src={Add} alt="Add New Candidate" className="w-24 h-24 mb-4" />
     <h3 className="text-xl font-semibold mb-2">Add New Candidate</h3>
     <button
-      onClick={() => onAdd(candidate.candidate_id)}
+      onClick={onAdd}
       className="bg-green-500 hover:bg-green-600 text-white font-bold my-2 py-2 px-4 rounded-full flex items-center"
     >
       Add

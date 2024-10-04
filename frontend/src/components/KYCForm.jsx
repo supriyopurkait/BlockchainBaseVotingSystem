@@ -9,13 +9,14 @@ import {
   Camera,
 } from "lucide-react";
 import CameraModal from "./CameraModal";
-import Loading from "@/components/LoadingModal"
+import Loading from "@/components/LoadingModal";
+
 const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [formData, setFormData] = useState({
     name: "",
     address: "",
     phoneNumber: "",
-    documentNumber: "",
+    votercardNumber: "",
     documentImage: null,
     walletAddress: "",
   });
@@ -23,7 +24,9 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [take, setTake] = useState(0);
-  const [loadingmodel , setLoadingmodel] = useState(false)
+  const [loadingmodel, setLoadingmodel] = useState(false);
+  const [errors, setErrors] = useState({}); // Track validation errors
+
   // Set the wallet address on component mount or when walletAddress changes
   useEffect(() => {
     if (walletAddress) {
@@ -37,7 +40,44 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   };
 
   const handleFileChange = (e) => {
-    setFormData((prevData) => ({ ...prevData, documentImage: e.target.files[0] }));
+    setFormData((prevData) => ({
+      ...prevData,
+      documentImage: e.target.files[0],
+    }));
+  };
+
+  const validateFields = () => {
+    let validationErrors = {};
+
+    // Name validation (no numbers or special characters)
+    if (!/^[a-zA-Z\s]+$/.test(formData.name)) {
+      validationErrors.name = "Name must contain only letters and spaces";
+    }
+
+    // Phone number validation (exactly 10 digits, no special characters)
+    if (!/^[0-9]{10}$/.test(formData.phoneNumber)) {
+      validationErrors.phoneNumber = "Phone number must be exactly 10 digits";
+    }
+
+    // Voter card validation (non-empty for now)
+    if (formData.votercardNumber.trim() === "") {
+      validationErrors.votercardNumber = "Voter card number is required";
+    }
+
+    // Document image validation
+    if (!formData.documentImage) {
+      validationErrors.documentImage = "Document image is required";
+    }
+
+    // Captured photo validation
+    if (!capturedPhoto) {
+      validationErrors.capturedPhoto = "Please capture your photo";
+    }
+
+    setErrors(validationErrors);
+
+    // Return true if no validation errors, otherwise false
+    return Object.keys(validationErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
@@ -54,7 +94,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     formDataToSend.append("name", formData.name);
     formDataToSend.append("address", formData.address);
     formDataToSend.append("phoneNumber", formData.phoneNumber);
-    formDataToSend.append("documentNumber", formData.documentNumber);
+    formDataToSend.append("documentNumber", formData.votercardNumber);
     formDataToSend.append("documentImage", formData.documentImage);
     formDataToSend.append("walletAddress", formData.walletAddress);
 
@@ -76,11 +116,11 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
           console.error("Unexpected success response:", data);
         }
       } else {
-        setLoadingmodel(false)
+        setLoadingmodel(false);
         console.error("Error submitting KYC:", data.error);
       }
     } catch (error) {
-      setLoadingmodel(false)
+      setLoadingmodel(false);
       console.error("Error during API call:", error);
     }
   };
@@ -103,7 +143,15 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
       <h2 className="text-2xl font-bold mb-6 text-center">
         Complete KYC Process
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form
+        className="space-y-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (validateFields()) {
+            handleSubmit(e); // Only proceed to handleSubmit if validation passes
+          }
+        }}
+      >
         <div>
           <label
             htmlFor="name"
@@ -120,24 +168,31 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {errors.name && (
+            <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+          )}
         </div>
+
         <div>
           <label
-            htmlFor="address"
+            htmlFor="subject"
             className="flex items-center text-sm font-medium text-gray-700 mb-1"
           >
-            <MapPin size={18} className="mr-2" /> Address
+            <MapPin size={18} className="mr-2" /> Area
           </label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={formData.address}
-            onChange={handleInputChange}
-            required
+          <select
+            name="subject"
+            id="subject"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          >
+            <option value="" selected="selected">
+              Select Area
+            </option>
+            <option value="area1">area1</option>
+            <option value="area2">area2</option>
+          </select>
         </div>
+
         <div>
           <label
             htmlFor="phoneNumber"
@@ -154,24 +209,32 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {errors.phoneNumber && (
+            <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
+          )}
         </div>
+
         <div>
           <label
-            htmlFor="documentNumber"
+            htmlFor="votercardNumber"
             className="flex items-center text-sm font-medium text-gray-700 mb-1"
           >
-            <FileText size={18} className="mr-2" /> Document Number
+            <FileText size={18} className="mr-2" /> Voter card Number
           </label>
           <input
             type="text"
-            id="documentNumber"
-            name="documentNumber"
-            value={formData.documentNumber}
+            id="votercardNumber"
+            name="votercardNumber"
+            value={formData.votercardNumber}
             onChange={handleInputChange}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          {errors.votercardNumber && (
+            <p className="text-red-500 text-sm mt-1">{errors.votercardNumber}</p>
+          )}
         </div>
+
         <div>
           <label
             htmlFor="documentImage"
@@ -188,59 +251,52 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </div>
-        <div className="ps-2">
-          {/* Show captured photo if available */}
-          {capturedPhoto ? (
-            <div className="flex flex-col justify-between items-start">
-              <h2 className="text-sm font-medium text-gray-700 mb-1">Captured Photo</h2>
-              <img
-                src={capturedPhoto}
-                alt="Captured"
-                className="m-2 object-contain rounded-md w-20 h-18"
-              />
-            </div>
-          ) : (
-            <p className="mb-4">No photo captured yet</p>
+          {errors.documentImage && (
+            <p className="text-red-500 text-sm mt-1">{errors.documentImage}</p>
           )}
-
-          <div className="container">
-            <button
-              type="button"
-              className="flex gap-2 items-center border-gray-700 rounded-md h-10 px-3 py-[0.1rem] bg-blue-500 hover:bg-blue-600 text-white"
-              onClick={handleOpenCamera}
-            >
-              <Camera /> {/* Camera icon */}
-              {take === 0 ? "Capture Face" : "Retake"}
-            </button>
-
-            {/* Camera Modal */}
-            {isCameraModalOpen && (
-              <CameraModal
-                isOpen={isCameraModalOpen}
-                onClose={handleCloseCamera}
-                onCapture={handleCapture}
-              />
-            )}
-          </div>
         </div>
-        <div className="flex justify-between">
+
+        <div className="flex justify-between items-center">
+          <div className="">{}</div>
+          <button
+            type="button"
+            onClick={handleOpenCamera}
+            className="flex items-center text-white bg-blue-500 px-4 py-2 rounded-md"
+          >
+            <Camera size={18} className="mr-2" />
+            {take === 1 ? "Recapture Photo" : "Capture Your Photo"}
+          </button>
+          {errors.capturedPhoto && (
+            <p className="text-red-500 text-sm mt-1">{errors.capturedPhoto}</p>
+          )}
+        </div>
+
+        <div className="flex justify-end">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+            className="mr-4 text-gray-700 bg-gray-200 px-4 py-2 rounded-md"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
+            className="flex items-center text-white bg-green-500 px-4 py-2 rounded-md"
           >
-            Submit KYC <ArrowRight size={18} className="ml-2" />
+            Submit
+            <ArrowRight size={18} className="ml-2" />
           </button>
         </div>
       </form>
-      {loadingmodel && <Loading modalVisible={loadingmodel} task="Submitting your details..." />}
+
+      {isCameraModalOpen && (
+        <CameraModal
+          isOpen={isCameraModalOpen}
+          onClose={handleCloseCamera}
+          onCapture={handleCapture}
+        />
+      )}
+      {loadingmodel && <Loading modalVisible={loadingmodel}/>}
     </div>
   );
 };

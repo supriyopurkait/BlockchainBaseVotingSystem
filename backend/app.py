@@ -17,7 +17,7 @@ def get_kyc_data():
         name = request.form.get('name')
         area = request.form.get('address')
         phone_number = request.form.get('phoneNumber')
-        document_number = request.form.get('documentNumber')
+        document_number = request.form.get('votercardNumber')
         wallet_address = request.form.get('walletAddress')  # Match the field name from frontend
         doc_image = request.files.get('documentImage')  # Match the field name from frontend
         

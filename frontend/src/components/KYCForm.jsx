@@ -9,7 +9,7 @@ import {
   Camera,
 } from "lucide-react";
 import CameraModal from "./CameraModal";
-
+import Loading from "@/components/LoadingModal"
 const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -23,7 +23,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [take, setTake] = useState(0);
-
+  const [loadingmodel , setLoadingmodel] = useState(false)
   // Set the wallet address on component mount or when walletAddress changes
   useEffect(() => {
     if (walletAddress) {
@@ -59,6 +59,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     formDataToSend.append("walletAddress", formData.walletAddress);
 
     try {
+      setLoadingmodel(true);
       const response = await fetch("http://127.0.0.1:5000/api/kyc", {
         method: "POST",
         body: formDataToSend,
@@ -67,6 +68,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
       const data = await response.json();
 
       if (response.ok) {
+        setLoadingmodel(false);
         console.log("KYC submitted successfully:", data);
         if (data.status === "success") {
           onSubmit({ ...formData, txHash: data.tx_hash });
@@ -74,9 +76,11 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
           console.error("Unexpected success response:", data);
         }
       } else {
+        setLoadingmodel(false)
         console.error("Error submitting KYC:", data.error);
       }
     } catch (error) {
+      setLoadingmodel(false)
       console.error("Error during API call:", error);
     }
   };
@@ -236,6 +240,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
           </button>
         </div>
       </form>
+      {loadingmodel && <Loading modalVisible={loadingmodel} task="Submitting your details..." />}
     </div>
   );
 };

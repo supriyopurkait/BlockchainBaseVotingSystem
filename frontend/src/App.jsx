@@ -144,6 +144,8 @@ const App = () => {
                 onAdd={() => {alert("Added candidate");}} 
                 onCandidate={handleAdminCandidateControls} 
                 onUser={handleAdminUserControls} 
+                onStartVote={() => {alert("Vote Started");}} 
+                onEndVote={() => {alert("Vote Ended");}} 
                 onClose={() => setAdminControlModal(false)} />;
           }
           if (showAdminCandidateControlsPage) {

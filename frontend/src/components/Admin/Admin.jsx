@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { PieChart, pieArcLabelClasses } from '@mui/x-charts/PieChart';
 import { Rss, X } from 'lucide-react';
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 import PieDiagram from '@/components/PieChart';
 
-const AdminControl = ({ onAdd, onCandidate, onUser, onClose }) => {
+const AdminControl = ({ onAdd, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
   const [Candidate, setCandidate] = useState([{
       id: 9999,
       photo: X,
@@ -20,13 +19,13 @@ const AdminControl = ({ onAdd, onCandidate, onUser, onClose }) => {
     ];
   
   return (
-    <div className="w-svw flex flex-col justify-self-start">
+    <div className="w-svw flex flex-col justify-self-start p-20">
       <div className="TopBar mx-6 flex flex-row justify-between justify-items-center">
         <h1 className="text-xl md:text-4xl font-bold md:my-2 md:py-2 md:px-4 m-4 pt-4">Admin Controls</h1>
         <div className="flex flex-row justify-items-center space-x-3 my-2 py-2">
           <button
             onClick={onCandidate}
-            className="w-fit bg-green-500 hover:bg-green-600 text-white font-bold my-2 py-2 px-4 rounded"
+            className="w-fit bg-cyan-500 hover:bg-cyan-600 text-white font-bold my-2 py-2 px-4 rounded"
           >
             Candidate Controls
           </button>
@@ -36,18 +35,30 @@ const AdminControl = ({ onAdd, onCandidate, onUser, onClose }) => {
           >
             User Controls
           </button>
+          <button
+            onClick={onStartVote}
+            className="w-fit bg-green-500 hover:bg-green-600 text-white font-bold my-2 py-2 px-4 rounded"
+          >
+            Start Vote
+          </button>
+          <button
+            onClick={onEndVote}
+            className="w-fit bg-red-500 hover:bg-red-600 text-white font-bold my-2 py-2 px-4 rounded"
+          >
+            End Vote
+          </button>
           <button onClick={onClose} className="">
               <X className="bg-red-500 hover:bg-red-600 text-white hover:text-gray-700 rounded-full" size={24} />
           </button>
         </div>
       </div>
       <div className="DashBoard flex flex-col md:flex-row">
-        <div className="PieChart flex-grow m-6">
+        <div className="PieChart bg-white rounded-2xl shadow-md flex-grow m-6">
           {/* Pie Chart % */}
           <h1 className="text-2xl font-bold flex-shrink m-4">Statistics</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 justify-items-stretch">
           {Array.from({ length: 4 }, (_, idx) => (
-            <PieDiagram key={idx} title={"Area "+`${idx + 1}`} data={statData} mgr={{ left: 45 }} size={380} cx={150} cy={150} ir={40} or={140}/>
+            <PieDiagram key={idx} title={"Area "+`${idx + 1}`} data={statData} fontsize={12} mgr={{ left: 25 }} size={250} cx={125} cy={125} ir={20} or={100}/>
           ))}
           </div>
         </div>
@@ -55,7 +66,9 @@ const AdminControl = ({ onAdd, onCandidate, onUser, onClose }) => {
         <div className="Stats h-max flex flex-col md:flex-col flex-grow-0 m-4">
           <div className="flex flex-col md:flex-row justify-around">
             {/* Add Candidate Button */}
-            <div className="md:w-fit m-4 flex justify-center"><AdminAddCandidateCard onAdd={onAdd} /></div>
+            <div className="md:w-fit m-4 flex justify-center">
+              <AdminAddCandidateCard onAdd={onAdd} />
+            </div>
             {/* Total Vote */}
             <div className="m-4 p-4 bg-white rounded-lg shadow-md flex flex-col flex-grow justify-around items-center">
               <h3 className="text-xl font-bold">Total Vote</h3>

@@ -13,25 +13,24 @@ RPC_URL = os.getenv('ALCHEMY_RPC')
 private_key = os.getenv('PRIVATE_KEY')
 
 w3 = Web3(Web3.HTTPProvider(RPC_URL))
-voter_id = 0
+
 # Metadata for Voter ID
-def metadata(area):
+def metadata(next_token_id, area):
 
     # Get current time in IST
     ist = timezone('Asia/Kolkata')
     current_time = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S IST')
     year = datetime.now(ist).strftime('%Y')
 
-    global voter_id
 
     metadata = {
-        "name"          : f"Voter ID #{voter_id}",
+        "name"          : f"Voter ID #{next_token_id}",
         "description"   : "A unique Virtual Voter ID issued to an individual for voting in decentralized elections.",
         "image"         : "https://xsgames.co/randomusers/avatar.php?g=pixel",
         "attributes"    : [
             {
                 "trait_type": "Virtal Voter ID Number",
-                "value"     : f"VVID-IN-{year}-{voter_id}"
+                "value"     : f"VVID-IN-{year}-{next_token_id}"
             },
             {
                 "trait_type": "Issued Date",
@@ -51,7 +50,7 @@ def metadata(area):
             }
         ]
     }
-    voter_id += 1
+    
     # Convert to JSON string
     metadata_json = json.dumps(metadata, indent=4)
     
@@ -70,11 +69,12 @@ def issue_sbt(reciever_addr, area):
         return ""
     # contract object creation
     contract = w3.eth.contract(address=contract_addr ,abi=data['abi'])
+    next_token_id = contract.functions.nextTokenID().call()
     reciever_addr = w3.to_checksum_address(reciever_addr)
     if(contract.functions.balanceOf(reciever_addr).call() == 1):    
         return "Minted"
     
-    meta_data = metadata(area)
+    meta_data = metadata(next_token_id, area)
     sender = w3.eth.account.from_key(private_key).address
     # build and sign transaction
     tx = contract.functions.safeMint(reciever_addr, meta_data).build_transaction({
@@ -89,3 +89,7 @@ def issue_sbt(reciever_addr, area):
     print("hash of transaction: ", tx_hash)
     return str(tx_hash)
     
+if __name__ == "__main__":
+    reciever_addr = input("Enter the reciever address: ")
+    area = input("Enter the area: ")
+    issue_sbt(reciever_addr, area)

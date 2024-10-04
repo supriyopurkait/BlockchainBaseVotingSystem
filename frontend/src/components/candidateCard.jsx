@@ -3,7 +3,7 @@ import { User } from 'lucide-react';
 
 const UserCard = ({ user, onVote }) => (
   <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
-    <img src={user.photo} alt={user.name} className="w-24 h-24 rounded-full mb-4" />
+    <img src={`${user.photo}&${user.id}`} alt={user.name} className="w-24 h-24 rounded-full mb-4" />
     <h3 className="text-xl font-semibold mb-2">{user.name}</h3>
     <button
       onClick={() => onVote(user.candidate_id)}

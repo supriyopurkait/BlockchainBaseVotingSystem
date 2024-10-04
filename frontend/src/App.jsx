@@ -6,9 +6,10 @@ import Hero from '@/components/Hero';
 import UserCardsPage from '@/components/canditateCardPage';
 import KYCForm from '@/components/KYCForm';
 import KYCModal from '@/components/KYCModal';
-import AdminControl from '@/components/Admin';
-import AdminCandidateControlsPage from '@/components/AdminCandidateControlsPage';
-import AdminUserControlsPage from '@/components/AdminUserControlsPage';
+import AdminControl from '@/components/Admin/Admin';
+import AdminCandidateControlsPage from '@/components/Admin/AdminCandidateControlsPage';
+import AdminAddCandidateForm from '@/components/Admin/AdminAddCandidateForm';
+import AdminUserControlsPage from '@/components/Admin/AdminUserControlsPage';
 import WalletConnectionModal from '@/components/WalletConnectionModal';
 
 
@@ -25,6 +26,7 @@ const App = () => {
   const [VotingSystemContractAddress, setVotingSystemContractAddress] = useState(null);
   const [AdminControlModal, setAdminControlModal] = useState(false);
   const [showAdminCandidateControlsPage, setAdminCandidateControlsPage] = useState(false);
+  const [showAdminAddCandidateForm, setshowAdminAddCandidateForm] = useState(false);
   const [showAdminUserControlsPage, setAdminUserControlsPage] = useState(false);
 
   const handleConnectWallet = async () => {
@@ -35,6 +37,15 @@ const App = () => {
       setIsWalletConnected(true);
       setShowWalletModal(false);
       handleGetABI();
+      if ((connectedWallet.address == import.meta.env.VITE_ADMINADDRESS)) {
+        setAdminControlModal(true);
+        console.log("Admin address:", connectedWallet.address, "is connected");
+      }
+      // write condition to check if NFT is owned then go to voting page -- Supriyo
+      // const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, connectedWallet);
+      // if (!hasNFT) {
+      //    setShowUserCards(true);
+      // }
     }
   };
 
@@ -108,7 +119,13 @@ const App = () => {
         isConnected={isWalletConnected} 
         walletAddress={isWalletConnected ? wallet.address : null} 
         onConnect={handleConnectWallet} 
-        onDisconnect={() => setIsWalletConnected(false)} // Handling disconnect
+        onDisconnect={() => {
+          setIsWalletConnected(false);
+          setShowUserCards(false);
+          setAdminControlModal(false);
+          setAdminCandidateControlsPage(false);
+          setAdminUserControlsPage(false);
+        }} // Handling disconnect
         wallet={wallet}
       />
       <main className="w-svw flex flex-grow justify-center items-center">
@@ -122,13 +139,38 @@ const App = () => {
               />
             );
           }
+          if (AdminControlModal) {
+            return <AdminControl
+                onAdd={() => {alert("Added candidate");}} 
+                onCandidate={handleAdminCandidateControls} 
+                onUser={handleAdminUserControls} 
+                onStartVote={() => {alert("Vote Started");}} 
+                onEndVote={() => {alert("Vote Ended");}} 
+                onClose={() => setAdminControlModal(false)} />;
+          }
           if (showAdminCandidateControlsPage) {
-            return <AdminCandidateControlsPage onClose={() => setAdminCandidateControlsPage(false)} />;
+            return <AdminCandidateControlsPage
+                wallet={wallet} 
+                VotingSystemContractAddress={VotingSystemContractAddress} 
+                VotingSystemABI={VotingSystemABI} 
+                onAdd={() => {alert("Added candidate");}} 
+                onRemove={() => {alert("Removed candidate");}} 
+                onClose={() => {
+                  setAdminCandidateControlsPage(false);
+                  setAdminControlModal(true);
+                }} />;
           }
           if (showAdminUserControlsPage) {
-            return <AdminUserControlsPage onClose={() => setAdminUserControlsPage(false)} />;
+            return <AdminUserControlsPage 
+                wallet={wallet} 
+                VotingSystemContractAddress={VotingSystemContractAddress} 
+                VotingSystemABI={VotingSystemABI} 
+                onRemove={() => {alert("Removed User");}} 
+                onClose={() => {
+                  setAdminUserControlsPage(false);
+                  setAdminControlModal(true);
+                }} />;
           }
-          if ((!showUserCards) && (!showAdminCandidateControlsPage) && (!showAdminUserControlsPage))
           return <Hero onEnterDApp={handleEnterDApp} />;
         })()}
       </main>
@@ -149,14 +191,16 @@ const App = () => {
           <KYCForm onSubmit={handleCompleteKYC} onCancel={() => setshowKYCFormModal(false)} walletAddress={wallet.address} />
         </div>
       )}
+      {/* Admin Add Candidate Form */}
+      {showAdminAddCandidateForm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
+          <AdminAddCandidateForm onSubmit={alert("added candidate")} onCancel={() => setshowAdminAddCandidateForm(false)} />
+        </div>
+      )}
 
       {/* Wallet Connection Modal */}
       {showWalletModal && (
         <WalletConnectionModal onClose={() => setShowWalletModal(false)} onConnect={handleConnectWallet} />
-      )}
-      {/* Admin Control Modal */}
-      {AdminControlModal && (
-        <AdminControl onCandidate={handleAdminCandidateControls} onUser={handleAdminUserControls} onClose={() => setAdminControlModal(false)} />
       )}
     </div>
   );

@@ -8,8 +8,8 @@ from rich import print
 load_dotenv()
 # RPC URL
 RPC_URL = os.getenv('ALCHEMY_RPC')
-# path to store outputs
-output_dir = "smart_contracts/scripts/output/voterID"
+# Define output directory and files
+output_dir = "smart_contracts/artifacts/voterID"
 os.makedirs(output_dir, exist_ok=True)
 
 # Install Solidity compiler version 0.8.4
@@ -29,10 +29,6 @@ def compile(contract_path):
     contract_data = compiled_sol[contract_name]
     abi = contract_data['abi']
     bytecode = contract_data['bin']
-
-    # Define output directory and files
-    output_dir = "smart_contracts/scripts/output/voterID"
-    os.makedirs(output_dir, exist_ok=True)
 
     # Write ABI to file
     with open(f"{output_dir}/abi.json", 'w') as f:

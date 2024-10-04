@@ -9,7 +9,7 @@ load_dotenv()
 # RPC URL
 RPC_URL = os.getenv('ALCHEMY_RPC')
 # path to store outputs
-output_dir = "smart_contracts/scripts/output/VotingSystem"
+output_dir = "smart_contracts/artifacts/VotingSystem"
 os.makedirs(output_dir, exist_ok=True)
 
 # Install Solidity compiler version 0.8.4
@@ -60,7 +60,7 @@ def deploy_contract():
     relayer_addr = w3.to_checksum_address(input("Enter the relayer address: "))
     
     # Getting VoterID smart contract Address
-    file_path = "smart_contracts/scripts/output/VoterID/CA.txt"
+    file_path = "smart_contracts/artifacts/VoterID/CA.txt"
     # Check if the file exists
     if not os.path.isfile(file_path):
         print(f"Failed to get the contract address. Please deploy VoterID contract first.")

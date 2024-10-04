@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.4;
 
-// Interface of SBT contract
+// Interface of SBT contract 
 interface SBT_SC {
     function balanceOf(address owner) external view returns (uint256);
     function name() external view returns (string memory);
@@ -10,6 +10,7 @@ interface SBT_SC {
 }
 
 contract VotingSystem {
+
     struct CandidateStruct {
         string candidateName;
         uint256 candidateId;
@@ -17,84 +18,113 @@ contract VotingSystem {
         string party;
     }
 
-    uint256 public voteCount;   // Total number of votes
-    address public owner;       // Owner address
-    address public VID_Address; // SBT contract address
-    address public relayer;     // Relayer address
-    address private userAddress; 
-    CandidateStruct[] public candidates;                                 // Array of candidates
-    mapping(uint256 => uint256) internal votes;                          // Mapping from candidate ID to number of votes
-    mapping(address => bool) public hasVoted;                            // Mapping from voter address to whether they have voted
-    mapping(uint256 => bool) private candidateExists;                    // Checks if a candidate ID is present or not
-    mapping(bytes32 => bool) private partyInAreaExists;                  // Ensures only one candidate from a party in an area
-    mapping(address => uint256) public nonces;                           // Mapping from voter address to nonce for meta tx
-    event CandidateAdded(string candidateName, uint256 candidateId);     // Event when a candidate is added
-    event VoteCast(address voter, uint256 candidateId);                  // Event when a voter casts a vote
+    enum VotingState { NotStarted, InProgress, Ended }
 
-    bool private inMetaTx;
+    uint256 private voteCount;          // Vote count
+    address public owner;               // Owner address
+    address public VID_Address;         // SBT contract address
+    address public relayer;             // Relayer address
+    address private userAddress;        // Voter address for meta tx
+    bool public resultsDeclared;
+    VotingState public votingState;     // State of the voting 0 = not started, 1 = in progress, 2 = ended
 
-    // modifier to restrict access to only owner of this contract
-    modifier onlyOwner() { 
+    CandidateStruct[] public candidates;
+    mapping(uint256 => uint256) private votes;
+    mapping(address => bool) public hasVoted;
+    mapping(uint256 => bool) private candidateExists;
+    mapping(bytes32 => bool) private partyInAreaExists;
+    mapping(address => uint256) public nonces;
+    event CandidateAdded(string candidateName, uint256 candidateId);
+    event VoteCast(address voter, uint256 candidateId);
+    event ResultsDeclared();
+    event VotingStarted();
+    event VotingStopped();
+
+    bool private inMetaTx;  // required for meta tx
+
+    // modifiers
+    modifier onlyOwner() {
         require(msg.sender == owner, "You are not the owner");
         _;
     }
 
-    // Modifier to restrict access to only NFT owners
     modifier onlyNftOwner() {
         require(SBT_SC(VID_Address).balanceOf(userAddress) > 0, "You must own an SBT");
+        _;
+    }
+
+    modifier resultsAreNotDeclared() {
+        require(!resultsDeclared, "Results have already been declared");
+        _;
+    }
+
+    modifier resultsAreDeclared() {
+        require(resultsDeclared, "Results have not been declared yet");
+        _;
+    }
+
+    modifier votingNotStarted() {
+        require(votingState == VotingState.NotStarted, "Voting has already started");
+        _;
+    }
+
+    modifier votingInProgress() {
+        require(votingState == VotingState.InProgress, "Voting is not in progress");
+        _;
+    }
+
+    modifier votingEnded() {
+        require(votingState == VotingState.Ended, "Voting has not ended yet");
         _;
     }
 
     constructor(address _VID_Address, address _relayer) {
         owner = msg.sender;
         VID_Address = _VID_Address;
-        voteCount = 0;
         relayer = _relayer;
+        voteCount = 0;
+        resultsDeclared = false;
+        votingState = VotingState.NotStarted;
     }
 
     function nameOfSBT() public view returns (string memory) {
         return SBT_SC(VID_Address).name();
     }
 
-    // Checks if an address holds a SBT or not
     function isHolderOfSBT(address _addr) public view returns (bool) {
         return SBT_SC(VID_Address).balanceOf(_addr) > 0;
     }
 
-    // Function to get the owners address of SBT contract
     function ownerOfVIdSmartContract() public view returns (address) {
         return SBT_SC(VID_Address).owner();
     }
 
-    // Add candinate names
-    function addCandidate(string memory _candidateName, uint256 _candidateId, string memory _area, string memory _party) public onlyOwner {
+    // Add candidates
+    function addCandidate(string memory _candidateName, uint256 _candidateId, string memory _area, string memory _party) public onlyOwner votingNotStarted {
         // Ensure candidateId does not already exist
-        require( !candidateExists[_candidateId], "Candidate with this ID already exists");
-
+        require(!candidateExists[_candidateId], "Candidate with this ID already exists");
+        
         // Create a unique hash for the party and area combination
         bytes32 partyAreaKey = keccak256(abi.encodePacked(_area, _party));
-        require( !partyInAreaExists[partyAreaKey], "This party already has a candidate in this area");
-
-        // Mark that the party now has a candidate in this area
-        partyInAreaExists[partyAreaKey] = true;
+        require(!partyInAreaExists[partyAreaKey], "This party already has a candidate in this area");
+        
+        partyInAreaExists[partyAreaKey] = true;     // Mark that the party now has a candidate in this area
 
         candidates.push(CandidateStruct(_candidateName, _candidateId, _area, _party));
         candidateExists[_candidateId] = true;
 
-        emit CandidateAdded(_candidateName, _candidateId); // Emit event
+        emit CandidateAdded(_candidateName, _candidateId);
     }
 
-    // Delete a candidate
-    function deleteCandidate(uint256 _candidateId) public onlyOwner {
+    // Delete candidates
+    function deleteCandidate(uint256 _candidateId) public onlyOwner votingNotStarted {
         require(candidateExists[_candidateId], "Candidate with this ID does not exist");
 
         for (uint256 i = 0; i < candidates.length; i++) {
             if (candidates[i].candidateId == _candidateId) {
-                // Recreate the partyAreaKey to mark the party as no longer having a candidate in this area
                 bytes32 partyAreaKey = keccak256(abi.encodePacked(candidates[i].area, candidates[i].party));
-                partyInAreaExists[partyAreaKey] = false;  // Update the partyInAreaExists mapping
+                partyInAreaExists[partyAreaKey] = false;
 
-                // Remove the candidate
                 candidates[i] = candidates[candidates.length - 1];
                 candidateExists[_candidateId] = false;
 
@@ -104,40 +134,55 @@ contract VotingSystem {
         }
     }
 
-    // Get total number of candidates
+    // Get number of candidates
     function totalCandidates() public view returns (uint256) {
         return candidates.length;
     }
 
+    // Get all candidates info
     function getAllCandidates() public view returns (CandidateStruct[] memory allCandidates) {
         return candidates;
     }
-    
-    // Only SBT holder can vote
-    function vote(uint256 _candidateId) public onlyNftOwner returns (string memory) {
-        require(inMetaTx, "Only through relayer Voting is possible");        
+
+    // Vote
+    function vote(uint256 _candidateId) public onlyNftOwner votingInProgress returns (string memory) {
+        require(inMetaTx, "Only through relayer Voting is possible");  
         require(isValidCandidate(_candidateId), "Invalid candidate ID");
         require(!hasVoted[userAddress], "You have already voted");
 
-        votes[_candidateId]++;  // Increment the vote count for the given candidateId
+        votes[_candidateId]++;
         voteCount++;
         hasVoted[userAddress] = true;
-        emit VoteCast(userAddress, _candidateId);  // Emit event with candidateId
-        return string(abi.encodePacked("Voted successfully"));
+        emit VoteCast(userAddress, _candidateId);
+        return "Voted successfully";
     }
 
-    // Checks if a candidate ID is present or not
     function isValidCandidate(uint256 _candidateId) internal view returns (bool) {
         return candidateExists[_candidateId];
     }
 
-    // Function to get vote count of a candidate
-    function getVoteCount(uint256 _candidateId) public view onlyOwner returns (uint256) {
+    function startVote() public onlyOwner votingNotStarted {
+        require(candidates.length > 0, "No candidates to vote on");
+        require(!resultsDeclared, "Results have already been declared");
+        votingState = VotingState.InProgress;
+        emit VotingStarted();
+    }
+
+    function stopVote() public onlyOwner votingInProgress {
+        votingState = VotingState.Ended;
+        emit VotingStopped();
+    }
+
+    function declareResults() public onlyOwner votingEnded resultsAreNotDeclared {
+        resultsDeclared = true;
+        emit ResultsDeclared();
+    }
+
+    function getVoteCount(uint256 _candidateId) public view resultsAreDeclared returns (uint256) {
         return votes[_candidateId];
     }
 
-    // Function to get total vote counts for all candidates
-    function totalVotes() public view onlyOwner returns (uint256) {
+    function totalVotes() public view resultsAreDeclared returns (uint256) {
         return voteCount;
     }
 

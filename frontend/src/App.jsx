@@ -11,7 +11,7 @@ import AdminCandidateControlsPage from '@/components/Admin/AdminCandidateControl
 import AdminAddCandidateForm from '@/components/Admin/AdminAddCandidateForm';
 import AdminUserControlsPage from '@/components/Admin/AdminUserControlsPage';
 import WalletConnectionModal from '@/components/WalletConnectionModal';
-
+import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   const [showUserCards, setShowUserCards] = useState(false);
@@ -115,6 +115,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
+      <Toaster position="bottom-right" />
       <Header 
         isConnected={isWalletConnected} 
         walletAddress={isWalletConnected ? wallet.address : null} 

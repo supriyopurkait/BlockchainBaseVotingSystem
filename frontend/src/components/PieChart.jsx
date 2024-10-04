@@ -1,9 +1,9 @@
 import React from 'react';
 import { PieChart, pieArcLabelClasses } from '@mui/x-charts/PieChart';
 
-const PieDiagram = ({ title, data, size, mgr, cx, cy, ir, or }) => {
+const PieDiagram = ({ title, data, fontsize, size, mgr, cx, cy, ir, or }) => {
     return (
-        <div className="PieDiagram bg-white flex flex-col justify-center rounded-2xl shadow-md m-2 p-4">
+        <div className="PieDiagram flex flex-col justify-center m-2 p-4">
             <h2 className="text-justify text-2xl font-bold">{title}</h2>
             <div className="">
                 <PieChart
@@ -31,7 +31,7 @@ const PieDiagram = ({ title, data, size, mgr, cx, cy, ir, or }) => {
                     [`& .${pieArcLabelClasses.root}`]: {
                     fontWeight: 'bold',
                     fill: '#000000',
-                    fontSize: 20,
+                    fontSize: fontsize,
                     },
                 }}
                 height={size}

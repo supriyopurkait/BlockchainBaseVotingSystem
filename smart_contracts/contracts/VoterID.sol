@@ -12,24 +12,33 @@ contract VoterID is ERC721URIStorage, Ownable {
     event TokenMinted(address to, uint256 tokenID);
     event TokenRevoked(uint256 tokenID);
 
-    constructor() ERC721("VoterID", "VID") {}
+    uint256 public nextTokenID;
+
+    constructor() ERC721("VoterID", "VID") {
+        nextTokenID = _tokenIDCounter.current();  // Initialize nextTokenID to 0 at deployment
+    }
 
     function safeMint(address to, string memory uri) public onlyOwner {
         require(balanceOf(to) == 0, "Max Mint per wallet reached");
+
         _tokenIDCounter.increment();
         uint256 tokenID = _tokenIDCounter.current();
+
         _safeMint(to, tokenID);
         _setTokenURI(tokenID, uri);
         emit TokenMinted(to, tokenID);  // Emit event
+
+        // Update nextTokenID to reflect the next available tokenID after minting
+        nextTokenID = _tokenIDCounter.current() + 1;
     }
 
-    function revoke(uint256 tokenID) external onlyOwner {
-        _burn(tokenID);
-        emit TokenRevoked(tokenID); // Emit event
+    function revoke(uint256 _tokenID) external onlyOwner {
+        _burn(_tokenID);
+        emit TokenRevoked(_tokenID); // Emit event
     }
 
-    function _beforeTokenTransfer(address from, address to, uint256 tokenID) internal virtual override {
-        tokenID;
+    function _beforeTokenTransfer(address from, address to, uint256 _tokenID) internal virtual override {
+        _tokenID;
         require(from == address(0) || to == address(0), "Err: Can not transfer SBT");
     }
 }

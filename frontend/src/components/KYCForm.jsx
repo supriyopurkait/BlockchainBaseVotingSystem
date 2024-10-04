@@ -14,9 +14,9 @@ import Loading from "@/components/LoadingModal";
 const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [formData, setFormData] = useState({
     name: "",
-    address: "",
+    area: "",
     phoneNumber: "",
-    votercardNumber: "",
+    aadhaarCardNumber: "", // Updated key for Aadhaar
     documentImage: null,
     walletAddress: "",
   });
@@ -24,7 +24,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [take, setTake] = useState(0);
-  const [loadingmodel, setLoadingmodel] = useState(false);
+  const [loadingModel, setLoadingModel] = useState(false);
   const [errors, setErrors] = useState({}); // Track validation errors
 
   // Set the wallet address on component mount or when walletAddress changes
@@ -46,6 +46,11 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     }));
   };
 
+  const handleAreaChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({ ...prevData, area: value }));
+  };
+
   const validateFields = () => {
     let validationErrors = {};
 
@@ -59,9 +64,9 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
       validationErrors.phoneNumber = "Phone number must be exactly 10 digits";
     }
 
-    // Voter card validation (non-empty for now)
-    if (formData.votercardNumber.trim() === "") {
-      validationErrors.votercardNumber = "Voter card number is required";
+    // Aadhaar card validation (non-empty for now)
+    if (formData.aadhaarCardNumber.trim() === "") {
+      validationErrors.aadhaarCardNumber = "Aadhaar card number is required";
     }
 
     // Document image validation
@@ -92,14 +97,14 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     // Prepare form data for submission
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
-    formDataToSend.append("address", formData.address);
+    formDataToSend.append("area", formData.area); // Ensure the area is properly set
     formDataToSend.append("phoneNumber", formData.phoneNumber);
-    formDataToSend.append("documentNumber", formData.votercardNumber);
+    formDataToSend.append("aadhaarCardNumber", formData.aadhaarCardNumber);
     formDataToSend.append("documentImage", formData.documentImage);
     formDataToSend.append("walletAddress", formData.walletAddress);
 
     try {
-      setLoadingmodel(true);
+      setLoadingModel(true);
       const response = await fetch("http://127.0.0.1:5000/api/kyc", {
         method: "POST",
         body: formDataToSend,
@@ -108,7 +113,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
       const data = await response.json();
 
       if (response.ok) {
-        setLoadingmodel(false);
+        setLoadingModel(false);
         console.log("KYC submitted successfully:", data);
         if (data.status === "success") {
           onSubmit({ ...formData, txHash: data.tx_hash });
@@ -116,11 +121,11 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
           console.error("Unexpected success response:", data);
         }
       } else {
-        setLoadingmodel(false);
+        setLoadingModel(false);
         console.error("Error submitting KYC:", data.error);
       }
     } catch (error) {
-      setLoadingmodel(false);
+      setLoadingModel(false);
       console.error("Error during API call:", error);
     }
   };
@@ -175,17 +180,19 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
 
         <div>
           <label
-            htmlFor="subject"
+            htmlFor="areaSelect"
             className="flex items-center text-sm font-medium text-gray-700 mb-1"
           >
             <MapPin size={18} className="mr-2" /> Area
           </label>
           <select
-            name="subject"
-            id="subject"
+            name="areaSelect"
+            id="areaSelect"
+            value={formData.area}
+            onChange={handleAreaChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="" selected="selected">
+            <option value="" disabled>
               Select Area
             </option>
             <option value="area1">area1</option>
@@ -216,22 +223,22 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
 
         <div>
           <label
-            htmlFor="votercardNumber"
+            htmlFor="aadhaarCardNumber"
             className="flex items-center text-sm font-medium text-gray-700 mb-1"
           >
-            <FileText size={18} className="mr-2" /> Voter card Number
+            <FileText size={18} className="mr-2" /> Aadhaar Card Number
           </label>
           <input
             type="text"
-            id="votercardNumber"
-            name="votercardNumber"
-            value={formData.votercardNumber}
+            id="aadhaarCardNumber"
+            name="aadhaarCardNumber"
+            value={formData.aadhaarCardNumber}
             onChange={handleInputChange}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {errors.votercardNumber && (
-            <p className="text-red-500 text-sm mt-1">{errors.votercardNumber}</p>
+          {errors.aadhaarCardNumber && (
+            <p className="text-red-500 text-sm mt-1">{errors.aadhaarCardNumber}</p>
           )}
         </div>
 
@@ -240,14 +247,13 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
             htmlFor="documentImage"
             className="flex items-center text-sm font-medium text-gray-700 mb-1"
           >
-            <Upload size={18} className="mr-2" /> Upload Document Image
+            <Upload size={18} className="mr-2" /> Upload Document
           </label>
           <input
             type="file"
             id="documentImage"
             name="documentImage"
             onChange={handleFileChange}
-            accept="image/*"
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -256,47 +262,60 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
           )}
         </div>
 
-        <div className="flex justify-between items-center">
-          <div className="">{}</div>
+        <div>
+          <label
+            htmlFor="capturedPhoto"
+            className="flex items-center text-sm font-medium text-gray-700 mb-1"
+          >
+            <Camera size={18} className="mr-2" /> Capture Photo
+          </label>
           <button
             type="button"
             onClick={handleOpenCamera}
-            className="flex items-center text-white bg-blue-500 px-4 py-2 rounded-md"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
           >
-            <Camera size={18} className="mr-2" />
-            {take === 1 ? "Recapture Photo" : "Capture Your Photo"}
+            {take === 0 ? "Open Camera" : "Take Again"}
           </button>
           {errors.capturedPhoto && (
             <p className="text-red-500 text-sm mt-1">{errors.capturedPhoto}</p>
           )}
+
+          {/* Show captured photo if available */}
+          {capturedPhoto && (
+            <div className="mt-3">
+              <p className="text-sm text-gray-500">Captured Photo:</p>
+              <img
+                src={capturedPhoto}
+                alt="Captured"
+                className="mt-2 max-w-full h-32 rounded-md border"
+              />
+            </div>
+          )}
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between">
           <button
             type="button"
             onClick={onCancel}
-            className="mr-4 text-gray-700 bg-gray-200 px-4 py-2 rounded-md"
+            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="flex items-center text-white bg-green-500 px-4 py-2 rounded-md"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors flex items-center"
           >
-            Submit
-            <ArrowRight size={18} className="ml-2" />
+            Submit <ArrowRight size={18} className="ml-2" />
           </button>
         </div>
       </form>
 
-      {isCameraModalOpen && (
-        <CameraModal
-          isOpen={isCameraModalOpen}
-          onClose={handleCloseCamera}
-          onCapture={handleCapture}
-        />
-      )}
-      {loadingmodel && <Loading modalVisible={loadingmodel}/>}
+      <CameraModal
+        isOpen={isCameraModalOpen}
+        onClose={handleCloseCamera}
+        onCapture={handleCapture}
+      />
+      {loadingModel && <Loading modalVisible={loadingModel}/>}
     </div>
   );
 };

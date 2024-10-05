@@ -4,52 +4,11 @@ import { fetchCandidate } from '@/utils/getDetails';
 import { ethers } from 'ethers';
 import Message from '@/components/AfterVoteMessage';
 import LoadingModal from '@/components/LoadingModal';
-import Face from 'pub/picture/face_img.png';
+
+import { dummyCandidates } from '@/utils/testData';
 
 const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI }) => {
   const [users, setUsers] = useState([]);
-  const [dummyusers, setDummyUsers] = useState([
-    {
-      id: 1,
-      photo: Face,
-      name: 'Alice Johnson',
-      candidate_id: '1',
-      area: 'area1',
-      party: 'Progressive Party'
-    },
-    {
-      id: 2,
-      photo: Face,
-      name: 'Bob Smith',
-      candidate_id: '2',
-      area: 'area2',
-      party: 'Liberal Party'
-    },
-    {
-      id: 3,
-      photo: Face,
-      name: 'Charlie Brown',
-      candidate_id: '3',
-      area: 'area3',
-      party: 'Conservative Party'
-    },
-    {
-      id: 4,
-      photo: Face,
-      name: 'Diana Prince',
-      candidate_id: '4',
-      area: 'area4',
-      party: 'Libertarian Party'
-    },
-    {
-      id: 5,
-      photo: Face,
-      name: 'Ethan Hunt',
-      candidate_id: '5',
-      area: 'area5',
-      party: 'Independent'
-    }
-  ]);
   const [loading, setLoading] = useState(true);
   const [votingLoading, setVotingLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -63,7 +22,7 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
       try {
         const fetchedUsers = await fetchCandidate(wallet);
         setUsers(fetchedUsers);
-        // setUsers(dummyusers); // Using Dummy data for testing
+        // setUsers(dummyCandidates); // Using Dummy data for testing
       } catch (err) {
         setError('Failed to load users. Please try again later.');
         console.error(err);

@@ -4,63 +4,11 @@ import { fetchCandidate } from '@/utils/getDetails';
 import { ethers } from 'ethers';
 import Message from '@/components/AfterVoteMessage';
 import LoadingModal from '@/components/LoadingModal';
-import Face from 'pub/picture/face_img.png';
-import Add from 'pub/picture/Add_Candidate.png';
 import AdminCandidateCard from '@/components/Admin/AdminCandidateCard';
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 
-const AdminCandidateControlsPage = ({ wallet, onAdd, onRemove, onClose }) => {
-  const [Candidates, setCandidates] = useState([]);
-  // const [dummyCandidates, setDummyCandidates] = useState([
-  //   {
-  //     id: 1,
-  //     photo: Face,
-  //     name: 'Alice Johnson',
-  //     candidate_id: '1',
-  //     area: 'area1',
-  //     party: 'Progressive Party'
-  //   },
-  //   {
-  //     id: 2,
-  //     photo: Face,
-  //     name: 'Bob Smith',
-  //     candidate_id: '2',
-  //     area: 'area2',
-  //     party: 'Liberal Party'
-  //   },
-  //   {
-  //     id: 3,
-  //     photo: Face,
-  //     name: 'Charlie Brown',
-  //     candidate_id: '3',
-  //     area: 'area3',
-  //     party: 'Conservative Party'
-  //   },
-  //   {
-  //     id: 4,
-  //     photo: Face,
-  //     name: 'Diana Prince',
-  //     candidate_id: '4',
-  //     area: 'area4',
-  //     party: 'Libertarian Party'
-  //   },
-  //   {
-  //     id: 5,
-  //     photo: Face,
-  //     name: 'Ethan Hunt',
-  //     candidate_id: '5',
-  //     area: 'area5',
-  //     party: 'Independent'
-  //   }
-  // ]);
-  // const [newCandidate, setNewCandidate] = useState([{
-  //     id: 9999,
-  //     photo: Add,
-  //     name: 'Add Candidate',
-  //     candidate_id: '',
-  //     area: '',
-  //     party: ''
-  // }]);
+const AdminCandidateControlsPage = ({ wallet, onRemove, onClose }) => {
+  const [Candidates, setCandidates] = useState([]);  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAftervoteMessage, setShowAftervoteMessage] = useState(false);
@@ -72,7 +20,7 @@ const AdminCandidateControlsPage = ({ wallet, onAdd, onRemove, onClose }) => {
       setLoading(true);
       try {
         const fetchedCandidates = await fetchCandidate(wallet);
-        console.error('Fetched candidates:', fetchedCandidates);
+        console.log('Fetched candidates:', fetchedCandidates);
         setCandidates(fetchedCandidates);
         // setCandidates(dummyCandidates); // Using Dummy data for testing
       } catch (err) {
@@ -85,12 +33,26 @@ const AdminCandidateControlsPage = ({ wallet, onAdd, onRemove, onClose }) => {
     loadCandidates();
   }, [wallet]);
 
-  if (loading) return <div>Loading users...</div>;
-  if (error) return <div>{error}{
-      <button onClick={onClose} className="absolute right-2 top-20">
-        <X className="bg-red-500 hover:bg-red-600 text-white hover:text-gray-700 rounded-full" size={24} />
-      </button>}
-    </div>;
+  const handleCandidateAdd  = async (candidateId) => {
+    alert("Candidate Added");
+  }
+  const handleCandidateRemove  = async (candidateId) => {
+    alert("Candidate Removed");
+  }
+
+  if (loading) return (<div><LoadingModal modalVisible={loading} task="Loading Candidates..." onClose={onClose} /></div>);
+  if (error) return (
+    <div>
+      <div className="loading-modal-overlay" onClick={onClose}>
+        <div className="loading-modal">
+          <p>{error}</p>
+        </div>
+        <button onClick={onClose} className="relative right-0 top-[-3rem]">
+          <X className="bg-red-500 hover:bg-red-600 text-white hover:text-gray-700 rounded-full" size={24} />
+        </button>
+      </div>
+    </div>
+    );
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -100,9 +62,9 @@ const AdminCandidateControlsPage = ({ wallet, onAdd, onRemove, onClose }) => {
       </button>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {Candidates.map(candidate => (
-          <AdminCandidateCard key={candidate.candidate_id} candidate={candidate} onRemove={onRemove} />
+          <AdminCandidateCard key={candidate.candidate_id} candidate={candidate} onRemove={handleCandidateRemove} />
         ))}
-        {<AdminAddCandidateCard onAdd={onAdd} />}
+        {<AdminAddCandidateCard onAdd={handleCandidateAdd} />}
       </div>
       {showAftervoteMessage && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

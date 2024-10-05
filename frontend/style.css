@@ -34,9 +34,6 @@ body {
 ::-webkit-scrollbar-thumb {
   max-height: 200px; /* Minimum height of the thumb handle */
 }
-/* body {
-    overflow-x: hidden
-} */
  /* LoadingModal.css */
 .loading-modal-overlay {
     position: fixed;
@@ -57,7 +54,6 @@ body {
     padding: 20px;
     text-align: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    width: 250px; /* Fixed width */
   }
   
   .spinner {

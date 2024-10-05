@@ -1,3 +1,7 @@
+import Face from 'pub/picture/face_img.png';
+import Add from 'pub/picture/Add_Candidate.png';
+
+
 export const totalVotes = "9,884,153";
 
 export const statData = [
@@ -43,3 +47,55 @@ export const AreaData = [
         { id: 4, value: 60, label: 'Subhasish Mondal', color: '#3A86FF' },
     ]},
 ];
+
+export const dummyCandidates = [
+{
+    id: 1,
+    photo: Face,
+    name: 'Alice Johnson',
+    candidate_id: '1',
+    area: 'area1',
+    party: 'Progressive Party'
+},
+{
+    id: 2,
+    photo: Face,
+    name: 'Bob Smith',
+    candidate_id: '2',
+    area: 'area2',
+    party: 'Liberal Party'
+},
+{
+    id: 3,
+    photo: Face,
+    name: 'Charlie Brown',
+    candidate_id: '3',
+    area: 'area3',
+    party: 'Conservative Party'
+},
+{
+    id: 4,
+    photo: Face,
+    name: 'Diana Prince',
+    candidate_id: '4',
+    area: 'area4',
+    party: 'Libertarian Party'
+},
+{
+    id: 5,
+    photo: Face,
+    name: 'Ethan Hunt',
+    candidate_id: '5',
+    area: 'area5',
+    party: 'Independent'
+}
+];
+
+export const newCandidate = [{
+    id: 9999,
+    photo: Add,
+    name: 'Add Candidate',
+    candidate_id: '',
+    area: '',
+    party: ''
+}];

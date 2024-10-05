@@ -111,7 +111,7 @@ def get_users():
 
 
         # Return the user details
-        return jsonify({'status': 'success', 'candidates': candidates}), 200
+        return jsonify({'status': 'success', 'users': users}), 200
 
     except Exception as e:
         print(e)

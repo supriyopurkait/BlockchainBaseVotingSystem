@@ -68,4 +68,4 @@ def get_all_users():
             'photo': 'https://xsgames.co/randomusers/avatar.php?g=pixel'
         })
         
-    return candidates
+    return users

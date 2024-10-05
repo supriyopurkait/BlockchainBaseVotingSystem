@@ -4,7 +4,7 @@ import { fetchUsers } from '@/utils/getDetails';
 import { ethers } from 'ethers';
 import Message from '@/components/AfterVoteMessage';
 import LoadingModal from '@/components/LoadingModal';
-import AdminUserCard from '@/components/Admin/AdminCandidateCard';
+import AdminUserCard from '@/components/Admin/AdminUserCard';
 import { dummyCandidates } from '@/utils/testData';
 
 const AdminUserControlsPage = ({ wallet, onClose }) => {

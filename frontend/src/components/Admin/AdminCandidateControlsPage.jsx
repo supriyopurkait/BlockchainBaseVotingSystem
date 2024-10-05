@@ -72,7 +72,8 @@ const AdminCandidateControlsPage = ({ wallet, onAdd, onRemove, onClose }) => {
       setLoading(true);
       try {
         const fetchedCandidates = await fetchCandidate(wallet);
-        setUsers(fetchedCandidates);
+        console.error('Fetched candidates:', fetchedCandidates);
+        setCandidates(fetchedCandidates);
         // setCandidates(dummyCandidates); // Using Dummy data for testing
       } catch (err) {
         setError('Failed to load Candidates. Please try again later.');
@@ -93,7 +94,7 @@ const AdminCandidateControlsPage = ({ wallet, onAdd, onRemove, onClose }) => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold mb-8 text-center">Candidates:</h2>
+      <h2 className="text-3xl font-bold mb-8 underline">All Candidates:</h2>
       <button onClick={onClose} className="absolute right-2 top-20">
         <X className="bg-red-500 hover:bg-red-600 text-white hover:text-gray-700 rounded-full" size={24} />
       </button>

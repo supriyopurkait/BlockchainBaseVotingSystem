@@ -2,8 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Rss, AtSign, UserRoundCog, CirclePlay, CircleStop, Ellipsis, X } from 'lucide-react';
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 import PieDiagram from '@/components/PieChart';
+import { processAreaData, calculateTotalVotes } from '@/components/Admin/StatDataProcessor';
 
-const AdminControl = ({ totalVotes, numberofArea, areaData, onAdd, onDeclareResults, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
+const AdminControl = ({ Data, onAdd, onDeclareResults, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
+  const areaData = processAreaData(Data);
+  const numberOfArea = areaData.length;
+  const totalVotes = calculateTotalVotes(Data);
+  
   const [showMore, setShowMore] = useState(false);
   const [moreORless, setmoreORless] = useState("More");
 
@@ -103,7 +108,7 @@ const AdminControl = ({ totalVotes, numberofArea, areaData, onAdd, onDeclareResu
                     cx={80} 
                     cy={110} 
                     sizeH={300} 
-                    sizeW={400} 
+                    sizeW={300} 
                     outerRadius={100}
                     innerRadius={20} 
                     margin={{ left: 25, right: 25, top: 25, bottom: 25 }} 
@@ -142,10 +147,10 @@ const AdminControl = ({ totalVotes, numberofArea, areaData, onAdd, onDeclareResu
                 <span className="p-2 font-bold">Area </span>
                 <span className="p-2 font-bold">Votes Per Area</span>
                 <span className="p-2 font-bold">Winner of Area</span>
-                <span className="p-2 font-bold">Won By Votes</span>
+                <span className="p-2 font-bold">Winner's Vote Count</span>
               </div>
               { Object.entries(areaData).map(([areaId, area]) => (
-                <div key={areaId + numberofArea} className="grid grid-cols-4 bg-gray-200 hover:bg-gray-100 m-2 rounded">
+                <div key={areaId + numberOfArea} className="grid grid-cols-4 bg-gray-200 hover:bg-gray-100 m-2 rounded">
                   <span className="p-2">{area.areaName}</span>
                   <span className="p-2 font-bold">{area.totalVotes}</span>
                   <span className="p-2">{area.winner}</span>

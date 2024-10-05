@@ -13,7 +13,7 @@ import AdminUserControlsPage from '@/components/Admin/AdminUserControlsPage';
 import WalletConnectionModal from '@/components/WalletConnectionModal';
 import { Toaster } from 'react-hot-toast';
 
-import { AreaData, totalVotes } from '@/utils/testData';
+import { data } from '@/utils/testData2';
 
 const App = () => {
   const [showUserCards, setShowUserCards] = useState(false);
@@ -144,9 +144,7 @@ const App = () => {
           }
           if (AdminControlModal) {
             return <AdminControl
-                totalVotes={totalVotes}
-                areaData={AreaData} 
-                numberofArea={AreaData.length}
+                Data={data}
                 onAdd={() => {alert("Added candidate");}}
                 onDeclareResults={() => {alert("Results Declared");}} 
                 onCandidate={handleAdminCandidateControls} 
@@ -159,9 +157,7 @@ const App = () => {
             return <AdminCandidateControlsPage
                 wallet={wallet} 
                 VotingSystemContractAddress={VotingSystemContractAddress} 
-                VotingSystemABI={VotingSystemABI} 
-                onAdd={() => {alert("Added candidate");}} 
-                onRemove={() => {alert("Removed candidate");}} 
+                VotingSystemABI={VotingSystemABI}
                 onClose={() => {
                   setAdminCandidateControlsPage(false);
                   setAdminControlModal(true);
@@ -171,8 +167,7 @@ const App = () => {
             return <AdminUserControlsPage 
                 wallet={wallet} 
                 VotingSystemContractAddress={VotingSystemContractAddress} 
-                VotingSystemABI={VotingSystemABI} 
-                onRemove={() => {alert("Removed User");}} 
+                VotingSystemABI={VotingSystemABI}
                 onClose={() => {
                   setAdminUserControlsPage(false);
                   setAdminControlModal(true);

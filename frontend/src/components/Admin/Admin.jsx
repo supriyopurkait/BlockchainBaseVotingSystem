@@ -3,7 +3,7 @@ import { Rss, AtSign, UserRoundCog, CirclePlay, CircleStop, Ellipsis, X } from '
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 import PieDiagram from '@/components/PieChart';
 
-const AdminControl = ({ totalVotes, numberofArea, areaData, onAdd, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
+const AdminControl = ({ totalVotes, numberofArea, areaData, onAdd, onDeclareResults, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
   const [showMore, setShowMore] = useState(false);
   const [moreORless, setmoreORless] = useState("More");
 
@@ -126,7 +126,7 @@ const AdminControl = ({ totalVotes, numberofArea, areaData, onAdd, onCandidate, 
               <h3 className="text-xl font-bold">Total Vote</h3>
               <p className="text-2xl text-blue-600 font-bold">{totalVotes}</p>
               <button
-                onClick={onAdd}
+                onClick={onDeclareResults}
                 className="w-fit bg-green-500 hover:bg-green-600 text-white font-bold my-2 py-2 px-4 rounded-full flex items-center"
               >
                 Declare Results

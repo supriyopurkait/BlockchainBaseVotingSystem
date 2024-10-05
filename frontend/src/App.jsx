@@ -147,7 +147,8 @@ const App = () => {
                 totalVotes={totalVotes}
                 areaData={AreaData} 
                 numberofArea={AreaData.length}
-                onAdd={() => {alert("Added candidate");}} 
+                onAdd={() => {alert("Added candidate");}}
+                onDeclareResults={() => {alert("Results Declared");}} 
                 onCandidate={handleAdminCandidateControls} 
                 onUser={handleAdminUserControls} 
                 onStartVote={() => {alert("Vote Started");}} 

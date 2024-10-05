@@ -1,7 +1,16 @@
 import sqlite3
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Function to fetch candidate details from the database based on the wallet address
 def get_candidates_by_area(address):
+    if(address.lower() == (os.getenv('ADMIN_ADDRESS')).lower()):
+        candidates = []
+        candidates = get_all_candidates()
+        return candidates
+        
     # Retrive the area from the database
     with sqlite3.connect('backend/db/voter_data.db') as conn:
         cursor = conn.cursor()
@@ -30,7 +39,7 @@ def get_candidates_by_area(address):
     candidates = []
     for candidate in results:
         candidates.append({
-            'id': candidate[0],
+            'id': candidate[2],
             'name': candidate[1],
             'candidate_id': candidate[2],
             'area': candidate[3],
@@ -38,4 +47,23 @@ def get_candidates_by_area(address):
             'photo': 'https://xsgames.co/randomusers/avatar.php?g=pixel'
         })
 
+    return candidates
+
+def get_all_candidates():
+    with sqlite3.connect('backend/db/candidates.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM candidates')
+        results = cursor.fetchall()
+
+    candidates = []
+    for candidate in results:
+        candidates.append({
+            'id': candidate[2],
+            'name': candidate[1],
+            'candidate_id': candidate[2],
+            'area': candidate[3],
+            'party': candidate[4],
+            'photo': 'https://xsgames.co/randomusers/avatar.php?g=pixel'
+        })
+        
     return candidates

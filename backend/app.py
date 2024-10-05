@@ -88,7 +88,36 @@ def get_candidates():
     except Exception as e:
         print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/get-users', methods=['POST'])
+def get_users():
+    try:
+        # Get the JSON data from the request
+        data = request.json
+        print("Received address:", data.get('address'))  
+
+        # Extract the address from the JSON data
+        address = data.get('address').lower()
+        
+        if not address:
+            return jsonify({'status': 'error', 'message': 'Address is required'}), 400
+        # Fetch the user details using the area
+        users = get_users_by_area(address)
+        print("Users:", users)  
+        # Check if the area was found
+        if not users:
+            return jsonify({'status': 'error', 'message': 'Area not found for the given address'}), 404
+
+
+
+        # Return the user details
+        return jsonify({'status': 'success', 'candidates': candidates}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({'status': 'error', 'message': str(e)}), 500
     
+
 @app.route('/api/execute-meta-tx', methods=['POST'])
 def execute_meta_transaction():
     try:

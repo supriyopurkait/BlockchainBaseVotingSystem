@@ -22,14 +22,14 @@ export const fetchCandidate = async (wallet) => {
       return data.candidates;
       
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error fetching Candidate:', error);
       return [];
     }
   };
 
 
-  export const fetchUsers = async (fetchUsers) => {
-    const url = 'https://dogapi.dog/api/v2/breeds';
+export const fetchUsers = async (wallet) => {
+    const url = 'http://127.0.0.1:5000/api/get-users';
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -46,12 +46,12 @@ export const fetchCandidate = async (wallet) => {
       
       // Get the full response
       const data = await response.json();
-      // console.log(data.candidates);
-      // Return only the candidates array
-      return data.candidates;
+      // console.log(data.users);
+      // Return only the Users array
+      return data.users;
       
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error('Error fetching Users:', error);
       return [];
     }
   };

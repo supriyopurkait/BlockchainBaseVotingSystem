@@ -13,6 +13,8 @@ import AdminUserControlsPage from '@/components/Admin/AdminUserControlsPage';
 import WalletConnectionModal from '@/components/WalletConnectionModal';
 import { Toaster } from 'react-hot-toast';
 
+import { AreaData, totalVotes } from '@/utils/testData';
+
 const App = () => {
   const [showUserCards, setShowUserCards] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
@@ -142,6 +144,9 @@ const App = () => {
           }
           if (AdminControlModal) {
             return <AdminControl
+                totalVotes={totalVotes}
+                areaData={AreaData} 
+                numberofArea={AreaData.length}
                 onAdd={() => {alert("Added candidate");}} 
                 onCandidate={handleAdminCandidateControls} 
                 onUser={handleAdminUserControls} 

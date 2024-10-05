@@ -7,8 +7,11 @@ import {
   Upload,
   ArrowRight,
   Camera,
+  ExternalLink
 } from "lucide-react";
 import CameraModal from "./CameraModal";
+import Loading from "@/components/LoadingModal";
+import toast from 'react-hot-toast';
 
 const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [formData, setFormData] = useState({
@@ -69,15 +72,39 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
       if (response.ok) {
         console.log("KYC submitted successfully:", data);
         if (data.status === "success") {
+          // Show toast notification with hyperlinked TxHash
+          toast.success(
+            <div>
+              Thank you for submitting your KYC! You can now vote for your favorite candidate.
+              <br />
+              TxHash:{' '}
+              <a
+                href={`https://base-sepolia.blockscout.com/tx/${data.tx_hash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:text-blue-700 underline"
+              >
+                {data.tx_hash.slice(0, 10)}...{data.tx_hash.slice(-8)}
+                <ExternalLink className="h-5 w-5 hover:text-blue-400 transition-colors duration-200" />
+              </a>
+            </div>,
+            {
+              duration: 10000, // 10 seconds
+              position: 'bottom-right',
+            }
+          );
           onSubmit({ ...formData, txHash: data.tx_hash });
         } else {
           console.error("Unexpected success response:", data);
+          toast.error("Unexpected response from server", { duration: 10000, position: 'bottom-right' });
         }
       } else {
         console.error("Error submitting KYC:", data.error);
+        toast.error(`Error submitting KYC: ${data.error}`, { duration: 10000, position: 'bottom-right' });
       }
     } catch (error) {
       console.error("Error during API call:", error);
+      toast.error("Error submitting KYC. Please try again.", { duration: 10000, position: 'bottom-right' });
     }
   };
 

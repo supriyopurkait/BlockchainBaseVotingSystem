@@ -19,8 +19,9 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     DOB:"",
     area: "",
     phoneNumber: "",
-    addharcardnumber: "", // Updated key for Aadhaar
+    documentNumber: "", // Updated key for Aadhaar
     documentImage: null,
+    faceImage: null,
     walletAddress: "",
   });
 
@@ -68,10 +69,10 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     }
   
     // Aadhaar card validation (non-empty for now)
-    if (!formData.addharcardnumber || formData.addharcardnumber.trim() === "") {
-      validationErrors.addharcardnumber = "Aadhaar card number is required";
-    } else if (formData.addharcardnumber.trim().length !== 12) {
-      validationErrors.addharcardnumber = "Aadhaar card number must be exactly 12 digits";
+    if (!formData.documentNumber || formData.documentNumber.trim() === "") {
+      validationErrors.documentNumber = "Aadhaar card number is required";
+    } else if (formData.documentNumber.trim().length !== 12) {
+      validationErrors.documentNumber = "Aadhaar card number must be exactly 12 digits";
     }
   
     // Document image validation
@@ -128,8 +129,9 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     formDataToSend.append("DOB", formData.DOB);
     formDataToSend.append("area", formData.area);
     formDataToSend.append("phoneNumber", formData.phoneNumber);
-    formDataToSend.append("addharcardnumber", formData.addharcardnumber);
+    formDataToSend.append("documentNumber", formData.documentNumber);
     formDataToSend.append("documentImage", formData.documentImage);
+    formDataToSend.append("faceImage", capturedPhoto);
     formDataToSend.append("walletAddress", formData.walletAddress);
 
     try {
@@ -297,22 +299,22 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
 
         <div>
           <label
-            htmlFor="addharcardnumber"
+            htmlFor="documentNumber"
             className="flex items-center text-sm font-medium text-gray-700 mb-1"
           >
             <FileText size={18} className="mr-2" /> Aadhaar Card Number
           </label>
           <input
             type="text"
-            id="addharcardnumber"
-            name="addharcardnumber"
-            value={formData.addharcardnumber}
+            id="documentNumber"
+            name="documentNumber"
+            value={formData.documentNumber}
             onChange={handleInputChange}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {errors.addharcardnumber && (
-            <p className="text-red-500 text-sm mt-1">{errors.addharcardnumber}</p>
+          {errors.documentNumber && (
+            <p className="text-red-500 text-sm mt-1">{errors.documentNumber}</p>
           )}
         </div>
 

@@ -1,5 +1,5 @@
-import Face from 'pub/picture/face_img.png';
-import Add from 'pub/picture/Add_Candidate.png';
+import Face from 'pub/picture/face_img.png?url';
+import Add from 'pub/picture/Add_Candidate.png?url';
 
 
 export const totalVotes = "9,884,153";

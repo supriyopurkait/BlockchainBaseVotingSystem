@@ -1,6 +1,6 @@
 import React from 'react';
 import { UserPlus } from 'lucide-react';
-import Add from 'pub/picture/Add_candidate.png';
+import Add from 'pub/picture/Add_candidate.png?url';
 
 const AdminAddCandidateCard = ({ candidate, onAdd }) => (
   <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">

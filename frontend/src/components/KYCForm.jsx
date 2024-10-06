@@ -9,7 +9,7 @@ import {
   Camera,
   ExternalLink
 } from "lucide-react";
-import CameraModal from "./CameraModal";
+import CameraModal from "@/components/CameraModal";
 import Loading from "@/components/LoadingModal";
 import toast from 'react-hot-toast';
 

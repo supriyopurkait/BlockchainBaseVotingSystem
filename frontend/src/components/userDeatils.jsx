@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { X } from 'lucide-react';
-import copy_svg from "pub/picture/copy-icon.png";
-import copy_check from "pub/icons/copy-check.svg";
+import copy_svg from "pub/picture/copy-icon.png?url";
+import copy_check from "pub/icons/copy-check.svg?url";
 import { fetchUsers } from '@/utils/getDetails';
 
 // CopyComponent for handling clipboard copy

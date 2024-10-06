@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { UserRoundX } from 'lucide-react';
-import Face from 'pub/picture/face_img.png';
-import copy_svg from "pub/picture/copy-icon.png";
-import copy_check from "pub/icons/copy-check.svg";
+import Face from 'pub/picture/face_img.png?url';
+import copy_svg from "pub/picture/copy-icon.png?url";
+import copy_check from "pub/icons/copy-check.svg?url";
 
 const CopyComponent = ({ walletAddress }) => {
   const [copySuccess, setCopySuccess] = useState(false); // State to track copy success

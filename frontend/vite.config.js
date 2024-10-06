@@ -14,7 +14,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "pub": path.resolve(__dirname, "./public"),
+      "pub": path.resolve(__dirname, "./assets"),
     },
   },
   server: {

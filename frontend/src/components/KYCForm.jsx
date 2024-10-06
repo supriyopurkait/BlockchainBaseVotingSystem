@@ -68,8 +68,10 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     }
   
     // Aadhaar card validation (non-empty for now)
-    if (formData.addharcardnumber.trim() === "") {
+    if (!formData.addharcardnumber || formData.addharcardnumber.trim() === "") {
       validationErrors.addharcardnumber = "Aadhaar card number is required";
+    } else if (formData.addharcardnumber.trim().length !== 12) {
+      validationErrors.addharcardnumber = "Aadhaar card number must be exactly 12 digits";
     }
   
     // Document image validation

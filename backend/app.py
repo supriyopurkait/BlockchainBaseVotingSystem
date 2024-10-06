@@ -1,6 +1,10 @@
 from flask import Flask, app, request, render_template, jsonify
 from flask_cors import CORS
 from index import *
+from dotenv import load_dotenv
+import os
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -11,41 +15,59 @@ def index():
 
 @app.route('/api/kyc', methods=['POST'])
 def get_kyc_data():
-    print(request.form)
     try:
         # Extract form data
         name = request.form.get('name')
+        aadhar_number = request.form.get('aadhar_number')
         area = request.form.get('area')
-        phone_number = request.form.get('phoneNumber')
-        document_number = request.form.get('addharcardnumber')
-        wallet_address = request.form.get('walletAddress')  # Match the field name from frontend
-        doc_image = request.files.get('documentImage')  # Match the field name from frontend
+        voter_number = request.form.get('voter_number')
+        address = request.form.get('address')
+        wallet_address = request.form.get('wallet_address')
+        doc_image = request.files.get('doc_image') 
+        human_image = request.files.get('human_image')
+        D_O_B = request.form.get('DOB')
         
+
+        # Validate input fields
+        if not name or not aadhar_number or not area or not voter_number or not address or not wallet_address or not D_O_B:
+            return jsonify({"error": "Missing required fields"}), 400
+        
+        # Validate images
         if not doc_image:
             return jsonify({"error": "Document image is required."}), 400
-
-        doc_image_data = doc_image.read()  # Read the file content for further processing or storing
-
-        # Insert the data into the database (this function should be implemented)
-        result = insert_data(name, area, phone_number, document_number, wallet_address, doc_image_data)
+        if not human_image:
+            return jsonify({"error": "Human image is required."}), 400
         
+        doc_image_data = doc_image.read()  # Read the file content
+        human_image_data = human_image.read()
+        # Issue SBT and get hash value
+        tx_hash = issue_sbt(wallet_address, area)
+        print(f"Transaction hash: {tx_hash}")
+        
+        if not tx_hash:
+            return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500
+
+        # Insert the data into the database
+        result = insert_data(name, aadhar_number, area, voter_number, address, wallet_address, doc_image_data, human_image_data, D_O_B)
         if result == "Duplicate":
             return jsonify({"error": "A KYC record already exists for this wallet address."}), 400
         elif result == False:
             return jsonify({"error": "An error occurred while inserting data into the database."}), 500
 
-        # Issue SBT and get the transaction hash (this function should be implemented)
-        tx_hash = issue_sbt(wallet_address, area)  # 'area' was replaced with 'address'
-        print(f"Transaction hash: {tx_hash}")
-
         # Handle the transaction hash logic
         if tx_hash == "Minted":
             return jsonify({"error": "SBT already minted by this address."}), 400
         elif tx_hash:
-            return jsonify({"status": "success", "tx_hash": str(tx_hash), "message": "Your KYC is done, you can now vote."}), 200
+            return jsonify({"status": "success","tx_hash": str(tx_hash), "message": "Your KYC is done, you can now vote."}), 200
         else:
             return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500
 
+    except KeyError as e:
+        return jsonify({"error": f"Missing key: {str(e)}"}), 400
+    except ValueError as e:
+        return jsonify({"error": f"Invalid value: {str(e)}"}), 400
+    except TypeError as e:
+        return jsonify({"error": f"Type error: {str(e)}"}), 400
     except Exception as e:
         print("An unexpected error occurred:", e)
         return jsonify({"error": "An unexpected error occurred. Please try again later."}), 500
@@ -138,6 +160,10 @@ def execute_meta_transaction():
         # Catch any other exceptions and return an internal server error
         print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
+    
+    
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

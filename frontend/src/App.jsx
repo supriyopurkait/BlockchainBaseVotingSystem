@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'; 
 import { ethers } from 'ethers';
-import { connectWallet, checkNFTOwnership } from '@/utils/web3Utils';
+import { connectWallet, checkNFTOwnership, votingState } from '@/utils/web3Utils';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import UserCardsPage from '@/components/canditateCardPage';
@@ -11,7 +11,7 @@ import AdminCandidateControlsPage from '@/components/Admin/AdminCandidateControl
 import AdminAddCandidateForm from '@/components/Admin/AdminAddCandidateForm';
 import AdminUserControlsPage from '@/components/Admin/AdminUserControlsPage';
 import WalletConnectionModal from '@/components/WalletConnectionModal';
-import { Toaster } from 'react-hot-toast';
+import { toast, Toaster } from 'react-hot-toast';
 
 import { data } from '@/utils/testData2';
 
@@ -51,6 +51,19 @@ const App = () => {
     }
   };
 
+  // Function to show toast messages
+  const toastMsg = (status, msg, duration, position) => {
+    // Call the appropriate toast function based on the status
+    if (toast[status]) {
+      toast[status](msg, {
+        duration, // 10 seconds
+        position,
+      });
+    } else {
+      console.error(`Invalid status: ${status}`);
+    }
+  };
+  
   const handleGetABI = async () => {
     const VoterIDabi = await fetch('http://'+'127.0.0.1'+':5000/api/get_abi/VoterID');
     const VoterIDjson = await VoterIDabi.json();
@@ -76,13 +89,27 @@ const App = () => {
 
   const handleEnterDApp = async () => {
     if (!isWalletConnected) {
+      toastMsg("error","Please connect your wallet first", 2000, "bottom-right");
       setShowWalletModal(true);
       return;
+    }
+    // Check voting state
+    const votingStatus = await votingState(VotingSystemABI, VotingSystemContractAddress, wallet);
+    console.log("Voting State:", votingStatus);
+    if (votingStatus == 1) {
+      toastMsg("success", "Voting is ongoing.", 10000, "top-center");
+    } else if (votingStatus == 0) {
+      toastMsg("error", "Voting has not started yet.", 100000, "top-center");
+    } else if (votingStatus == 2) {
+      toastMsg("error", "Voting has ended.", 100000, "top-center");
+    } else if (votingStatus == -1) {
+      toastMsg("error", "Error checking voting status. Please try again later.", 10000, "top-center");
     }
     console.log("ENV Admin address:", import.meta.env.VITE_ADMINADDRESS)
     if (!(wallet.address == import.meta.env.VITE_ADMINADDRESS)) { // Use for Admin Debug
       const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, wallet);
       if (!hasNFT) {
+        toastMsg("error", "You do not have a Voter ID NFT! Please complete the KYC process first.", 5000);
         setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
       } else {
         setShowUserCards(true); // Show user cards page if NFT is owned

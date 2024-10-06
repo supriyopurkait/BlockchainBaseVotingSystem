@@ -1,5 +1,5 @@
 // Static data
-export const data = [
+export const sdata = [
     {"area": "area1", "maxVotes": 100, "candidates": [
         {"id": 1, "candidateId": "1", "candidateName": "cand1", "voteCount": 20, "party": "Party 1"},
         {"id": 2, "candidateId": "2", "candidateName": "cand2", "voteCount": 20, "party": "Party 2"},
@@ -30,9 +30,9 @@ export function getRandomColor() {
 }
 
 
-const totalVotes = data.reduce((sum, area) => sum + area.maxVotes, 0).toLocaleString();
+const totalVotes = sdata.reduce((sum, area) => sum + area.maxVotes, 0).toLocaleString();
 // Generate statData (overall statistics)
-const statData = data.flatMap(area => area.candidates).reduce((acc, candidate) => {
+const statData = sdata.flatMap(area => area.candidates).reduce((acc, candidate) => {
     const existingCandidate = acc.find(c => c.label === candidate.candidateName);
     if (existingCandidate) {
         existingCandidate.value += candidate.voteCount;
@@ -44,7 +44,7 @@ const statData = data.flatMap(area => area.candidates).reduce((acc, candidate) =
 }, []);
 
 // Generate AreaData
-const AreaData = data.map((area, index) => ({
+const AreaData = sdata.map((area, index) => ({
     id: index,
     areaName: area.area,
     totalVotes: area.maxVotes,

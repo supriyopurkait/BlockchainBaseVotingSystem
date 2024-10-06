@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { fetchStatData } from '@/utils/getDetails';
 import { Rss, AtSign, UserRoundCog, CirclePlay, CircleStop, Ellipsis, X } from 'lucide-react';
+import LoadingModal from '@/components/LoadingModal';
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 import PieDiagram from '@/components/PieChart';
-import { processAreaData, calculateTotalVotes } from '@/components/Admin/StatDataProcessor';
+import { processAreaData, calculateTotalVotes } from '@/utils/StatDataProcessor';
 
-const AdminControl = ({ Data, onAdd, onDeclareResults, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
-  const areaData = processAreaData(Data);
-  const numberOfArea = areaData.length;
-  const totalVotes = calculateTotalVotes(Data);
-  
+import { sdata } from '@/utils/testData2';
+
+const AdminControl = ({ wallet, onAdd, onDeclareResults, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
+  const [areaData, setareaData] = useState(null);
+  const [numberOfArea, setnumberOfArea] = useState(null);
+  const [totalVotes, settotalVotes] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showStat, setShowStat] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [moreORless, setmoreORless] = useState("More");
 
@@ -25,6 +31,41 @@ const AdminControl = ({ Data, onAdd, onDeclareResults, onCandidate, onUser, onSt
     }
     
   };
+
+  useEffect(() => {
+    const loadStatData = async () => {
+      setLoading(true);
+      try {
+        const fetchedStatData = await fetchStatData(wallet);
+        console.log('Fetched StatData:', fetchedStatData);
+        setareaData(processAreaData(fetchedStatData));
+        // setareaData(processAreaData(sdata)); // Using Dummy data for testing
+        setnumberOfArea(areaData.length());
+        settotalVotes(calculateTotalVotes(fetchedStatData));
+        setShowStat(true);
+      } catch (err) {
+        setError('Failed to load Vote Data. Please try again later.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadStatData();
+  }, [wallet]);
+
+  if (loading) return (<div><LoadingModal modalVisible={loading} task="Loading Vote Data..." onClose={setLoading(false)} /></div>);
+  if (error) return (
+    <div>
+      <div className="loading-modal-overlay" onClick={setError(null)}>
+        <div className="loading-modal">
+          <p>{error}</p>
+        </div>
+        <button onClick={setError(null)} className="relative right-0 top-[-3rem]">
+          <X className="bg-red-500 hover:bg-red-600 text-white hover:text-gray-700 rounded-full" size={24} />
+        </button>
+      </div>
+    </div>
+    );
 
   return (
     <div className="w-svw flex flex-col justify-self-start m-10">
@@ -81,6 +122,7 @@ const AdminControl = ({ Data, onAdd, onDeclareResults, onCandidate, onUser, onSt
         </div>
       </div>
       <div className="DashBoard flex flex-col lg:flex-row">
+      {showStat && (
         <div className="PieChart h-fit bg-white rounded-2xl shadow-md flex-grow m-0 p-2 pl-8">
           {/* Pie Chart % */}
           <div className="flex flex-row justify-between items-center">
@@ -119,6 +161,7 @@ const AdminControl = ({ Data, onAdd, onDeclareResults, onCandidate, onUser, onSt
             }
           </div>
         </div>
+      )}
         {/* End Of Pie Chart */}
         <div className="Stats h-max flex flex-col md:flex-col flex-grow-0 m-4">
           <div className="flex flex-col md:flex-row justify-around">
@@ -129,7 +172,7 @@ const AdminControl = ({ Data, onAdd, onDeclareResults, onCandidate, onUser, onSt
             {/* Total Vote */}
             <div className="m-4 p-4 bg-white rounded-lg shadow-md flex flex-col flex-grow justify-around items-center">
               <h3 className="text-xl font-bold">Total Vote</h3>
-              <p className="text-2xl text-blue-600 font-bold">{totalVotes}</p>
+              <p className="text-2xl text-blue-600 font-bold">{totalVotes?totalVotes:0}</p>
               <button
                 onClick={onDeclareResults}
                 className="w-fit bg-green-500 hover:bg-green-600 text-white font-bold my-2 py-2 px-4 rounded-full flex items-center"
@@ -140,6 +183,7 @@ const AdminControl = ({ Data, onAdd, onDeclareResults, onCandidate, onUser, onSt
             </div>
           </div>
           {/* Area Votes */}
+          {showStat && (
           <div className="m-4 p-4  w-full bg-white rounded-lg shadow-md text-center">
             <h3 className="text-xl font-bold pb-2">Area Votes:</h3>
             <div className="text-center">
@@ -159,6 +203,7 @@ const AdminControl = ({ Data, onAdd, onDeclareResults, onCandidate, onUser, onSt
               ))}
             </div>
           </div>
+          )}
         </div>
         {/* End Of Stats */}
       </div> 

@@ -27,7 +27,6 @@ export const fetchCandidate = async (wallet) => {
     }
   };
 
-
 export const fetchUsers = async (wallet) => {
     const url = 'http://127.0.0.1:5000/api/get-users';
     try {
@@ -52,6 +51,34 @@ export const fetchUsers = async (wallet) => {
       
     } catch (error) {
       console.error('Error fetching Users:', error);
+      return [];
+    }
+  };
+
+export const fetchStatData = async (wallet) => {
+    const url = 'http://127.0.0.1:5000/api/get-statdata';
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          address: wallet.address
+        })
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      // Get the full response
+      const responseData = await response.json();
+      // console.log(responseData.data);
+      // Return only the Users array
+      return responseData.data;
+      
+    } catch (error) {
+      console.error('Error fetching Statistics Data:', error);
       return [];
     }
   };

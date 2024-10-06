@@ -19,8 +19,9 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     DOB:"",
     area: "",
     phoneNumber: "",
-    addharcardnumber: "", // Updated key for Aadhaar
+    documentNumber: "", // Updated key for Aadhaar
     documentImage: null,
+    faceImage: null,
     walletAddress: "",
   });
 
@@ -68,8 +69,10 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     }
   
     // Aadhaar card validation (non-empty for now)
-    if (formData.addharcardnumber.trim() === "") {
-      validationErrors.addharcardnumber = "Aadhaar card number is required";
+    if (!formData.documentNumber || formData.documentNumber.trim() === "") {
+      validationErrors.documentNumber = "Aadhaar card number is required";
+    } else if (formData.documentNumber.trim().length !== 12) {
+      validationErrors.documentNumber = "Aadhaar card number must be exactly 12 digits";
     }
   
     // Document image validation
@@ -98,11 +101,17 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
       validationErrors.DOB = `You must be 18 years old or older as of January 1, ${currentYear}.`;
     }
   
+    // Area selection validation (must select a non-empty value)
+    if (!formData.area || formData.area === "") {
+      validationErrors.area = "You must select an area";
+    }
+  
     setErrors(validationErrors);
   
     // Return true if no validation errors
     return Object.keys(validationErrors).length === 0;
   };
+  
   
 
   const handleSubmit = async (e) => {
@@ -120,8 +129,9 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     formDataToSend.append("DOB", formData.DOB);
     formDataToSend.append("area", formData.area);
     formDataToSend.append("phoneNumber", formData.phoneNumber);
-    formDataToSend.append("addharcardnumber", formData.addharcardnumber);
+    formDataToSend.append("documentNumber", formData.documentNumber);
     formDataToSend.append("documentImage", formData.documentImage);
+    formDataToSend.append("faceImage", capturedPhoto);
     formDataToSend.append("walletAddress", formData.walletAddress);
 
     try {
@@ -261,6 +271,9 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
             <option value="area1">area1</option>
             <option value="area2">area2</option>
           </select>
+          {errors.area && (
+            <p className="text-red-500 text-sm mt-1">{errors.area}</p>
+          )}
         </div>
 
         <div>
@@ -286,22 +299,22 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
 
         <div>
           <label
-            htmlFor="addharcardnumber"
+            htmlFor="documentNumber"
             className="flex items-center text-sm font-medium text-gray-700 mb-1"
           >
             <FileText size={18} className="mr-2" /> Aadhaar Card Number
           </label>
           <input
             type="text"
-            id="addharcardnumber"
-            name="addharcardnumber"
-            value={formData.addharcardnumber}
+            id="documentNumber"
+            name="documentNumber"
+            value={formData.documentNumber}
             onChange={handleInputChange}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {errors.addharcardnumber && (
-            <p className="text-red-500 text-sm mt-1">{errors.addharcardnumber}</p>
+          {errors.documentNumber && (
+            <p className="text-red-500 text-sm mt-1">{errors.documentNumber}</p>
           )}
         </div>
 

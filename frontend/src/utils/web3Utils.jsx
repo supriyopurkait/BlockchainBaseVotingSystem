@@ -109,6 +109,22 @@ export const checkNFTOwnership = async (VoterIdABI, VoterIDContractAddress, wall
 
 };
 
+export const votingState = async (VotingSystemABI, VotingSystemContractAddress, wallet) => {
+  const { provider, signer } = wallet;
+  const contract = new ethers.Contract(VotingSystemContractAddress, VotingSystemABI, signer);
+  const walletAddress = await signer.getAddress(); // Ensure address is fetched correctly
+  console.log("Wallet address:", walletAddress);
+  try {
+    // Check NFT balance
+    const state = await contract.votingState();
+    console.log("Voting State:", state.toString());  // Convert to string for logging
+    return state;
+  } catch (error) {
+    console.error("Error checking voting state:", error);
+    return -1;
+  }
+};
+
 export const fetchUsers = async (wallet) => {
   const url = 'http://127.0.0.1:5000/api/get-candidates';
   try {

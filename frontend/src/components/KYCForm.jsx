@@ -98,11 +98,17 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
       validationErrors.DOB = `You must be 18 years old or older as of January 1, ${currentYear}.`;
     }
   
+    // Area selection validation (must select a non-empty value)
+    if (!formData.area || formData.area === "") {
+      validationErrors.area = "You must select an area";
+    }
+  
     setErrors(validationErrors);
   
     // Return true if no validation errors
     return Object.keys(validationErrors).length === 0;
   };
+  
   
 
   const handleSubmit = async (e) => {
@@ -261,6 +267,9 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
             <option value="area1">area1</option>
             <option value="area2">area2</option>
           </select>
+          {errors.area && (
+            <p className="text-red-500 text-sm mt-1">{errors.area}</p>
+          )}
         </div>
 
         <div>

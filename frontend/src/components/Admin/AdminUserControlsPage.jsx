@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 import Message from '@/components/AfterVoteMessage';
 import LoadingModal from '@/components/LoadingModal';
 import AdminUserCard from '@/components/Admin/AdminUserCard';
-import { dummyCandidates } from '@/utils/testData';
+import { dummyUsers } from '@/utils/testData';
 
 const AdminUserControlsPage = ({ wallet, onClose }) => {
   const [Users, setUsers] = useState([]);
@@ -21,7 +21,7 @@ const AdminUserControlsPage = ({ wallet, onClose }) => {
       try {
         const fetchedUsers = await fetchUsers(wallet);
         setUsers(fetchedUsers);
-        // setUsers(dummyCandidates); // Using Dummy data for testing
+        // setUsers(dummyUsers); // Using Dummy data for testing
       } catch (err) {
         setError('Failed to load Users. Please try again later.');
         console.error(err);

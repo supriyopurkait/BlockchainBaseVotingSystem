@@ -99,3 +99,51 @@ export const newCandidate = [{
     area: '',
     party: ''
 }];
+
+export const dummyUsers = [
+    {
+        id: 1,
+        name: 'Alice Johnson',
+        area: 'area1',
+        phoneNumber: 7878787878,
+        documentNumber: 'NSE787878',
+        wallet_address: '0x944a01e5748383e8Be53F37fBa5f3C9D12DEC884',
+        photo: Face
+    },
+    {
+        id: 2,
+        name: 'Bob Smith',
+        area: 'area2',
+        phoneNumber: 7878787878,
+        documentNumber: 'NSE787878',
+        wallet_address: '0x944a01e5748383e8Be53F37fBa5f3C9D12DEC884',
+        photo: Face
+    },
+    {
+        id: 3,
+        name: 'Charlie Brown',
+        area: 'area3',
+        phoneNumber: 7878787878,
+        documentNumber: 'NSE787878',
+        wallet_address: '0x944a01e5748383e8Be53F37fBa5f3C9D12DEC884',
+        photo: Face
+    },
+    {
+        id: 4,
+        name: 'Diana Prince',
+        area: 'area4',
+        phoneNumber: 7878787878,
+        documentNumber: 'NSE787878',
+        wallet_address: '0x944a01e5748383e8Be53F37fBa5f3C9D12DEC884',
+        photo: Face
+    },
+    {
+        id: 5,
+        name: 'Ethan Hunt',
+        area: 'area5',
+        phoneNumber: 7878787878,
+        documentNumber: 'NSE787878',
+        wallet_address: '0x944a01e5748383e8Be53F37fBa5f3C9D12DEC884',
+        photo: Face
+    }
+];

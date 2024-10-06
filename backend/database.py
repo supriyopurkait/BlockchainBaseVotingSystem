@@ -17,8 +17,6 @@ def setup_database():
                 name TEXT NOT NULL,
                 aadhar_number TEXT UNIQUE,
                 area TEXT NOT NULL,
-                voter_number TEXT UNIQUE,
-                address TEXT,
                 wallet_address TEXT UNIQUE,
                 doc_image BLOB,
                 human_image BLOB,
@@ -77,15 +75,15 @@ def update_database_from_blockchain():
 
 
 # Insert form data into the database
-def insert_data(name, aadhar_number, area, voter_number, address, wallet_address, doc_image, human_image, date_of_birth):
+def insert_data(name, aadhar_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth):
     wallet_address = wallet_address.strip().lower()
     try:
         with sqlite3.connect('backend/db/voter_data.db') as conn:
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO voters (name, aadhar_number, area, voter_number, address, wallet_address, doc_image, human_image, date_of_birth)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (name, aadhar_number, area, voter_number, address, wallet_address, doc_image, human_image, date_of_birth))
+                INSERT INTO voters (name, aadhar_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (name, aadhar_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth))
             conn.commit()
             print("Data inserted successfully.")
     except sqlite3.IntegrityError as e:

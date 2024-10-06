@@ -18,18 +18,17 @@ def get_kyc_data():
     try:
         # Extract form data
         name = request.form.get('name')
-        aadhar_number = request.form.get('aadhar_number')
+        aadhar_number = request.form.get('documentNumber')
         area = request.form.get('area')
-        voter_number = request.form.get('voter_number')
-        address = request.form.get('address')
-        wallet_address = request.form.get('wallet_address')
-        doc_image = request.files.get('doc_image') 
-        human_image = request.files.get('human_image')
+        voter_number = request.form.get('phoneNumber')
+        wallet_address = request.form.get('walletAddress')
+        doc_image = request.files.get('documentImage') 
+        human_image = request.files.get('faceImage')
         D_O_B = request.form.get('DOB')
         
 
         # Validate input fields
-        if not name or not aadhar_number or not area or not voter_number or not address or not wallet_address or not D_O_B:
+        if not name or not aadhar_number or not area or not voter_number or not wallet_address or not D_O_B:
             return jsonify({"error": "Missing required fields"}), 400
         
         # Validate images
@@ -48,7 +47,7 @@ def get_kyc_data():
             return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500
 
         # Insert the data into the database
-        result = insert_data(name, aadhar_number, area, voter_number, address, wallet_address, doc_image_data, human_image_data, D_O_B)
+        result = insert_data(name, aadhar_number, area, voter_number, wallet_address, doc_image_data, human_image_data, D_O_B)
         if result == "Duplicate":
             return jsonify({"error": "A KYC record already exists for this wallet address."}), 400
         elif result == False:

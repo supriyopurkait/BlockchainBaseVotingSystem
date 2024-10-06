@@ -16,9 +16,10 @@ import toast from 'react-hot-toast';
 const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   const [formData, setFormData] = useState({
     name: "",
+    DOB:"",
     area: "",
     phoneNumber: "",
-    aadhaarCardNumber: "", // Updated key for Aadhaar
+    addharcardnumber: "", // Updated key for Aadhaar
     documentImage: null,
     walletAddress: "",
   });
@@ -55,37 +56,54 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
 
   const validateFields = () => {
     let validationErrors = {};
-
-    // Name validation (no numbers or special characters)
+  
+    // Name validation (letters and spaces only)
     if (!/^[a-zA-Z\s]+$/.test(formData.name)) {
       validationErrors.name = "Name must contain only letters and spaces";
     }
-
+  
     // Phone number validation (exactly 10 digits, no special characters)
     if (!/^[0-9]{10}$/.test(formData.phoneNumber)) {
       validationErrors.phoneNumber = "Phone number must be exactly 10 digits";
     }
-
+  
     // Aadhaar card validation (non-empty for now)
-    if (formData.aadhaarCardNumber.trim() === "") {
-      validationErrors.aadhaarCardNumber = "Aadhaar card number is required";
+    if (formData.addharcardnumber.trim() === "") {
+      validationErrors.addharcardnumber = "Aadhaar card number is required";
     }
-
+  
     // Document image validation
     if (!formData.documentImage) {
       validationErrors.documentImage = "Document image is required";
     }
-
+  
     // Captured photo validation
     if (!capturedPhoto) {
       validationErrors.capturedPhoto = "Please capture your photo";
     }
-
+  
+    // DOB validation (must be at least 18 years old as of January 1 of the current year)
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const qualifyingDate = new Date(`${currentYear}-01-01`);
+    const dob = new Date(formData.DOB);
+  
+    const ageOnQualifyingDate = qualifyingDate.getFullYear() - dob.getFullYear();
+    const is18OrOlder = ageOnQualifyingDate > 18 || 
+                       (ageOnQualifyingDate === 18 && 
+                        (qualifyingDate.getMonth() > dob.getMonth() ||
+                         (qualifyingDate.getMonth() === dob.getMonth() && qualifyingDate.getDate() >= dob.getDate())));
+  
+    if (!is18OrOlder) {
+      validationErrors.DOB = `You must be 18 years old or older as of January 1, ${currentYear}.`;
+    }
+  
     setErrors(validationErrors);
-
-    // Return true if no validation errors, otherwise false
+  
+    // Return true if no validation errors
     return Object.keys(validationErrors).length === 0;
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,9 +117,10 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
     // Prepare form data for submission
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
-    formDataToSend.append("area", formData.area); // Ensure the area is properly set
+    formDataToSend.append("DOB", formData.DOB);
+    formDataToSend.append("area", formData.area);
     formDataToSend.append("phoneNumber", formData.phoneNumber);
-    formDataToSend.append("aadhaarCardNumber", formData.aadhaarCardNumber);
+    formDataToSend.append("addharcardnumber", formData.addharcardnumber);
     formDataToSend.append("documentImage", formData.documentImage);
     formDataToSend.append("walletAddress", formData.walletAddress);
 
@@ -205,6 +224,24 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
         </div>
 
         <div>
+          <label htmlFor="DOB" className="flex items-center text-sm font-medium text-gray-700 mb-1">
+            <User size={18} className="mr-2" /> Date of Birth (DOB)
+          </label>
+          <input
+            type="date"
+            id="DOB"
+            name="DOB"
+            value={formData.DOB}
+            onChange={handleInputChange}
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {errors.DOB && (
+            <p className="text-red-500 text-sm mt-1">{errors.DOB}</p>
+          )}
+        </div>
+
+        <div>
           <label
             htmlFor="areaSelect"
             className="flex items-center text-sm font-medium text-gray-700 mb-1"
@@ -249,22 +286,22 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
 
         <div>
           <label
-            htmlFor="aadhaarCardNumber"
+            htmlFor="addharcardnumber"
             className="flex items-center text-sm font-medium text-gray-700 mb-1"
           >
             <FileText size={18} className="mr-2" /> Aadhaar Card Number
           </label>
           <input
             type="text"
-            id="aadhaarCardNumber"
-            name="aadhaarCardNumber"
-            value={formData.aadhaarCardNumber}
+            id="addharcardnumber"
+            name="addharcardnumber"
+            value={formData.addharcardnumber}
             onChange={handleInputChange}
             required
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          {errors.aadhaarCardNumber && (
-            <p className="text-red-500 text-sm mt-1">{errors.aadhaarCardNumber}</p>
+          {errors.addharcardnumber && (
+            <p className="text-red-500 text-sm mt-1">{errors.addharcardnumber}</p>
           )}
         </div>
 

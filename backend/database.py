@@ -15,13 +15,14 @@ def setup_database():
             CREATE TABLE IF NOT EXISTS voters (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                aadhar_number TEXT UNIQUE,
+                document_number TEXT UNIQUE,
                 area TEXT NOT NULL,
                 phone_number TEXT NOT NULL,
                 wallet_address TEXT UNIQUE,
                 doc_image BLOB,
                 human_image BLOB,
-                date_of_birth TEXT  -- Stored as 'YYYY-MM-DD'
+                date_of_birth TEXT,
+                VID_NUMBER TEXT UNIQUE
             )
         ''')
         conn.commit()
@@ -76,15 +77,15 @@ def update_database_from_blockchain():
 
 
 # Insert form data into the database
-def insert_data(name, aadhar_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth):
+def insert_data(name, document_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth):
     wallet_address = wallet_address.strip().lower()
     try:
         with sqlite3.connect('backend/db/voter_data.db') as conn:
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO voters (name, aadhar_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth)
+                INSERT INTO voters (name, document_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (name, aadhar_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth))
+            ''', (name, document_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth))
             conn.commit()
             print("Data inserted successfully.")
     except sqlite3.IntegrityError as e:
@@ -110,6 +111,18 @@ def delete_data(wallet_address):
         conn.commit()
         print("Changes committed to the database.")  # Log after commit
     return True
+
+def insert_vid_number(address, vid_number):
+    address = address.strip().lower()
+    with sqlite3.connect('backend/db/voter_data.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE voters
+            SET VID_NUMBER = ?
+            WHERE wallet_address = ?
+        ''', (vid_number, address))
+        conn.commit()
+
 
 if __name__ == '__main__':
     setup_database()

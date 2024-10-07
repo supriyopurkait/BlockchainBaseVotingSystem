@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 import os
 
 
-
 app = Flask(__name__)
 CORS(app)
 
@@ -19,7 +18,7 @@ def get_kyc_data():
     try:
         # Extract form data
         name = request.form.get('name')
-        aadhar_number = request.form.get('documentNumber')
+        document_number = request.form.get('documentNumber')
         area = request.form.get('area')
         phone_number = request.form.get('phoneNumber')
         wallet_address = request.form.get('walletAddress')
@@ -28,7 +27,7 @@ def get_kyc_data():
         D_O_B = request.form.get('DOB')
         
         # Validate input fields
-        if not name or not aadhar_number or not area or not phone_number or not wallet_address or not D_O_B:
+        if not name or not document_number or not area or not phone_number or not wallet_address or not D_O_B:
             return jsonify({"error": "Missing required fields"}), 400
         
         # Validate images
@@ -39,16 +38,17 @@ def get_kyc_data():
         human_image_data = human_image.read()
 
         # Insert the data into the database
-        result = insert_data(name, aadhar_number, area, phone_number, wallet_address, doc_image_data, human_image_data, D_O_B)
+        result = insert_data(name, document_number, area, phone_number, wallet_address, doc_image_data, human_image_data, D_O_B)
         if result == "Duplicate":
             return jsonify({"error": "A KYC record already exists for this wallet address."}), 400
         elif result == False:
             return jsonify({"error": "An error occurred while inserting data into the database."}), 500
         
         # Issue SBT and get hash value
-        tx_hash = issue_sbt(wallet_address, area)
+        tx_hash, vid_number = issue_sbt(wallet_address, area)
         print(f"Transaction hash: {tx_hash}")
         
+        insert_vid_number(wallet_address, vid_number)
         if not tx_hash:
             delete_data(wallet_address)
             return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500     
@@ -80,7 +80,6 @@ def get_candidates():
     try:
         # Get the JSON data from the request
         data = request.json
-        print("Received address:", data.get('address'))  
         # Extract the address from the JSON data
         address = data.get('address').lower()
         
@@ -111,7 +110,7 @@ def get_users():
         if not address:
             return jsonify({'status': 'error', 'message': 'Address is required'}), 400
         # Fetch the user details using the area
-        users = get_users_by_area(address)
+        users = get_all_users(address)
         print("Users:", users)  
         # Check if the area was found
         if not users:

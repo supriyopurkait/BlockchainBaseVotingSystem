@@ -23,6 +23,7 @@ def metadata(next_token_id, area):
     current_time = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S IST')
     year = datetime.now(ist).strftime('%Y')
 
+    vid_number = f"VVID-IN-{year}-{next_token_id}"
 
     metadata = {
         "name"          : f"Voter ID #{next_token_id}",
@@ -31,7 +32,7 @@ def metadata(next_token_id, area):
         "attributes"    : [
             {
                 "trait_type": "Virtal Voter ID Number",
-                "value"     : f"VVID-IN-{year}-{next_token_id}"
+                "value"     : vid_number
             },
             {
                 "trait_type": "Issued Date",
@@ -55,7 +56,7 @@ def metadata(next_token_id, area):
     # Convert to JSON string
     metadata_json = json.dumps(metadata, indent=4)
     
-    return metadata_json
+    return metadata_json, vid_number
 
 # Issue SBT to a user
 def issue_sbt(reciever_addr, area):
@@ -76,7 +77,7 @@ def issue_sbt(reciever_addr, area):
         if(contract.functions.balanceOf(reciever_addr).call() == 1):    
             return "Minted"
 
-        meta_data = metadata(next_token_id, area)
+        meta_data, vid_number = metadata(next_token_id, area)
         sender = w3.eth.account.from_key(private_key).address
         # build and sign transaction
         tx = contract.functions.safeMint(reciever_addr, meta_data).build_transaction({
@@ -89,7 +90,7 @@ def issue_sbt(reciever_addr, area):
         tx_hash = w3.to_hex(w3.eth.send_raw_transaction(signed.raw_transaction))
         w3.eth.wait_for_transaction_receipt(tx_hash)    # wait for tx to be mined
         # print("hash of transaction: ", tx_hash)
-        return str(tx_hash)
+        return str(tx_hash), str(vid_number)
     except Exception as e:
         print(e)
         return None

@@ -36,10 +36,10 @@ const AdminUserCard = ({ user, onRemove }) => (
         <img src={`data:image/jpeg;base64,${user.faceImage}`} alt={user.name} className="w-24 h-24 rounded-full mb-4" />
     <h3 onClick={() => alert("hi")} className="text-xl font-semibold mb-2"><b>Name:</b> {user.name}</h3>
     <h4 className="text-lg font-semibold mb-2"><b>Area:</b> {user.area}</h4>
-    <h4 className="text-lg font-semibold mb-2"><b>Wallet Address:</b></h4>
     <h4 className="text-lg font-semibold mb-2"><b>Doc Number:</b> {user.documentNumber} </h4>
     <h4 className="text-lg font-semibold mb-2"><b>VID Number:</b> {user.VIDNumber} </h4>
-    <h4 className="text-lg font-semibold mb-2"><b>Wallet: </b>
+    <h4 className="text-lg font-semibold mb-2"><b>Wallet Address:</b></h4>
+    <h4 className="text-lg font-semibold mb-2">
       {`${user.walletAddress.substring(0, 6)}...${user.walletAddress.substring(user.walletAddress.length - 6)}`}
       <CopyComponent walletAddress={user.walletAddress} />
     </h4>

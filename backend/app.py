@@ -1,5 +1,6 @@
 from flask import Flask, app, request, render_template, jsonify
 from flask_cors import CORS
+from numpy import delete
 from index import *
 from dotenv import load_dotenv
 import os
@@ -20,53 +21,45 @@ def get_kyc_data():
         name = request.form.get('name')
         aadhar_number = request.form.get('documentNumber')
         area = request.form.get('area')
-        voter_number = request.form.get('phoneNumber')
+        phone_number = request.form.get('phoneNumber')
         wallet_address = request.form.get('walletAddress')
         doc_image = request.files.get('documentImage') 
         human_image = request.files.get('faceImage')
         D_O_B = request.form.get('DOB')
         
-
         # Validate input fields
-        if not name or not aadhar_number or not area or not voter_number or not wallet_address or not D_O_B:
+        if not name or not aadhar_number or not area or not phone_number or not wallet_address or not D_O_B:
             return jsonify({"error": "Missing required fields"}), 400
         
         # Validate images
-        if not doc_image:
-            return jsonify({"error": "Document image is required."}), 400
-        if not human_image:
-            return jsonify({"error": "Human image is required."}), 400
+        if not doc_image or not human_image:
+            return jsonify({"error": "Missing required images"}), 400
         
         doc_image_data = doc_image.read()  # Read the file content
         human_image_data = human_image.read()
+
+        # Insert the data into the database
+        result = insert_data(name, aadhar_number, area, phone_number, wallet_address, doc_image_data, human_image_data, D_O_B)
+        if result == "Duplicate":
+            return jsonify({"error": "A KYC record already exists for this wallet address."}), 400
+        elif result == False:
+            return jsonify({"error": "An error occurred while inserting data into the database."}), 500
+        
         # Issue SBT and get hash value
         tx_hash = issue_sbt(wallet_address, area)
         print(f"Transaction hash: {tx_hash}")
         
         if not tx_hash:
-            return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500
-
-        # Insert the data into the database
-        result = insert_data(name, aadhar_number, area, voter_number, wallet_address, doc_image_data, human_image_data, D_O_B)
-        if result == "Duplicate":
-            return jsonify({"error": "A KYC record already exists for this wallet address."}), 400
-        elif result == False:
-            return jsonify({"error": "An error occurred while inserting data into the database."}), 500
-
-        # Handle the transaction hash logic
-        if tx_hash == "Minted":
+            delete_data(wallet_address)
+            return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500     
+        elif tx_hash == "Minted":
             return jsonify({"error": "SBT already minted by this address."}), 400
         elif tx_hash:
             return jsonify({"status": "success","tx_hash": str(tx_hash), "message": "Your KYC is done, you can now vote."}), 200
         else:
+            delete_data(wallet_address)
             return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500
 
-    except KeyError as e:
-        return jsonify({"error": f"Missing key: {str(e)}"}), 400
-    except ValueError as e:
-        return jsonify({"error": f"Invalid value: {str(e)}"}), 400
-    except TypeError as e:
-        return jsonify({"error": f"Type error: {str(e)}"}), 400
     except Exception as e:
         print("An unexpected error occurred:", e)
         return jsonify({"error": "An unexpected error occurred. Please try again later."}), 500

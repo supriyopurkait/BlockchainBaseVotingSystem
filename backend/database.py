@@ -17,6 +17,7 @@ def setup_database():
                 name TEXT NOT NULL,
                 aadhar_number TEXT UNIQUE,
                 area TEXT NOT NULL,
+                phone_number TEXT NOT NULL,
                 wallet_address TEXT UNIQUE,
                 doc_image BLOB,
                 human_image BLOB,
@@ -95,7 +96,21 @@ def insert_data(name, aadhar_number, area, phone_number, wallet_address, doc_ima
     except Exception as e:
         print("An unexpected error occurred:", e)
         return False
-    
+
+# Delete data from the database incase of any issues
+def delete_data(wallet_address):
+    wallet_address = wallet_address.strip().lower()
+    with sqlite3.connect('backend/db/voter_data.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            DELETE FROM voters
+            WHERE wallet_address = ?
+        ''', (wallet_address,))
+        print("Deleting wallet address...")  # Log before commit
+        conn.commit()
+        print("Changes committed to the database.")  # Log after commit
+    return True
+
 if __name__ == '__main__':
     setup_database()
     # Fetch and update the database

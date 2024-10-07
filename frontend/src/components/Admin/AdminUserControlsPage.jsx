@@ -52,7 +52,7 @@ const AdminUserControlsPage = ({ wallet, onRemove, onClose }) => {
       <button onClick={onClose} className="absolute right-2 top-20">
         <X className="bg-red-500 hover:bg-red-600 text-white hover:text-gray-700 rounded-full" size={24} />
       </button>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {Users.map(user => (
           <AdminUserCard key={user.id} user={user} onRemove={onRemove} />
         ))}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { toast, Toaster } from 'react-hot-toast';
 import { fetchStatData } from '@/utils/getDetails';
-import { Rss, AtSign, UserRoundCog, CirclePlay, CircleStop, Ellipsis, X } from 'lucide-react';
+import { Rss, AtSign, UserRoundCog, CirclePlay, CircleStop, Ellipsis, Search, X } from 'lucide-react';
 import LoadingModal from '@/components/LoadingModal';
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 import PieDiagram from '@/components/PieChart';
@@ -8,40 +9,63 @@ import { processAreaData, calculateTotalVotes } from '@/utils/StatDataProcessor'
 
 import { sdata } from '@/utils/testData2';
 
-const AdminControl = ({ wallet, onAdd, onDeclareResults, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
-  const [areaData, setareaData] = useState(null);
-  const [numberOfArea, setnumberOfArea] = useState(null);
-  const [totalVotes, settotalVotes] = useState(null);
+const AdminControl = ({ wallet, voteStatus, onAdd, onDeclareResults, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
+  const [areaData, setAreaData] = useState({});
+  const [NumberOfArea, setNumberOfArea] = useState(0);
+  const [TotalVotes, setTotalVotes] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showStat, setShowStat] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [moreORless, setmoreORless] = useState("More");
 
+  // Function to show toast messages
+  const toastMsg = (status, msg, duration, position) => {
+    // Call the appropriate toast function based on the status
+    if (toast[status]) {
+      toast[status](msg, {
+        duration, // 10 seconds
+        position,
+      });
+    } else {
+      console.error(`Invalid status: ${status}`);
+    }
+  };
+
   const handleShowMore = () => {
     if(!showMore){
       setShowMore(true);
       setmoreORless("Less");
-      alert("Loading More");
+      toastMsg("success", "Loading More", 10000, "top-center");
     }
     if(showMore){
       setShowMore(false);
       setmoreORless("More");
-      alert("Loading Less");
+      toastMsg("success", "Loading Less", 10000, "top-center");
     }
     
   };
-
+  const handleCheckVoteStatus = () => {
+    if (voteStatus == 1) {
+      toastMsg("success", "Voting is ongoing.", 10000, "top-center");
+    } else if (voteStatus == 0) {
+      toastMsg("error", "Voting has not started yet.", 100000, "top-center");
+    } else if (voteStatus == 2) {
+      toastMsg("error", "Voting has ended.", 100000, "top-center");
+    } else if (voteStatus == -1) {
+      toastMsg("error", "Error checking voting status. Please try again later.", 10000, "top-center");
+    }
+  };
+  
   useEffect(() => {
     const loadStatData = async () => {
       setLoading(true);
       try {
         const fetchedStatData = await fetchStatData(wallet);
-        console.log('Fetched StatData:', fetchedStatData);
-        setareaData(processAreaData(fetchedStatData));
+        setAreaData(processAreaData(fetchedStatData));
         // setareaData(processAreaData(sdata)); // Using Dummy data for testing
-        setnumberOfArea(areaData.length());
-        settotalVotes(calculateTotalVotes(fetchedStatData));
+        setNumberOfArea(areaData.length);
+        setTotalVotes(calculateTotalVotes(fetchedStatData));
         setShowStat(true);
       } catch (err) {
         setError('Failed to load Vote Data. Please try again later.');
@@ -53,14 +77,14 @@ const AdminControl = ({ wallet, onAdd, onDeclareResults, onCandidate, onUser, on
     loadStatData();
   }, [wallet]);
 
-  if (loading) return (<div><LoadingModal modalVisible={loading} task="Loading Vote Data..." onClose={setLoading(false)} /></div>);
+  if (loading) return (<div><LoadingModal modalVisible={loading} task="Loading Vote Data..." onClose={() => {setLoading(false);}} /></div>);
   if (error) return (
     <div>
-      <div className="loading-modal-overlay" onClick={setError(null)}>
+      <div className="loading-modal-overlay" onClick={() => {setError(null)}}>
         <div className="loading-modal">
           <p>{error}</p>
         </div>
-        <button onClick={setError(null)} className="relative right-0 top-[-3rem]">
+        <button onClick={() => {setError(null)}} className="relative right-0 top-[-3rem]">
           <X className="bg-red-500 hover:bg-red-600 text-white hover:text-gray-700 rounded-full" size={24} />
         </button>
       </div>
@@ -172,13 +196,20 @@ const AdminControl = ({ wallet, onAdd, onDeclareResults, onCandidate, onUser, on
             {/* Total Vote */}
             <div className="m-4 p-4 bg-white rounded-lg shadow-md flex flex-col flex-grow justify-around items-center">
               <h3 className="text-xl font-bold">Total Vote</h3>
-              <p className="text-2xl text-blue-600 font-bold">{totalVotes?totalVotes:0}</p>
+              <p className="text-2xl text-blue-600 font-bold">{TotalVotes?TotalVotes:"Vote Has Not Started.."}</p>
               <button
                 onClick={onDeclareResults}
                 className="w-fit bg-green-500 hover:bg-green-600 text-white font-bold my-2 py-2 px-4 rounded-full flex items-center"
               >
                 Declare Results
                 <Rss className="ml-2" size={16} />
+              </button>
+              <button
+                onClick={handleCheckVoteStatus}
+                className="w-fit bg-purple-500 hover:bg-purple-600 text-white font-bold my-2 py-2 px-4 rounded-full flex items-center"
+              >
+                Check Vote Status
+                <Search className="ml-2" size={16} />
               </button>
             </div>
           </div>
@@ -194,7 +225,7 @@ const AdminControl = ({ wallet, onAdd, onDeclareResults, onCandidate, onUser, on
                 <span className="p-2 font-bold">Winner's Vote Count</span>
               </div>
               { Object.entries(areaData).map(([areaId, area]) => (
-                <div key={areaId + numberOfArea} className="grid grid-cols-4 bg-gray-200 hover:bg-gray-100 m-2 rounded">
+                <div key={areaId + NumberOfArea} className="grid grid-cols-4 bg-gray-200 hover:bg-gray-100 m-2 rounded">
                   <span className="p-2">{area.areaName}</span>
                   <span className="p-2 font-bold">{area.totalVotes}</span>
                   <span className="p-2">{area.winner}</span>

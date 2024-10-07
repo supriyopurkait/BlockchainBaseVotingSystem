@@ -20,6 +20,7 @@ const App = () => {
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showKYCConfirm, setShowKYCConfirm] = useState(false); // New state for KYC prompt
   const [wallet, setWallet] = useState(null);
+  const [AdminVotingStatus, setAdminVotingStatus] = useState(null);
   const [VoterIdABI, setVoterIdABI] = useState(null);
   const [VoterIDContractAddress, setContractAddress] = useState(null);
   const [VotingSystemABI, setVotingSystemABI] = useState(null);
@@ -34,18 +35,39 @@ const App = () => {
     if (connectedWallet) {
       console.log(connectedWallet);
       setWallet(connectedWallet);
-      setIsWalletConnected(true);
-      setShowWalletModal(false);
       handleGetABI();
       if ((connectedWallet.address == import.meta.env.VITE_ADMINADDRESS)) {
+        // const votingStatus = await votingState(VotingSystemABI, VotingSystemContractAddress, wallet);
+        // console.log("Voting State:", votingStatus);
+        // setAdminVotingStatus(votingStatus);
+        // console.log("Admin vote status",AdminVotingStatus);
+        // if (votingStatus == 1) {
+        //   toastMsg("success", "Voting is ongoing.", 10000, "top-center");
+        // } else if (votingStatus == 0) {
+        //   toastMsg("error", "Voting has not started yet.", 100000, "top-center");
+        // } else if (votingStatus == 2) {
+        //   toastMsg("error", "Voting has ended.", 100000, "top-center");
+        // } else if (votingStatus == -1) {
+        //   toastMsg("error", "Error checking voting status. Please try again later.", 10000, "top-center");
+        // }
         setAdminControlModal(true);
         console.log("Admin address:", connectedWallet.address, "is connected");
       }
-      // write condition to check if NFT is owned then go to voting page -- Supriyo
-      // const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, connectedWallet);
-      // if (!hasNFT) {
-      //    setShowUserCards(true);
+      // if (!(connectedWallet.address == import.meta.env.VITE_ADMINADDRESS)) {
+      //   const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, connectedWallet);
+      //   console.log(hasNFT);
+      //   if (!hasNFT) {
+      //     toastMsg("error", "You do not have a Voter ID NFT! Please complete the KYC process first.", 5000);
+      //     setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
+      //   } else {
+      //     setShowUserCards(true); // Show user cards page if NFT is owned
+      //   }
       // }
+      setIsWalletConnected(true);
+      setShowWalletModal(false);
+      const votingStatus = await votingState(VotingSystemABI, VotingSystemContractAddress, connectedWallet);
+      console.log("Voting State:", votingStatus);
+      setAdminVotingStatus(votingStatus);
     }
   };
 
@@ -94,6 +116,8 @@ const App = () => {
     // Check voting state
     const votingStatus = await votingState(VotingSystemABI, VotingSystemContractAddress, wallet);
     console.log("Voting State:", votingStatus);
+    setAdminVotingStatus(votingStatus);
+    console.log("Admin vote status",AdminVotingStatus);
     if (votingStatus == 1) {
       toastMsg("success", "Voting is ongoing.", 10000, "top-center");
     } else if (votingStatus == 0) {
@@ -139,6 +163,26 @@ const App = () => {
     setAdminControlModal(false);
     setAdminUserControlsPage(true);
   };
+  const handleAdminStartVote = () => {
+    toastMsg("success", "Vote Started.", 10000, "top-center");
+    // write function to start vote
+  };
+  const handleAdminStopVote = () => {
+    toastMsg("error", "Vote Stopped.", 10000, "top-center");
+    // write function to stop vote
+  };
+  const handleCandidateAdd  = async (candidateId) => {
+    toastMsg("success", "Candidate Added.", 10000, "top-center");
+  }
+  const handleCandidateRemove  = async (candidateId) => {
+    toastMsg("error", "Candidate Removed.", 10000, "top-center");
+  }
+  const handleUserRemove = async (userId, userWalletAddress) => {
+    toastMsg("error", "User Removed.", 10000, "top-center");
+  };
+  const handleDeclareResults = async (userId, userWalletAddress) => {
+    toastMsg("success", "Results Declared", 10000, "top-center");
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
@@ -170,17 +214,20 @@ const App = () => {
           if (AdminControlModal) {
             return <AdminControl
                 wallet={wallet}
-                onAdd={() => {alert("Added candidate");}}
-                onDeclareResults={() => {alert("Results Declared");}} 
+                voteStatus={AdminVotingStatus}
+                onAdd={handleCandidateAdd}
+                onDeclareResults={handleDeclareResults}
                 onCandidate={handleAdminCandidateControls} 
                 onUser={handleAdminUserControls} 
-                onStartVote={() => {alert("Vote Started");}} 
-                onEndVote={() => {alert("Vote Ended");}} 
+                onStartVote={handleAdminStartVote} 
+                onEndVote={handleAdminStopVote}
                 onClose={() => setAdminControlModal(false)} />;
           }
           if (showAdminCandidateControlsPage) {
             return <AdminCandidateControlsPage
-                wallet={wallet} 
+                wallet={wallet}
+                onAdd={handleCandidateAdd}
+                onRemove={handleCandidateRemove} 
                 VotingSystemContractAddress={VotingSystemContractAddress} 
                 VotingSystemABI={VotingSystemABI}
                 onClose={() => {
@@ -191,6 +238,7 @@ const App = () => {
           if (showAdminUserControlsPage) {
             return <AdminUserControlsPage 
                 wallet={wallet} 
+                onRemove={handleUserRemove}
                 VotingSystemContractAddress={VotingSystemContractAddress} 
                 VotingSystemABI={VotingSystemABI}
                 onClose={() => {

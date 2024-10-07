@@ -7,7 +7,7 @@ import LoadingModal from '@/components/LoadingModal';
 import AdminCandidateCard from '@/components/Admin/AdminCandidateCard';
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
 
-const AdminCandidateControlsPage = ({ wallet, onRemove, onClose }) => {
+const AdminCandidateControlsPage = ({ wallet, onAdd, onRemove, onClose }) => {
   const [Candidates, setCandidates] = useState([]);  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,14 +32,6 @@ const AdminCandidateControlsPage = ({ wallet, onRemove, onClose }) => {
     };
     loadCandidates();
   }, [wallet]);
-
-  const handleCandidateAdd  = async (candidateId) => {
-    alert("Candidate Added");
-  }
-  const handleCandidateRemove  = async (candidateId) => {
-    alert("Candidate Removed");
-  }
-
   if (loading) return (<div><LoadingModal modalVisible={loading} task="Loading Candidates..." onClose={onClose} /></div>);
   if (error) return (
     <div>
@@ -62,9 +54,9 @@ const AdminCandidateControlsPage = ({ wallet, onRemove, onClose }) => {
       </button>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {Candidates.map(candidate => (
-          <AdminCandidateCard key={candidate.candidate_id} candidate={candidate} onRemove={handleCandidateRemove} />
+          <AdminCandidateCard key={candidate.candidate_id} candidate={candidate} onRemove={onRemove} />
         ))}
-        {<AdminAddCandidateCard onAdd={handleCandidateAdd} />}
+        {<AdminAddCandidateCard onAdd={onAdd} />}
       </div>
       {showAftervoteMessage && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

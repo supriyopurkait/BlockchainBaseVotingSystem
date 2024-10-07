@@ -7,7 +7,7 @@ import LoadingModal from '@/components/LoadingModal';
 import AdminUserCard from '@/components/Admin/AdminUserCard';
 import { dummyUsers } from '@/utils/testData';
 
-const AdminUserControlsPage = ({ wallet, onClose }) => {
+const AdminUserControlsPage = ({ wallet, onRemove, onClose }) => {
   const [Users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,10 +32,6 @@ const AdminUserControlsPage = ({ wallet, onClose }) => {
     loadUsers();
   }, [wallet]);
 
-  const handleUserRemove = async (userId, userWalletAddress) => {
-    alert("User Removed");
-  };
-
   if (loading) return (<div><LoadingModal modalVisible={loading} task="Loading Users..." onClose={onClose} /></div>);
   if (error) return (
     <div>
@@ -58,7 +54,7 @@ const AdminUserControlsPage = ({ wallet, onClose }) => {
       </button>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {Users.map(user => (
-          <AdminUserCard key={user.id} user={user} onRemove={handleUserRemove} />
+          <AdminUserCard key={user.id} user={user} onRemove={onRemove} />
         ))}
       </div>
       {showUserRemovedMessage && (

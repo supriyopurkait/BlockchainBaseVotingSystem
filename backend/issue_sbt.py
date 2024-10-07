@@ -1,3 +1,4 @@
+from tkinter import N
 from flask import jsonify
 from web3 import Web3
 from dotenv import load_dotenv
@@ -58,36 +59,40 @@ def metadata(next_token_id, area):
 
 # Issue SBT to a user
 def issue_sbt(reciever_addr, area):
-    if(not w3.is_connected()):
-        return jsonify({"error": "Some error occurred. Please try again later."})
-    data = get_abi_voterID()
-    contract_addr = data['ca']
-    if contract_addr == "":
-        print("========================================")
-        print("Pls deploy VoterID contract first...")
-        print("========================================")
-        return ""
-    # contract object creation
-    contract = w3.eth.contract(address=contract_addr ,abi=data['abi'])
-    next_token_id = contract.functions.nextTokenID().call()
-    reciever_addr = w3.to_checksum_address(reciever_addr)
-    if(contract.functions.balanceOf(reciever_addr).call() == 1):    
-        return "Minted"
-    
-    meta_data = metadata(next_token_id, area)
-    sender = w3.eth.account.from_key(private_key).address
-    # build and sign transaction
-    tx = contract.functions.safeMint(reciever_addr, meta_data).build_transaction({
-        "from": sender,
-        "nonce": w3.eth.get_transaction_count(sender),
-        "gas": 3000000,
-        "gasPrice": w3.eth.gas_price
-    })
-    signed = w3.eth.account.sign_transaction(tx, private_key=private_key)
-    tx_hash = w3.to_hex(w3.eth.send_raw_transaction(signed.raw_transaction))
-    w3.eth.wait_for_transaction_receipt(tx_hash)    # wait for tx to be mined
-    print("hash of transaction: ", tx_hash)
-    return str(tx_hash)
+    try:
+        if(not w3.is_connected()):
+            return jsonify({"error": "Some error occurred. Please try again later."})
+        data = get_abi_voterID()
+        contract_addr = data['ca']
+        if contract_addr == "":
+            print("========================================")
+            print("Pls deploy VoterID contract first...")
+            print("========================================")
+            return ""
+        # contract object creation
+        contract = w3.eth.contract(address=contract_addr ,abi=data['abi'])
+        next_token_id = contract.functions.nextTokenID().call()
+        reciever_addr = w3.to_checksum_address(reciever_addr)
+        if(contract.functions.balanceOf(reciever_addr).call() == 1):    
+            return "Minted"
+
+        meta_data = metadata(next_token_id, area)
+        sender = w3.eth.account.from_key(private_key).address
+        # build and sign transaction
+        tx = contract.functions.safeMint(reciever_addr, meta_data).build_transaction({
+            "from": sender,
+            "nonce": w3.eth.get_transaction_count(sender),
+            "gas": 3000000,
+            "gasPrice": w3.eth.gas_price
+        })
+        signed = w3.eth.account.sign_transaction(tx, private_key=private_key)
+        tx_hash = w3.to_hex(w3.eth.send_raw_transaction(signed.raw_transaction))
+        w3.eth.wait_for_transaction_receipt(tx_hash)    # wait for tx to be mined
+        # print("hash of transaction: ", tx_hash)
+        return str(tx_hash)
+    except Exception as e:
+        print(e)
+        return None
     
 if __name__ == "__main__":
     reciever_addr = input("Enter the reciever address: ")

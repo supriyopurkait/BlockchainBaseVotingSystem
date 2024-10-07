@@ -36,12 +36,12 @@ const AdminControl = ({ wallet, voteStatus, onAdd, onDeclareResults, onCandidate
     if(!showMore){
       setShowMore(true);
       setmoreORless("Less");
-      toastMsg("success", "Loading More", 10000, "top-center");
+      toastMsg("success", "Loading More", 1000, "top-center");
     }
     if(showMore){
       setShowMore(false);
       setmoreORless("More");
-      toastMsg("success", "Loading Less", 10000, "top-center");
+      toastMsg("success", "Loading Less", 1000, "top-center");
     }
     
   };
@@ -62,11 +62,13 @@ const AdminControl = ({ wallet, voteStatus, onAdd, onDeclareResults, onCandidate
       setLoading(true);
       try {
         const fetchedStatData = await fetchStatData(wallet);
-        setAreaData(processAreaData(fetchedStatData));
-        // setareaData(processAreaData(sdata)); // Using Dummy data for testing
-        setNumberOfArea(areaData.length);
-        setTotalVotes(calculateTotalVotes(fetchedStatData));
-        setShowStat(true);
+        if(fetchStatData){
+          setAreaData(processAreaData(fetchedStatData));
+          // setareaData(processAreaData(sdata)); // Using Dummy data for testing
+          setNumberOfArea(areaData.length);
+          setTotalVotes(calculateTotalVotes(fetchedStatData));
+          setShowStat(true);
+        }
       } catch (err) {
         setError('Failed to load Vote Data. Please try again later.');
         console.error(err);

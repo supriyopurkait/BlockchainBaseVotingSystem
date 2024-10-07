@@ -69,6 +69,7 @@ export const fetchStatData = async (wallet) => {
       });
       if (!response.ok) {
         throw new Error('Network response was not ok');
+        return null;
       }
       
       // Get the full response
@@ -79,6 +80,6 @@ export const fetchStatData = async (wallet) => {
       
     } catch (error) {
       console.error('Error fetching Statistics Data:', error);
-      return [];
+      return null;
     }
   };

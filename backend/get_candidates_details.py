@@ -39,11 +39,10 @@ def get_candidates_by_area(address):
     candidates = []
     for candidate in results:
         candidates.append({
-            'id': candidate[2],
-            'name': candidate[1],
-            'candidate_id': candidate[2],
-            'area': candidate[3],
-            'party': candidate[4],
+            'candidate_id': candidate[1],
+            'name': candidate[0],
+            'area': candidate[2],
+            'party': candidate[3],
             'photo': 'https://xsgames.co/randomusers/avatar.php?g=pixel'
         })
 
@@ -58,11 +57,10 @@ def get_all_candidates():
     candidates = []
     for candidate in results:
         candidates.append({
-            'id': candidate[2],
-            'name': candidate[1],
-            'candidate_id': candidate[2],
-            'area': candidate[3],
-            'party': candidate[4],
+            'candidate_id': candidate[1],
+            'name': candidate[0],
+            'area': candidate[2],
+            'party': candidate[3],
             'photo': 'https://xsgames.co/randomusers/avatar.php?g=pixel'
         })
         

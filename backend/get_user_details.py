@@ -22,7 +22,8 @@ def get_all_users(address):
                 'phoneNumber': user[4],
                 'walletAddress': user[5],
                 'documentImage': base64.b64encode(user[6]).decode('utf-8'),
-                'faceImage': base64.b64encode(user[7]).decode('utf-8')
+                'faceImage': base64.b64encode(user[7]).decode('utf-8'),
+                'VIDNumber': user[9]
             })
             
         return users

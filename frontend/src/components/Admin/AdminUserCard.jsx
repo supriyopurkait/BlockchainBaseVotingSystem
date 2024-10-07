@@ -38,7 +38,8 @@ const AdminUserCard = ({ user, onRemove }) => (
     <h4 className="text-lg font-semibold mb-2"><b>Area:</b> {user.area}</h4>
     <h4 className="text-lg font-semibold mb-2"><b>Wallet Address:</b></h4>
     <h4 className="text-lg font-semibold mb-2"><b>Doc Number:</b> {user.documentNumber} </h4>
-    <h4 className="text-lg font-semibold mb-2">
+    <h4 className="text-lg font-semibold mb-2"><b>VID Number:</b> {user.VIDNumber} </h4>
+    <h4 className="text-lg font-semibold mb-2"><b>Wallet: </b>
       {`${user.walletAddress.substring(0, 6)}...${user.walletAddress.substring(user.walletAddress.length - 6)}`}
       <CopyComponent walletAddress={user.walletAddress} />
     </h4>

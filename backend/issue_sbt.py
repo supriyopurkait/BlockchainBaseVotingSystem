@@ -93,7 +93,7 @@ def issue_sbt(reciever_addr, area):
         return str(tx_hash), str(vid_number)
     except Exception as e:
         print(e)
-        return None
+        return None, None
     
 if __name__ == "__main__":
     reciever_addr = input("Enter the reciever address: ")

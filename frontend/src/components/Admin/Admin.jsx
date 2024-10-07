@@ -9,15 +9,17 @@ import { processAreaData, calculateTotalVotes } from '@/utils/StatDataProcessor'
 
 import { sdata } from '@/utils/testData2';
 
-const AdminControl = ({ wallet, voteStatus, onAdd, onDeclareResults, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
+const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
   const [areaData, setAreaData] = useState({});
   const [NumberOfArea, setNumberOfArea] = useState(0);
   const [TotalVotes, setTotalVotes] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [contractLoading, setContractLoading] = useState(true); // New state to track contract loading
   const [error, setError] = useState(null);
   const [showStat, setShowStat] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [moreORless, setmoreORless] = useState("More");
+  const [voteStatus, setVoteStatus] = useState(null);
 
   // Function to show toast messages
   const toastMsg = (status, msg, duration, position) => {
@@ -31,40 +33,33 @@ const AdminControl = ({ wallet, voteStatus, onAdd, onDeclareResults, onCandidate
       console.error(`Invalid status: ${status}`);
     }
   };
-
   const handleShowMore = () => {
-    if(!showMore){
-      setShowMore(true);
-      setmoreORless("Less");
-      toastMsg("success", "Loading More", 1000, "top-center");
-    }
-    if(showMore){
-      setShowMore(false);
-      setmoreORless("More");
-      toastMsg("success", "Loading Less", 1000, "top-center");
-    }
-    
+    setShowMore(!showMore);
+    setmoreORless(showMore ? "More" : "Less");
+    toastMsg("success", showMore ? "Loading Less" : "Loading More", 1000, "top-center");
   };
+
   const handleCheckVoteStatus = () => {
-    if (voteStatus == 1) {
+    // console.error("Voting Status:", voteStatus);
+    const status = parseInt(voteStatus);
+    if (status === 1) {
       toastMsg("success", "Voting is ongoing.", 10000, "top-center");
-    } else if (voteStatus == 0) {
+    } else if (status === 0) {
       toastMsg("error", "Voting has not started yet.", 100000, "top-center");
-    } else if (voteStatus == 2) {
+    } else if (status === 2) {
       toastMsg("error", "Voting has ended.", 100000, "top-center");
-    } else if (voteStatus == -1) {
+    } else if (status === -1) {
       toastMsg("error", "Error checking voting status. Please try again later.", 10000, "top-center");
     }
   };
-  
+
   useEffect(() => {
     const loadStatData = async () => {
       setLoading(true);
       try {
         const fetchedStatData = await fetchStatData(wallet);
-        if(fetchStatData){
+        if (fetchStatData) {
           setAreaData(processAreaData(fetchedStatData));
-          // setareaData(processAreaData(sdata)); // Using Dummy data for testing
           setNumberOfArea(areaData.length);
           setTotalVotes(calculateTotalVotes(fetchedStatData));
           setShowStat(true);
@@ -76,22 +71,42 @@ const AdminControl = ({ wallet, voteStatus, onAdd, onDeclareResults, onCandidate
         setLoading(false);
       }
     };
-    loadStatData();
-  }, [wallet]);
 
-  if (loading) return (<div><LoadingModal modalVisible={loading} task="Loading Vote Data..." onClose={() => {setLoading(false);}} /></div>);
+    const loadVoteStatus = async () => {
+      try {
+        if (votingContract && typeof votingContract.votingState === 'function') {
+          const fetchedVoteStatus = await votingContract.votingState();
+          setVoteStatus(fetchedVoteStatus);
+        }
+      } catch (err) {
+        console.error('Failed to fetch voting status:', err);
+        setVoteStatus(-1);
+      } finally {
+        setContractLoading(false); // Voting contract is now done loading
+      }
+    };
+
+    loadStatData();
+
+    if (votingContract) {
+      loadVoteStatus();
+    }
+  }, [wallet, votingContract, areaData.length]);
+
+  if (loading || contractLoading) return <LoadingModal modalVisible={loading || contractLoading} task="Loading Data..." onClose={() => { setLoading(false); setContractLoading(false); }} />;
+
   if (error) return (
     <div>
-      <div className="loading-modal-overlay" onClick={() => {setError(null)}}>
+      <div className="loading-modal-overlay" onClick={() => { setError(null) }}>
         <div className="loading-modal">
           <p>{error}</p>
         </div>
-        <button onClick={() => {setError(null)}} className="relative right-0 top-[-3rem]">
+        <button onClick={() => { setError(null) }} className="relative right-0 top-[-3rem]">
           <X className="bg-red-500 hover:bg-red-600 text-white hover:text-gray-700 rounded-full" size={24} />
         </button>
       </div>
     </div>
-    );
+  );
 
   return (
     <div className="w-svw flex flex-col justify-self-start m-10">

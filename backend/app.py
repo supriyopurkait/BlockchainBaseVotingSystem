@@ -109,12 +109,11 @@ def get_users():
         
         if not address:
             return jsonify({'status': 'error', 'message': 'Address is required'}), 400
-        # Fetch the user details using the area
-        users = get_all_users(address)
-        print("Users:", users)  
+        # Fetch the user details
+        users = get_details(address)
         # Check if the area was found
         if not users:
-            return jsonify({'status': 'error', 'message': 'Area not found for the given address'}), 404
+            return jsonify({'status': 'error', 'message': 'No user details found'}), 404
         # Return the user details
         return jsonify({'status': 'success', 'users': users}), 200
 

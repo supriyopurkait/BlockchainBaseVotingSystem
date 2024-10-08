@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import UserCard from '@/components/candidateCard';
+import CandidateCard from '@/components/candidateCard';
 import { fetchCandidate } from '@/utils/getDetails';
 import { ethers } from 'ethers';
 import Message from '@/components/AfterVoteMessage';
@@ -93,7 +93,7 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
       <h2 className="text-3xl font-bold mb-8 text-center">Vote for Your Favorite User</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {users.map(user => (
-          <UserCard key={user.candidate_id} user={user} onVote={handleVote} />
+          <CandidateCard key={user.candidate_id} user={user} onVote={handleVote} />
         ))}
       </div>
       {votingLoading && <LoadingModal modalVisible={votingLoading} task="Submitting your vote..." />}
@@ -101,7 +101,7 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <Message
             data={messageData}
-            txhash={txHash ? `${txHash}` : null}
+            txhash={txHash ? `${txHash}` : "null"}
             onClose={() => setShowAftervoteMessage(false)}
           />
         </div>

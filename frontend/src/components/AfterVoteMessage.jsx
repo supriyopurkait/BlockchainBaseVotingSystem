@@ -8,7 +8,7 @@ const Message = ({ onClose, data, txhash }) => {
 
   // Use useEffect to handle side effects like updating state when `data` changes
   useEffect(() => {
-    if (data === 'You have already voted') {
+    if ((data === 'You have already voted')||(txhash === 'null')) {
       setShow(false);
     }
   }, [data]);

@@ -32,6 +32,7 @@ const App = () => {
   const [showAdminCandidateControlsPage, setAdminCandidateControlsPage] = useState(false);
   const [showAdminAddCandidateForm, setshowAdminAddCandidateForm] = useState(false);
   const [showAdminUserControlsPage, setAdminUserControlsPage] = useState(false);
+  const [votingStatusButton, setVotingStatusButton] = useState(false)
 
   const handleConnectWallet = async () => {
     const connectedWallet = await connectWallet();
@@ -129,6 +130,11 @@ const App = () => {
     }
     // Check voting state
     const votingStatus = await getVotingContract().votingState();
+    //here is the vote declared logic
+    //const isdeclared = await getVotingContract().resultDeclared();
+    if(true){
+      setVotingStatusButton(true);
+    }
     console.log("Voting State:", votingStatus);
 
     if (votingStatus == 1) {
@@ -354,7 +360,7 @@ const App = () => {
                   setAdminControlModal(true);
                 }} />;
           }
-          return <Hero onEnterDApp={handleEnterDApp} />;
+          return <Hero onEnterDApp={handleEnterDApp} showVoteButton={votingStatusButton} />;
         })()}
       </main>
       <footer className="bg-gray-900 text-white text-center py-4">

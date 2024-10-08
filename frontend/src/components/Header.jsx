@@ -4,7 +4,7 @@ import UserDeatils from "@/components/userDeatils"; // Assuming you have this co
 import signOutIcon from "pub/picture/sign-out-icon.png?url";
 import metamask from "pub/icons/metamask-icon.svg?url";
 
-const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) => {
+const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false); // State to control UserDetails visibility
 
@@ -14,11 +14,15 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
-      if (showUserDetails) {
-        const userDetailsContainer = document.querySelector(".user-details-container");
-        if (!userDetailsContainer.contains(event.target)) {
-          setShowUserDetails(false);
-        }
+      const dropdownMenu = document.querySelector(".dropdown-menu");
+      const userDetailsContainer = document.querySelector(".user-details-container");
+
+      // Check if click is outside the dropdown or UserDetails, and close if so
+      if (isDropdownOpen && dropdownMenu && !dropdownMenu.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+      if (showUserDetails && userDetailsContainer && !userDetailsContainer.contains(event.target)) {
+        setShowUserDetails(false);
       }
     };
 
@@ -27,7 +31,7 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [showUserDetails]);
+  }, [isDropdownOpen, showUserDetails]);
 
   return (
     <header className="flex justify-between items-center p-4 bg-gray-900">
@@ -44,7 +48,7 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
           onClick={isConnected ? toggleDropdown : onConnect} // Call connect when not connected
         >
           <Wallet className="mr-2" size={20} />
-          <img src={metamask} className="h-6 w-6 pe-1"/>
+          <img src={metamask} className="h-6 w-6 pe-1" />
           <div className="hidden sm:flex">
             {isConnected
               ? `${walletAddress.substring(0, 3)}...${walletAddress.substring(walletAddress.length - 4)}`
@@ -71,31 +75,31 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
 
         {/* Dropdown Menu */}
         {isDropdownOpen && isConnected && ( // Only show dropdown when connected
-            <div className="z-3 absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-10">
-              {/* Disconnect button */}
-              <button
-                className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => {
-                  onDisconnect();
-                  setDropdownOpen(false); // Close the dropdown after disconnecting
-                }}
-              >
-                <img
-                  src={signOutIcon}
-                  alt="Sign Out"
-                  className="w-5 h-5 mr-2 inline-block"
-                />
-                Disconnect
-              </button>
+          <div className="z-3 absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-10 dropdown-menu">
+            {/* Disconnect button */}
+            <button
+              className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
+              onClick={() => {
+                onDisconnect();
+                setDropdownOpen(false); // Close the dropdown after disconnecting
+              }}
+            >
+              <img
+                src={signOutIcon}
+                alt="Sign Out"
+                className="w-5 h-5 mr-2 inline-block"
+              />
+              Disconnect
+            </button>
 
-              {/* User Details button */}
-              <button
-                className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => showUserDetails == true?setShowUserDetails(false):setShowUserDetails(true)}
+            {/* User Details button */}
+            <button
+              className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
+              onClick={() => showUserDetails == true?setShowUserDetails(false):setShowUserDetails(true)}
               >
-                User Details
-              </button>
-            </div>
+              User Details
+            </button>
+          </div>
         )}
       </div>
 
@@ -105,7 +109,7 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
           className="absolute right-0 mt-2 user-details-container"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
-              showUserDetails == true?setShowUserDetails(false):setShowUserDetails(true)
+              setShowUserDetails(false);
             }
           }}
         >

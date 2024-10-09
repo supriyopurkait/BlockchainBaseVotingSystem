@@ -1,23 +1,40 @@
 import React, { useState, useEffect } from "react";
 import { Wallet, Vote } from "lucide-react";
-import UserDeatils from "@/components/userDeatils"; // Assuming you have this component for displaying user details
+import UserDetails from "@/components/userDeatils"; // Corrected component name
 import signOutIcon from "pub/picture/sign-out-icon.png?url";
 import metamask from "pub/icons/metamask-icon.svg?url";
+import { fetchUsers } from '@/utils/getDetails';
 
 const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [showUserDetails, setShowUserDetails] = useState(false); // State to control UserDetails visibility
+  const [showUserDetails, setShowUserDetails] = useState(false);
+  const [data, setData] = useState([])
+  const [userfetched, setUserfetched] = useState(false)
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!isDropdownOpen);
+  // Function to load user data
+  const loadUserData = async () => {
+    const fetchedUsers = await fetchUsers(wallet);
+    console.log('Fetched users:', fetchedUsers);
+    setData([fetchedUsers["area"], fetchedUsers["VIDNumber"]]);
+    setUserfetched(true)
+    
+    
+    // Use console.log instead of console.error for regular logging
+    toggleDropdown(); // Toggling dropdown after fetching data
   };
 
+  // Toggle dropdown visibility
+  const toggleDropdown = () => {
+    setDropdownOpen((prev) => !prev);
+  };
+
+  // Handle clicks outside dropdown or UserDetails to close them
   useEffect(() => {
     const handleOutsideClick = (event) => {
       const dropdownMenu = document.querySelector(".dropdown-menu");
       const userDetailsContainer = document.querySelector(".user-details-container");
 
-      // Check if click is outside the dropdown or UserDetails, and close if so
+      // Check if the click is outside the dropdown or UserDetails, close if so
       if (isDropdownOpen && dropdownMenu && !dropdownMenu.contains(event.target)) {
         setDropdownOpen(false);
       }
@@ -45,10 +62,10 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet })
           className={`${
             isConnected ? "bg-green-500" : "bg-blue-500"
           } hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded flex items-center`}
-          onClick={isConnected ? toggleDropdown : onConnect} // Call connect when not connected
+          onClick={isConnected ? userfetched?toggleDropdown:loadUserData : onConnect} // Call connect when not connected
         >
           <Wallet className="mr-2" size={20} />
-          <img src={metamask} className="h-6 w-6 pe-1" />
+          <img src={metamask} className="h-6 w-6 pe-1" alt="Metamask logo" />
           <div className="hidden sm:flex">
             {isConnected
               ? `${walletAddress.substring(0, 3)}...${walletAddress.substring(walletAddress.length - 4)}`
@@ -95,8 +112,8 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet })
             {/* User Details button */}
             <button
               className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
-              onClick={() => showUserDetails == true?setShowUserDetails(false):setShowUserDetails(true)}
-              >
+              onClick={() => setShowUserDetails((prev) => !prev)} // Toggle user details visibility
+            >
               User Details
             </button>
           </div>
@@ -113,10 +130,11 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet })
             }
           }}
         >
-          <UserDeatils
+          <UserDetails
             walletAddress={walletAddress}
             wallet={wallet}
             onClose={() => setShowUserDetails(false)}
+            details = {data}
           />
         </div>
       )}

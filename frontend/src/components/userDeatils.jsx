@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { X } from 'lucide-react';
+import { X } from "lucide-react";
 import copy_svg from "pub/picture/copy-icon.png?url";
 import copy_check from "pub/icons/copy-check.svg?url";
-import { fetchUsers } from '@/utils/getDetails';
+import { fetchUsers } from "@/utils/getDetails";
 
 // CopyComponent for handling clipboard copy
 const CopyComponent = ({ walletAddress, wallet }) => {
   const [copySuccess, setCopySuccess] = useState(false); // State to track copy success
 
   const eventCopy = () => {
-    navigator.clipboard.writeText(walletAddress ? walletAddress : "NULL").then(() => {
-      setCopySuccess(true); // Set copy success to true
+    navigator.clipboard
+      .writeText(walletAddress ? walletAddress : "NULL")
+      .then(() => {
+        setCopySuccess(true); // Set copy success to true
 
-      // Reset the icon back to the default after 1 second
-      setTimeout(() => {
-        setCopySuccess(false);
-      }, 1000);
-    });
+        // Reset the icon back to the default after 1 second
+        setTimeout(() => {
+          setCopySuccess(false);
+        }, 1000);
+      });
   };
 
   useEffect(() => {
@@ -24,10 +26,10 @@ const CopyComponent = ({ walletAddress, wallet }) => {
       try {
         setLoading(true);
         const fetchedUsers = await fetchUsers(wallet);
-        console.error('Fetched users:', fetchedUsers);
+        console.error("Fetched users:", fetchedUsers);
         setUsers(fetchedUsers);
       } catch (err) {
-        setError('Failed to load users. Please try again later.');
+        setError("Failed to load users. Please try again later.");
         console.error(err);
       } finally {
         setLoading(false);
@@ -40,10 +42,7 @@ const CopyComponent = ({ walletAddress, wallet }) => {
   }, [wallet]);
 
   return (
-    <button
-      className="ml-2 p-4 rounded-full"
-      onClick={eventCopy}
-    >
+    <button className="ml-2 p-4 rounded-full" onClick={eventCopy}>
       <img
         src={copySuccess ? copy_check : copy_svg} // Conditionally display the correct icon
         alt={copySuccess ? "Copy-check" : "Copy"}
@@ -53,20 +52,28 @@ const CopyComponent = ({ walletAddress, wallet }) => {
   );
 };
 
-const UserDeatils = ({ walletAddress, onEnter, onClose }) => {
+const UserDeatils = ({ walletAddress, onEnter, onClose, details }) => {
   const userName = "ABCD";
-  let walletAddressShort = `${walletAddress.substring(0, 12)}...${walletAddress.substring(walletAddress.length - 12)}`
+  let walletAddressShort = `${walletAddress.substring(
+    0,
+    12
+  )}...${walletAddress.substring(walletAddress.length - 12)}`;
   return (
     <div
       className="z-4 absolute right-[1rem] top-[7rem] w-[20rem] sm:right-[12rem] sm:top-[1rem] sm:w-[30rem] z-60 bg-white shadow-lg rounded-lg transition-all duration-1000 transform scale-100 p-4"
       // onMouseEnter={(e) => e.stopPropagation()} // Prevent hover from closing when inside the modal
       onMouseEnter={onEnter} // Prevent hover from closing when inside the modal
     >
-      <button onClick={onClose} className="absolute left-[17rem] sm:left-[27rem] text-gray-500 hover:text-gray-700">
+      <button
+        onClick={onClose}
+        className="absolute left-[17rem] sm:left-[27rem] text-gray-500 hover:text-gray-700"
+      >
         <X size={24} />
       </button>
       <div className="flex justify-between items-center mb-4">
-        <h5 className="text-lg font-semibold w-min sm:w-fit">User Wallet Information</h5>
+        <h5 className="text-lg font-semibold w-min sm:w-fit">
+          User Wallet Information
+        </h5>
       </div>
       <div className="mb-4">
         <h5 className="font-semibold">Wallet Address</h5>
@@ -85,17 +92,23 @@ const UserDeatils = ({ walletAddress, onEnter, onClose }) => {
       <hr className="my-2" />
 
       <div className="mb-4">
-        <h5 className="font-semibold">Your Voting Status</h5>
+        <h5 className="font-semibold">Kyc Status:</h5>
         {/* Add voting status content here */}
       </div>
 
       <hr className="my-2" />
 
-      <div className="mb-4">
-        <h5 className="font-semibold">User Profile</h5>
-        <ul className="list-none">
+      <div className="my-4 p-4 bg-white rounded-lg">
+        <h5 className="font-semibold text-lg text-gray-900 mb-4">
+          User Details
+        </h5>
+        <ul className="list-none space-y-2">
+          {/* Added vertical spacing between list items */}
           <li className="text-gray-700">
-            <strong>Full Name:</strong> {userName}
+            <strong className="text-gray-800">VID Number:</strong> {details[1]}
+          </li>
+          <li className="text-gray-700">
+            <strong className="text-gray-800">Area:</strong> {details[0]}
           </li>
         </ul>
       </div>

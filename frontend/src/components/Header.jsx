@@ -1,24 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { Wallet, Vote } from "lucide-react";
-import UserDeatils from "@/components/userDeatils"; // Assuming you have this component for displaying user details
+import UserDetails from "@/components/userDeatils"; // Corrected component name
 import signOutIcon from "pub/picture/sign-out-icon.png?url";
 import metamask from "pub/icons/metamask-icon.svg?url";
+import { fetchUsers } from '@/utils/getDetails';
 
-const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) => {
+const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [showUserDetails, setShowUserDetails] = useState(false); // State to control UserDetails visibility
+  const [showUserDetails, setShowUserDetails] = useState(false);
+  const [data, setData] = useState([])
+  const [userfetched, setUserfetched] = useState(false)
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!isDropdownOpen);
+  // Function to load user data
+  const loadUserData = async () => {
+    const fetchedUsers = await fetchUsers(wallet);
+    console.log('Fetched users:', fetchedUsers);
+    setData([fetchedUsers["area"], fetchedUsers["VIDNumber"]]);
+    setUserfetched(true)
+    
+    
+    // Use console.log instead of console.error for regular logging
+    toggleDropdown(); // Toggling dropdown after fetching data
   };
 
+  // Toggle dropdown visibility
+  const toggleDropdown = () => {
+    setDropdownOpen((prev) => !prev);
+  };
+
+  // Handle clicks outside dropdown or UserDetails to close them
   useEffect(() => {
     const handleOutsideClick = (event) => {
-      if (showUserDetails) {
-        const userDetailsContainer = document.querySelector(".user-details-container");
-        if (!userDetailsContainer.contains(event.target)) {
-          setShowUserDetails(false);
-        }
+      const dropdownMenu = document.querySelector(".dropdown-menu");
+      const userDetailsContainer = document.querySelector(".user-details-container");
+
+      // Check if the click is outside the dropdown or UserDetails, close if so
+      if (isDropdownOpen && dropdownMenu && !dropdownMenu.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+      if (showUserDetails && userDetailsContainer && !userDetailsContainer.contains(event.target)) {
+        setShowUserDetails(false);
       }
     };
 
@@ -27,7 +48,7 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [showUserDetails]);
+  }, [isDropdownOpen, showUserDetails]);
 
   return (
     <header className="flex justify-between items-center p-4 bg-gray-900">
@@ -41,10 +62,10 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
           className={`${
             isConnected ? "bg-green-500" : "bg-blue-500"
           } hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded flex items-center`}
-          onClick={isConnected ? toggleDropdown : onConnect} // Call connect when not connected
+          onClick={isConnected ? userfetched?toggleDropdown:loadUserData : onConnect} // Call connect when not connected
         >
           <Wallet className="mr-2" size={20} />
-          <img src={metamask} className="h-6 w-6 pe-1"/>
+          <img src={metamask} className="h-6 w-6 pe-1" alt="Metamask logo" />
           <div className="hidden sm:flex">
             {isConnected
               ? `${walletAddress.substring(0, 3)}...${walletAddress.substring(walletAddress.length - 4)}`
@@ -71,31 +92,31 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
 
         {/* Dropdown Menu */}
         {isDropdownOpen && isConnected && ( // Only show dropdown when connected
-            <div className="z-3 absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-10">
-              {/* Disconnect button */}
-              <button
-                className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => {
-                  onDisconnect();
-                  setDropdownOpen(false); // Close the dropdown after disconnecting
-                }}
-              >
-                <img
-                  src={signOutIcon}
-                  alt="Sign Out"
-                  className="w-5 h-5 mr-2 inline-block"
-                />
-                Disconnect
-              </button>
+          <div className="z-3 absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-10 dropdown-menu">
+            {/* Disconnect button */}
+            <button
+              className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
+              onClick={() => {
+                onDisconnect();
+                setDropdownOpen(false); // Close the dropdown after disconnecting
+              }}
+            >
+              <img
+                src={signOutIcon}
+                alt="Sign Out"
+                className="w-5 h-5 mr-2 inline-block"
+              />
+              Disconnect
+            </button>
 
-              {/* User Details button */}
-              <button
-                className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => showUserDetails == true?setShowUserDetails(false):setShowUserDetails(true)}
-              >
-                User Details
-              </button>
-            </div>
+            {/* User Details button */}
+            <button
+              className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
+              onClick={() => setShowUserDetails((prev) => !prev)} // Toggle user details visibility
+            >
+              User Details
+            </button>
+          </div>
         )}
       </div>
 
@@ -105,14 +126,15 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet}) 
           className="absolute right-0 mt-2 user-details-container"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
-              showUserDetails == true?setShowUserDetails(false):setShowUserDetails(true)
+              setShowUserDetails(false);
             }
           }}
         >
-          <UserDeatils
+          <UserDetails
             walletAddress={walletAddress}
             wallet={wallet}
             onClose={() => setShowUserDetails(false)}
+            details = {data}
           />
         </div>
       )}

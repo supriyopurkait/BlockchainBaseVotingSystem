@@ -61,18 +61,25 @@ def update_database_from_blockchain():
     cursor.execute('DELETE FROM candidates')
     candidate_length = contract.functions.totalCandidates().call()
     # Fetch candidates from the blockchain
-    for i in range(candidate_length):
-        candidates = contract.functions.candidates(i).call()
+    candidate = contract.functions.getAllCandidates().call()
+    formatted_data = []
+    for entry in candidate:
+        candidate_name, candidate_id, area, party = entry
+        # Ensure candidate_id is a string
+        candidate_id_str = str(candidate_id)
+        formatted_data.append((candidate_name, candidate_id_str, area, party))
 
-        print(candidates)
-        # Insert new candidates into the database
-        cursor.execute('''
-        INSERT INTO candidates (candidate_name, candidate_id, area, party) 
+    # Insert data with conflict resolution: Update existing records on duplicate candidate_name
+    cursor.executemany('''
+        INSERT INTO candidates (candidate_name, candidate_id, area, party)
         VALUES (?, ?, ?, ?)
-        ''', (candidates[0], str(candidates[1]), candidates[2], candidates[3]))
-
-        # Commit the transaction
-        conn.commit()
+        ON CONFLICT(candidate_name) DO UPDATE SET
+            candidate_id=excluded.candidate_id,
+            area=excluded.area,
+            party=excluded.party;
+    ''', formatted_data)
+    print("Candidate details updated successfully.")
+    conn.commit()
 
 
 

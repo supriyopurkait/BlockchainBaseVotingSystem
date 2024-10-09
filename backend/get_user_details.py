@@ -5,6 +5,29 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# get user details
+def get_details(address):
+    if(address.lower() == (os.getenv('ADMIN_ADDRESS')).lower()):
+        return get_all_users(address)
+    else:
+        return get_user_details_by_wallet_address(address)
+
+# get details for a specific user by wallet address
+def get_user_details_by_wallet_address(address):
+    with sqlite3.connect('backend/db/voter_data.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT area, VID_NUMBER FROM voters WHERE wallet_address = ?', (address,))
+        user = cursor.fetchone()
+
+    if user is None:
+        return None
+
+    return {
+        'area': user[0],
+        'VIDNumber': user[1]
+    }
+
+# get all users details for admin
 def get_all_users(address):
     if(address.lower() == (os.getenv('ADMIN_ADDRESS')).lower()):
         with sqlite3.connect('backend/db/voter_data.db') as conn:

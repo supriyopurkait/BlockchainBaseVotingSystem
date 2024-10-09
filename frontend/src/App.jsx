@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect, useRef } from 'react'; 
 import { ethers } from 'ethers';
 import { connectWallet, checkNFTOwnership, votingState } from '@/utils/web3Utils';
 import Header from '@/components/Header';
@@ -14,6 +14,9 @@ import WalletConnectionModal from '@/components/WalletConnectionModal';
 import { toast, Toaster } from 'react-hot-toast';
 
 const App = () => {
+
+  const votingContractRef = useRef(null); // Add this at the top within your component, alongside other state variables.
+
   const [showUserCards, setShowUserCards] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [showKYCFormModal, setshowKYCFormModal] = useState(false);
@@ -29,6 +32,7 @@ const App = () => {
   const [showAdminCandidateControlsPage, setAdminCandidateControlsPage] = useState(false);
   const [showAdminAddCandidateForm, setshowAdminAddCandidateForm] = useState(false);
   const [showAdminUserControlsPage, setAdminUserControlsPage] = useState(false);
+  const [votingStatusButton, setVotingStatusButton] = useState(false)
 
   const handleConnectWallet = async () => {
     const connectedWallet = await connectWallet();
@@ -51,7 +55,10 @@ const App = () => {
         //   toastMsg("error", "Error checking voting status. Please try again later.", 10000, "top-center");
         // }
         setAdminControlModal(true);
-        console.log("Admin address:", connectedWallet.address, "is connected");
+        // console.log("Admin address:", connectedWallet.address, "is connected");
+        // const votingStatus = await votingState(VotingSystemABI, VotingSystemContractAddress, connectedWallet);
+        // console.log("Voting State:", votingStatus);
+        // setAdminVotingStatus(votingStatus);
       }
       // if (!(connectedWallet.address == import.meta.env.VITE_ADMINADDRESS)) {
       //   const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, connectedWallet);
@@ -65,11 +72,19 @@ const App = () => {
       // }
       setIsWalletConnected(true);
       setShowWalletModal(false);
-      const votingStatus = await votingState(VotingSystemABI, VotingSystemContractAddress, connectedWallet);
-      console.log("Voting State:", votingStatus);
-      setAdminVotingStatus(votingStatus);
+      
     }
   };
+
+
+  const getVotingContract = () => {
+    if (!votingContractRef.current && VotingSystemABI && VotingSystemContractAddress && wallet) {
+      votingContractRef.current = new ethers.Contract(VotingSystemContractAddress, VotingSystemABI, wallet.signer);
+      console.log("Contract created:", votingContractRef.current);
+    }
+    return votingContractRef.current;
+  };
+  
 
   // Function to show toast messages
   const toastMsg = (status, msg, duration, position) => {
@@ -114,10 +129,14 @@ const App = () => {
       return;
     }
     // Check voting state
-    const votingStatus = await votingState(VotingSystemABI, VotingSystemContractAddress, wallet);
+    const votingStatus = await getVotingContract().votingState();
+    //here is the vote declared logic
+    //const isdeclared = await getVotingContract().resultDeclared();
+    if(true){
+      setVotingStatusButton(true);
+    }
     console.log("Voting State:", votingStatus);
-    setAdminVotingStatus(votingStatus);
-    console.log("Admin vote status",AdminVotingStatus);
+
     if (votingStatus == 1) {
       toastMsg("success", "Voting is ongoing.", 10000, "top-center");
     } else if (votingStatus == 0) {
@@ -163,25 +182,120 @@ const App = () => {
     setAdminControlModal(false);
     setAdminUserControlsPage(true);
   };
-  const handleAdminStartVote = () => {
-    toastMsg("success", "Vote Started.", 10000, "top-center");
-    // write function to start vote
+
+  const handleAdminStartVote = async() => {
+    try {
+      const contract = getVotingContract();
+      const state = await contract.votingState();
+      if(state == 1) {
+        toastMsg("error", "Voting is ongoing", 10000, "top-center");
+        return;
+      } else if(state == 2) {
+        toastMsg("error", "Voting has ended", 10000, "top-center");
+        return;
+      }
+      // Attempt to call the startVote function on the contract
+      const tx = await contract.startVote();
+      tx.wait();
+      // If successful, display a success message
+      toastMsg("success", "Voting has started successfully.", 10000, "top-center");
+    } catch (error) {
+      // Log the error for debugging
+      console.error('Failed to start voting:', error);
+      toastMsg("error", "Failed to start voting", 10000, "top-center");
+    }
   };
-  const handleAdminStopVote = () => {
-    toastMsg("error", "Vote Stopped.", 10000, "top-center");
-    // write function to stop vote
+
+  // stop vote function
+  const handleAdminStopVote = async() => {
+    try {
+      const contract = getVotingContract();
+      const state = await contract.votingState();
+      if(state == 0) {
+        toastMsg("error", "Either Voting has not started yet.", 10000, "top-center");
+        return;
+      } else if(state == 2) {
+        toastMsg("error", "Either Voting has ended", 10000, "top-center");
+        return;
+      }
+      // Attempt to call the stopVote function on the contract
+      const tx = await contract.stopVote();
+      tx.wait();
+      // If successful, display a success message
+      toastMsg("success", "Voting has stopped successfully.", 10000, "top-center");
+    } catch (error) {
+      // Log the error for debugging
+      console.error('Failed to stop voting:', error);
+      toastMsg("error", "Failed to stop voting", 10000, "top-center");
+    }
+    
   };
   const handleCandidateAdd  = async (candidateId) => {
+    // A form has to be created here
+    // A form has to be created here
+    // A form has to be created here
+    // A form has to be created here
     toastMsg("success", "Candidate Added.", 10000, "top-center");
   }
+
   const handleCandidateRemove  = async (candidateId) => {
-    toastMsg("error", "Candidate Removed.", 10000, "top-center");
+    console.error('Removing candidate:', candidateId);
+    const contract = getVotingContract();
+    const state = await contract.votingState();
+    if(state == 1) {
+      toastMsg("error", "Voting is ongoing.", 10000, "top-center");
+      return;
+    } else if(state == 2) {
+      toastMsg("error", "Voting has already ended.", 10000, "top-center");
+      return;
+    }
+    try {
+      const tx = await getVotingContract().deleteCandidate(candidateId);
+      console.log("Transaction sent:", tx.hash);
+      await tx.wait();
+      toastMsg("success", "Candidate Removed.", 5000, "top-center");
+    } catch (error) {
+      toastMsg("error", `Failed to remove candidate`, 10000, "top-center");
+      console.error('Failed to remove candidate:', error);
+    }
   }
+
+
   const handleUserRemove = async (userId, userWalletAddress) => {
+    // TO DO
     toastMsg("error", "User Removed.", 10000, "top-center");
   };
-  const handleDeclareResults = async (userId, userWalletAddress) => {
-    toastMsg("success", "Results Declared", 10000, "top-center");
+
+  // Declare results function
+  const handleDeclareResults = async (wallet) => {
+    const contract = getVotingContract();
+    try {
+      const votingState = await contract.votingState();
+      const resultsDeclared = await contract.resultsDeclared();
+  
+      if(votingState == 1) {
+        toastMsg("error", "Voting is ongoing. Please till the voting has ended.", 10000, "top-center");
+        return;      
+      } else if(votingState == 0) {
+        toastMsg("error", "Voting has not started yet.", 10000, "top-center");
+        return;
+      }
+      
+      if(!resultsDeclared) {
+        console.log("Attempting to declare results...");
+        const tx = await contract.declareResults();
+        console.log("Transaction sent:", tx.hash);
+        await tx.wait();
+        console.log("Transaction confirmed");
+        toastMsg("success", "Results Declared.", 10000, "top-center");
+      } else {
+        toastMsg("error", "Results Already Declared.", 10000, "top-center");
+        console.error("resultsDeclared:", resultsDeclared);
+      }
+    } catch (error) {
+      toastMsg("error", `Failed to declare results`, 10000, "top-center");
+      console.error('Failed to declare results:', error);
+    }
   };
 
   return (
@@ -214,7 +328,7 @@ const App = () => {
           if (AdminControlModal) {
             return <AdminControl
                 wallet={wallet}
-                voteStatus={AdminVotingStatus}
+                votingContract={getVotingContract()}
                 onAdd={handleCandidateAdd}
                 onDeclareResults={handleDeclareResults}
                 onCandidate={handleAdminCandidateControls} 
@@ -246,7 +360,7 @@ const App = () => {
                   setAdminControlModal(true);
                 }} />;
           }
-          return <Hero onEnterDApp={handleEnterDApp} />;
+          return <Hero onEnterDApp={handleEnterDApp} showVoteButton={votingStatusButton} />;
         })()}
       </main>
       <footer className="bg-gray-900 text-white text-center py-4">

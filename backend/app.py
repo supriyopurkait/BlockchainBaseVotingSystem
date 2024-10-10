@@ -64,6 +64,50 @@ def get_kyc_data():
         print("An unexpected error occurred:", e)
         return jsonify({"error": "An unexpected error occurred. Please try again later."}), 500
 
+@app.route('/api/newCandidate', methods=['POST'])
+def get_newCandidate_data():
+    try:
+        # Extract form data
+        candidate_name = request.form.get('candidate_name')
+        area = request.form.get('area')
+        party = request.form.get('party')
+        human_image = request.files.get('photo')
+        
+        candidate_id = 3 # Generate a unique candidate_id
+        
+        # Validate images
+        if not human_image:
+            return jsonify({"error": "Missing required images"}), 400
+        
+        photo = human_image.read() # Read the file content
+
+        # Insert the data into the database
+        result = insert_newCandidate_data(candidate_name, candidate_id, area, party, photo)
+        if result == "Duplicate":
+            return jsonify({"error": "A Candidate record already exists for this Candidate."}), 400
+        elif result == False:
+            return jsonify({"error": "An error occurred while inserting data into the database."}), 500
+        
+        # # Issue SBT and get hash value
+        # tx_hash, vid_number = issue_sbt(wallet_address, area)
+        # print(f"Transaction hash: {tx_hash}")
+        
+        # insert_vid_number(wallet_address, vid_number)
+        # if not tx_hash:
+        #     delete_data(wallet_address)
+        #     return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500     
+        # elif tx_hash == "Minted":
+        #     return jsonify({"error": "SBT already minted by this address."}), 400
+        # elif tx_hash:
+        #     return jsonify({"status": "success","tx_hash": str(tx_hash), "message": "Your KYC is done, you can now vote."}), 200
+        # else:
+        #     delete_data(wallet_address)
+        #     return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500
+
+    except Exception as e:
+        print("An unexpected error occurred:", e)
+        return jsonify({"error": "An unexpected error occurred. Please try again later."}), 500
+
 @app.route('/api/get_abi/<contract>', methods=['GET'])
 def get_abi(contract):
     if contract == "VoterID":

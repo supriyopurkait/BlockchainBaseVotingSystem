@@ -237,12 +237,15 @@ const App = () => {
     }
     
   };
-  const handleCandidateAdd  = async (candidateId) => {
-    // A form has to be created here
-    // A form has to be created here
-    // A form has to be created here
-    // A form has to be created here
-    toastMsg("success", "Candidate Added.", 10000, "top-center");
+  const handleCandidateAdd  = () => {
+    setshowAdminAddCandidateForm(true);
+    console.log('Adding candidate:');
+  }
+
+  const handleCandidateAdded  = () => {
+    setshowAdminAddCandidateForm(false);
+    setAdminCandidateControlsPage(true);
+    console.log('Added candidate:');
   }
 
   const handleCandidateRemove  = async (candidateId) => {
@@ -390,7 +393,7 @@ const App = () => {
       {/* Admin Add Candidate Form */}
       {showAdminAddCandidateForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
-          <AdminAddCandidateForm onSubmit={alert("added candidate")} onCancel={() => setshowAdminAddCandidateForm(false)} />
+          <AdminAddCandidateForm onSubmit={handleCandidateAdded} onCancel={() => setshowAdminAddCandidateForm(false)} walletAddress={wallet.address} />
         </div>
       )}
 

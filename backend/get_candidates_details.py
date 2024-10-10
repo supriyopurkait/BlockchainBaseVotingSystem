@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import base64
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -11,7 +12,7 @@ def get_candidates_by_area(address):
         candidates = get_all_candidates()
         return candidates
         
-    # Retrive the area from the database
+    # Retrieve the area from the database
     with sqlite3.connect('backend/db/voter_data.db') as conn:
         cursor = conn.cursor()
 
@@ -43,7 +44,7 @@ def get_candidates_by_area(address):
             'name': candidate[0],
             'area': candidate[2],
             'party': candidate[3],
-            'photo': 'https://xsgames.co/randomusers/avatar.php?g=pixel'
+            'photo': base64.b64encode(candidate[4]).decode('utf-8')
         })
 
     return candidates
@@ -61,7 +62,7 @@ def get_all_candidates():
             'name': candidate[0],
             'area': candidate[2],
             'party': candidate[3],
-            'photo': 'https://xsgames.co/randomusers/avatar.php?g=pixel'
+            'photo': base64.b64encode(candidate[4]).decode('utf-8')
         })
         
     return candidates

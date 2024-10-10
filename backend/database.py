@@ -36,7 +36,8 @@ def setup_database():
             candidate_name TEXT NOT NULL PRIMARY KEY,
             candidate_id TEXT NOT NULL,
             area TEXT NOT NULL,
-            party TEXT NOT NULL
+            party TEXT NOT NULL,
+            photo BLOB NOT NULL DEFAULT ('https://xsgames.co/randomusers/avatar.php?g=pixel')
         )
         ''')
         conn.commit()
@@ -93,6 +94,26 @@ def insert_data(name, document_number, area, phone_number, wallet_address, doc_i
                 INSERT INTO voters (name, document_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ''', (name, document_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth))
+            conn.commit()
+            print("Data inserted successfully.")
+    except sqlite3.IntegrityError as e:
+        print("Error: Duplicate entry detected. Details:", e)
+        return "Duplicate"
+    except sqlite3.OperationalError as e:
+        print("Error: Database is locked. Details:", e)
+        return False
+    except Exception as e:
+        print("An unexpected error occurred:", e)
+        return False
+
+def insert_newCandidate_data(candidate_name, candidate_id, area, party, photo):
+    try:
+        with sqlite3.connect('backend/db/candidates.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                INSERT INTO candidates (candidate_name, candidate_id, area, party, photo) 
+                VALUES (?, ?, ?, ? , ?)
+            ''', (candidate_name, candidate_id, area, party, photo))
             conn.commit()
             print("Data inserted successfully.")
     except sqlite3.IntegrityError as e:

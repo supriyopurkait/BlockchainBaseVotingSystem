@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowRight, Info } from 'lucide-react';
 import VoterBoxicon from "pub/picture/Mascot.png?url";
 
-const Hero = ({ onEnterDApp, showVoteButton}) => (
+const Hero = ({ onEnterDApp, showVoteButton, onEnterShowResult}) => (
   <div className="hero centre h-fit w-fit flex flex-col min-[970px]:flex-row items-center justify-center px-4">
     <div className="p-8 sm:w-1/2">
       <h1 className="text-4xl font-bold mb-4">Welcome Voter</h1>
@@ -21,8 +21,8 @@ const Hero = ({ onEnterDApp, showVoteButton}) => (
       {/* if the value of showVoteButton == true button will show or hide*/}
       {showVoteButton && (
         <div className="mt-8">
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full flex items-center" onClick={()=>{console.log("vote declared button clicked")}}>
-            Vote Now
+          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full flex items-center" onClick={onEnterShowResult}>
+            Check result
           </button>
         </div>
       )}

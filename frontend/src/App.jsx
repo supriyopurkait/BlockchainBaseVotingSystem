@@ -11,6 +11,7 @@ import AdminCandidateControlsPage from '@/components/Admin/AdminCandidateControl
 import AdminAddCandidateForm from '@/components/Admin/AdminAddCandidateForm';
 import AdminUserControlsPage from '@/components/Admin/AdminUserControlsPage';
 import WalletConnectionModal from '@/components/WalletConnectionModal';
+import ShowVoteResultPage from '@/components/ShowVoteResultPage'
 import { Toaster } from 'react-hot-toast';
 import toastMsg from '@/utils/toastMsg';  
 
@@ -19,6 +20,7 @@ const App = () => {
   const votingContractRef = useRef(null); // Add this at the top within your component, alongside other state variables.
 
   const [showUserCards, setShowUserCards] = useState(false);
+  const [showVoteResultCards,setShowVoteResultCards] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [showKYCFormModal, setshowKYCFormModal] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -166,6 +168,11 @@ const App = () => {
     }
     setAdminControlModal(true);
     console.log("Admin address:", wallet.address, "is connected");
+  };
+  //here it will help to show vote result modal
+  const handelShowvoteResult = ()=>{
+    setShowVoteResultCards(true);
+    
   };
 
   // Show KYC form when "Complete KYC" button is clicked
@@ -335,6 +342,11 @@ const App = () => {
               />
             );
           }
+          if(showVoteResultCards){
+            return(
+              <ShowVoteResultPage/>
+            );
+          }//here i have to add the voting result show modal 
           if (AdminControlModal) {
             return <AdminControl
                 wallet={wallet}
@@ -370,7 +382,7 @@ const App = () => {
                   setAdminControlModal(true);
                 }} />;
           }
-          return <Hero onEnterDApp={handleEnterDApp} showVoteButton={votingStatusButton} />;
+          return <Hero onEnterDApp={handleEnterDApp} showVoteButton={votingStatusButton} onEnterShowResult= {handelShowvoteResult}/*here pass the show vote model hook*/ />;
         })()}
       </main>
       <footer className="bg-gray-900 text-white text-center py-4">

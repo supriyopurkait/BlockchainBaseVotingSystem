@@ -21,9 +21,10 @@ const Hero = ({ onEnterDApp, showVoteButton, onEnterShowResult }) => (
       {/* if the value of showVoteButton == true button will show or hide*/}
       {showVoteButton && (
         <div className="mt-8">
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full flex items-center" onClick={()=>{console.log("vote declared button clicked")}}>
+          <button className="bg-blue-500 m-2 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full flex items-center" onClick={()=>{console.log("vote declared button clicked")}}>
             See results of your area
-          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full flex items-center" onClick={onEnterShowResult}>
+            </button>
+          <button className="bg-blue-500 mx-2 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full flex items-center" onClick={onEnterShowResult}>
             Check result
           </button>
         </div>

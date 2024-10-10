@@ -1,4 +1,4 @@
-import { toast, Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 
 const toastMsg = (status, msg, duration, position) => {
     // Call the appropriate toast function based on the status
@@ -11,3 +11,5 @@ const toastMsg = (status, msg, duration, position) => {
       console.error(`Invalid status: ${status}`);
     }
   };
+
+export default toastMsg

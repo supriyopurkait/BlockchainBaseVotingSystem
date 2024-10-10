@@ -12,7 +12,8 @@ import AdminAddCandidateForm from '@/components/Admin/AdminAddCandidateForm';
 import AdminUserControlsPage from '@/components/Admin/AdminUserControlsPage';
 import WalletConnectionModal from '@/components/WalletConnectionModal';
 import ShowVoteResultPage from '@/components/ShowVoteResultPage'
-import { toast, Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+import toastMsg from '@/utils/toastMsg';  
 
 const App = () => {
 
@@ -87,20 +88,6 @@ const App = () => {
     return votingContractRef.current;
   };
   
-
-  // Function to show toast messages
-  const toastMsg = (status, msg, duration, position) => {
-    // Call the appropriate toast function based on the status
-    if (toast[status]) {
-      toast[status](msg, {
-        duration, // 10 seconds
-        position,
-      });
-    } else {
-      console.error(`Invalid status: ${status}`);
-    }
-  };
-  
   const handleGetABI = async () => {
     const VoterIDabi = await fetch('http://'+'127.0.0.1'+':5000/api/get_abi/VoterID');
     const VoterIDjson = await VoterIDabi.json();
@@ -114,15 +101,35 @@ const App = () => {
     setVotingSystemContractAddress(votingSystemJson.ca);
   };
 
+  // Function to get the results declared status
+  const isDeclared = async () => {
+    return await getVotingContract().resultsDeclared();
+  };
+
   useEffect(() => {
     if (VoterIdABI && VoterIDContractAddress && VotingSystemABI && VotingSystemContractAddress) {
       console.log("Voter ID ABI:", VoterIdABI);
       console.log("Voter ID Contract Address:", VoterIDContractAddress);
-      console.log("VotingSystemABI", VotingSystemABI);
-      console.log("VotingSystemContractAddress", VotingSystemContractAddress);
-      console.log("Addr ", wallet.address)
-    }
+      console.log("VotingSystemABI:", VotingSystemABI);
+      console.log("VotingSystemContractAddress:", VotingSystemContractAddress);
+      console.log("Wallet Address:", wallet.address);
+      // Check if results have been declared
+      const checkResultsDeclared = async () => {
+        try {
+          const declared = true                         //await isDeclared();    //// true for testing only
+          console.log("Result declared:", declared);
+          setVotingStatusButton(declared);
+          if (declared) {
+            toastMsg("success", "Results have been declared.", 10000, "top-center");
+          }
+        } catch (error) {
+          console.error("Error in declaring results:", error);
+        }
+      }
+      checkResultsDeclared(); 
+    };
   }, [VoterIdABI, VoterIDContractAddress, VotingSystemABI, VotingSystemContractAddress, wallet]);
+  
 
   const handleEnterDApp = async () => {
     if (!isWalletConnected) {
@@ -134,9 +141,9 @@ const App = () => {
     const votingStatus = await getVotingContract().votingState();
     //here is the vote declared logic
     //const isdeclared = await getVotingContract().resultDeclared();
-    if(true){
-      setVotingStatusButton(true);
-    }
+    // if(true){
+    //   setVotingStatusButton(true);
+    // }
     console.log("Voting State:", votingStatus);
 
     if (votingStatus == 1) {

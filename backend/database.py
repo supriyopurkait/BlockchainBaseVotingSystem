@@ -3,6 +3,9 @@ import os
 from get_abi import get_abi_votingSystem
 from dotenv import load_dotenv
 from web3 import Web3
+import requests
+from io import BytesIO
+from PIL import Image
 
 load_dotenv()
 # Set up the SQLite database
@@ -33,8 +36,8 @@ def setup_database():
         # Create the candidates table if it doesn't exist
         cursor.execute('''
         CREATE TABLE IF NOT EXISTS candidates (
-            candidate_name TEXT NOT NULL PRIMARY KEY,
-            candidate_id TEXT NOT NULL,
+            candidate_id TEXT NOT NULL PRIMARY KEY,
+            candidate_name TEXT NOT NULL,
             area TEXT NOT NULL,
             party TEXT NOT NULL,
             photo BLOB NOT NULL DEFAULT ('https://xsgames.co/randomusers/avatar.php?g=pixel')
@@ -44,7 +47,7 @@ def setup_database():
     
 
 # Function to update the database with candidates from the blockchain
-def update_database_from_blockchain():  
+def update_database_from_blockchain():
     # Connect to blockchain node
     w3 = Web3(Web3.HTTPProvider(os.getenv('ALCHEMY_RPC')))
 
@@ -55,32 +58,57 @@ def update_database_from_blockchain():
 
     # Create a Web3 contract instance
     contract = w3.eth.contract(address=contract_address, abi=contract_abi)  
+    
     # Connect to SQLite database
     conn = sqlite3.connect('backend/db/candidates.db')
     cursor = conn.cursor()
+    
     # Clear the existing data in the table
     cursor.execute('DELETE FROM candidates')
+    
     candidate_length = contract.functions.totalCandidates().call()
+    
     # Fetch candidates from the blockchain
     candidate = contract.functions.getAllCandidates().call()
     formatted_data = []
+    
     for entry in candidate:
-        candidate_name, candidate_id, area, party = entry
-        # Ensure candidate_id is a string
-        candidate_id_str = str(candidate_id)
-        formatted_data.append((candidate_name, candidate_id_str, area, party))
+        candidate_name, candidate_id, area, party, photo_url = entry
+        candidate_id = str(candidate_id)  # Converting candidate_id to string
+        # Download image from URL
+        if photo_url:
+            try:
+                # Attempt to download the image
+                response = requests.get(photo_url)
+                response.raise_for_status()  # Raise an exception for bad responses
+                
+                # Open the image and convert to bytes
+                image = Image.open(BytesIO(response.content))
+                img_byte_arr = BytesIO()
+                image.save(img_byte_arr, format='PNG')
+                photo_data = img_byte_arr.getvalue()
+            except Exception as e:
+                print(f"Error downloading image for candidate {candidate_id}: {str(e)}")
+                photo_data = None
+        else:
+            photo_data = None
+        
+        formatted_data.append((candidate_id, candidate_name, area, party, photo_data))
 
-    # Insert data with conflict resolution: Update existing records on duplicate candidate_name
+    # Insert data with conflict resolution: Update existing records on duplicate candidate_id
     cursor.executemany('''
-        INSERT INTO candidates (candidate_name, candidate_id, area, party)
-        VALUES (?, ?, ?, ?)
-        ON CONFLICT(candidate_name) DO UPDATE SET
-            candidate_id=excluded.candidate_id,
+        INSERT INTO candidates (candidate_id, candidate_name, area, party, photo)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(candidate_id) DO UPDATE SET
+            candidate_name=excluded.candidate_name,
             area=excluded.area,
-            party=excluded.party;
+            party=excluded.party,
+            photo=excluded.photo;
     ''', formatted_data)
+    
     print("Candidate details updated successfully.")
     conn.commit()
+    conn.close()
 
 
 

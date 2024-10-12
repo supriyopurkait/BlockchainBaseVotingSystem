@@ -1,4 +1,3 @@
-from tkinter import N
 from flask import jsonify
 from web3 import Web3
 from dotenv import load_dotenv
@@ -75,7 +74,7 @@ def issue_sbt(reciever_addr, area):
         next_token_id = contract.functions.nextTokenID().call()
         reciever_addr = w3.to_checksum_address(reciever_addr)
         if(contract.functions.balanceOf(reciever_addr).call() == 1):    
-            return "Minted"
+            return "Minted", None
 
         meta_data, vid_number = metadata(next_token_id, area)
         sender = w3.eth.account.from_key(private_key).address

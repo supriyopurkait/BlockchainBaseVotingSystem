@@ -7,8 +7,8 @@ import LoadingModal from '@/components/LoadingModal';
 
 import { dummyCandidates } from '@/utils/testData';
 
-const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI }) => {
-  const [users, setUsers] = useState([]);
+const CandidateCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI }) => {
+  const [candidates, setcandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [votingLoading, setVotingLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,14 +17,14 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
   const [txHash, setTxHash] = useState('');
 
   useEffect(() => {
-    const loadUsers = async () => {
+    const loadcandidates = async () => {
       setLoading(true);
       try {
-        const fetchedUsers = await fetchCandidate(wallet);
-        setUsers(fetchedUsers);
-        // setUsers(dummyCandidates); // Using Dummy data for testing
+        const fetchedcandidates = await fetchCandidate(wallet);
+        setcandidates(fetchedcandidates);
+        // setcandidates(dummyCandidates); // Using Dummy data for testing
       } catch (err) {
-        setError('Failed to load users. Please try again later.');
+        setError('Failed to load candidates. Please try again later.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -32,7 +32,7 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
     };
 
     if (wallet) {
-      loadUsers();
+      loadcandidates();
     }
   }, [wallet]);
 
@@ -40,7 +40,7 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
     setVotingLoading(true);
     try {
       const RELAYER_URL = 'http://127.0.0.1:5000/api';
-      console.log('Voting for user:', candidateId);
+      console.log('Voting for candidate:', candidateId);
       const { provider, signer } = wallet;
       const address = await signer.getAddress();
 
@@ -50,6 +50,15 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
       }
 
       const contract = new ethers.Contract(VotingSystemContractAddress, VotingSystemABI, signer);
+      if( await contract.votingState() == 0) {
+        setMessageData('Voting has not started yet. Please wait.');
+        setShowAftervoteMessage(true);
+        return;
+      } else if(contract.votingState() == 2) {
+        setMessageData('Voting has ended.');
+        setShowAftervoteMessage(true);
+        return;
+      }
       const nonce = await contract.nonces(address);
       const functionSignature = contract.interface.encodeFunctionData('vote', [candidateId]);
 
@@ -58,13 +67,22 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
         [address, nonce, functionSignature]
       );
       const messageHashBinary = ethers.getBytes(messageHash);
-      const signature = await signer.signMessage(messageHashBinary);
+      let signature;
+      try {
+        signature = await signer.signMessage(messageHashBinary);
+      } catch (error) {
+        if(error.code === 'ACTION_REJECTED') {
+          setMessageData("User rejected signature. Please try again.");
+          setShowAftervoteMessage(true);  
+          return;
+        }
+      }
       const { r, s, v } = ethers.Signature.from(signature);
 
       const response = await fetch( `${RELAYER_URL}/execute-meta-tx`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userAddress: address, functionSignature, r, s, v })
+        body: JSON.stringify({ candidateAddress: address, functionSignature, r, s, v })
       });
 
       const data = await response.json();
@@ -85,15 +103,15 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
     }
   };
 
-  if (loading) return <div>Loading users...</div>;
+  if (loading) return <div>Loading candidates...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold mb-8 text-center">Vote for Your Favorite User</h2>
+      <h2 className="text-3xl font-bold mb-8 text-center">Vote for Your Favorite candidate</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {users.map(user => (
-          <CandidateCard key={user.candidate_id} user={user} onVote={handleVote} />
+        {candidates.map(candidate => (
+          <CandidateCard key={candidate.candidate_id} candidate={candidate} onVote={handleVote} />
         ))}
       </div>
       {votingLoading && <LoadingModal modalVisible={votingLoading} task="Submitting your vote..." />}
@@ -110,4 +128,4 @@ const UserCardsPage = ({ wallet, VotingSystemContractAddress, VotingSystemABI })
   );
 };
 
-export default UserCardsPage;
+export default CandidateCardsPage;

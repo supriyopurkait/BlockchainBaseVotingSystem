@@ -16,11 +16,13 @@ contract VotingSystem {
         uint256 candidateId;
         string area;
         string party;
+        string imageUrl;    // candidate image url
     }
 
     enum VotingState { NotStarted, InProgress, Ended }
 
     uint256 private voteCount;          // Vote count
+    uint256 public nextCandidateId;     // Next candidate ID                  
     address public owner;               // Owner address
     address public VID_Address;         // SBT contract address
     address public relayer;             // Relayer address
@@ -85,6 +87,7 @@ contract VotingSystem {
         voteCount = 0;
         resultsDeclared = false;
         votingState = VotingState.NotStarted;
+        nextCandidateId = 1;
     }
 
     function nameOfSBT() public view returns (string memory) {
@@ -100,17 +103,17 @@ contract VotingSystem {
     }
 
     // Add candidates
-    function addCandidate(string memory _candidateName, uint256 _candidateId, string memory _area, string memory _party) public onlyOwner votingNotStarted {
-        // Ensure candidateId does not already exist
-        require(!candidateExists[_candidateId], "Candidate with this ID already exists");
+    function addCandidate(string memory _candidateName, string memory _area, string memory _party, string memory _imageUrl) public onlyOwner votingNotStarted {
         
+        uint256 _candidateId = nextCandidateId;
+        nextCandidateId++;
         // Create a unique hash for the party and area combination
         bytes32 partyAreaKey = keccak256(abi.encodePacked(_area, _party));
         require(!partyInAreaExists[partyAreaKey], "This party already has a candidate in this area");
         
         partyInAreaExists[partyAreaKey] = true;     // Mark that the party now has a candidate in this area
 
-        candidates.push(CandidateStruct(_candidateName, _candidateId, _area, _party));
+        candidates.push(CandidateStruct(_candidateName, _candidateId, _area, _party, _imageUrl));
         candidateExists[_candidateId] = true;
 
         emit CandidateAdded(_candidateName, _candidateId);

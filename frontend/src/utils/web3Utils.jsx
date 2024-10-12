@@ -8,7 +8,7 @@ const config = {
 };
 
 // Connect Wallet using ethers.js and setup the provider and signer
-export const connectWallet = async () => {
+const connectWallet = async () => {
   if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
     try {
       // Initialize ethers provider using window.ethereum (MetaMask or other provider)
@@ -87,7 +87,7 @@ export const connectWallet = async () => {
   }
 };
 
-export const checkNFTOwnership = async (VoterIdABI, VoterIDContractAddress, wallet) => {
+const checkNFTOwnership = async (VoterIdABI, VoterIDContractAddress, wallet) => {
   const { provider, signer } = wallet;
   console.log("Provider:", provider);
   console.log("Signer:", signer);
@@ -109,8 +109,8 @@ export const checkNFTOwnership = async (VoterIdABI, VoterIDContractAddress, wall
 
 };
 
-export const votingState = async (VotingSystemABI, VotingSystemContractAddress, wallet) => {
-  const { provider, signer } = wallet;
+const votingState = async (VotingSystemABI, VotingSystemContractAddress, wallet) => {
+  const { provider,signer } = wallet;
   const contract = new ethers.Contract(VotingSystemContractAddress, VotingSystemABI, signer);
   const walletAddress = await signer.getAddress(); // Ensure address is fetched correctly
   console.log("Wallet address:", walletAddress);
@@ -125,30 +125,5 @@ export const votingState = async (VotingSystemABI, VotingSystemContractAddress, 
   }
 };
 
-export const fetchUsers = async (wallet) => {
-  const url = 'http://127.0.0.1:5000/api/get-candidates';
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        address: wallet.address
-      })
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
 
-    // Get the full response
-    const data = await response.json();
-    // console.log(data.candidates);
-    // Return only the candidates array
-    return data.candidates;
-
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    return [];
-  }
-};
+export { connectWallet, checkNFTOwnership, votingState };

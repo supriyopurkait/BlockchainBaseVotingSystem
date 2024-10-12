@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { connectWallet, checkNFTOwnership, votingState } from '@/utils/web3Utils';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
-import UserCardsPage from '@/components/canditateCardPage';
+import CandidateCardsPage from '@/components/canditateCardPage';
 import KYCForm from '@/components/KYCForm';
 import KYCModal from '@/components/KYCModal';
 import AdminControl from '@/components/Admin/Admin';
@@ -19,14 +19,13 @@ const App = () => {
 
   const votingContractRef = useRef(null); // Add this at the top within your component, alongside other state variables.
 
-  const [showUserCards, setShowUserCards] = useState(false);
+  const [showCadidateCards, setshowCadidateCards] = useState(false);
   const [showVoteResultCards,setShowVoteResultCards] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [showKYCFormModal, setshowKYCFormModal] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showKYCConfirm, setShowKYCConfirm] = useState(false); // New state for KYC prompt
   const [wallet, setWallet] = useState(null);
-  const [AdminVotingStatus, setAdminVotingStatus] = useState(null);
   const [VoterIdABI, setVoterIdABI] = useState(null);
   const [VoterIDContractAddress, setContractAddress] = useState(null);
   const [VotingSystemABI, setVotingSystemABI] = useState(null);
@@ -70,7 +69,7 @@ const App = () => {
       //     toastMsg("error", "You do not have a Voter ID NFT! Please complete the KYC process first.", 5000);
       //     setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
       //   } else {
-      //     setShowUserCards(true); // Show user cards page if NFT is owned
+      //     setshowCadidateCards(true); // Show user cards page if NFT is owned
       //   }
       // }
       setIsWalletConnected(true);
@@ -116,7 +115,7 @@ const App = () => {
       // Check if results have been declared
       const checkResultsDeclared = async () => {
         try {
-          const declared = true                         //await isDeclared();    //// true for testing only
+          const declared = await isDeclared();    //// true for testing only
           console.log("Result declared:", declared);
           setVotingStatusButton(declared);
           if (declared) {
@@ -162,7 +161,7 @@ const App = () => {
         toastMsg("error", "You do not have a Voter ID NFT! Please complete the KYC process first.", 5000);
         setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
       } else {
-        setShowUserCards(true); // Show user cards page if NFT is owned
+        setshowCadidateCards(true); // Show user cards page if NFT is owned
       }
       return;
     }
@@ -184,7 +183,7 @@ const App = () => {
   const handleCompleteKYC = (formData) => {
     console.log("KYC data submitted:", formData);
     setshowKYCFormModal(false);
-    setShowUserCards(true); // Show user cards page after KYC is completed
+    setshowCadidateCards(true); // Show user cards page after KYC is completed
   };
 
   const handleAdminCandidateControls = () => {
@@ -324,7 +323,7 @@ const App = () => {
         onConnect={handleConnectWallet} 
         onDisconnect={() => {
           setIsWalletConnected(false);
-          setShowUserCards(false);
+          setshowCadidateCards(false);
           setAdminControlModal(false);
           setAdminCandidateControlsPage(false);
           setAdminUserControlsPage(false);
@@ -333,9 +332,9 @@ const App = () => {
       />
       <main className="w-svw flex flex-grow justify-center items-center">
         {(() => {
-          if (showUserCards) {
+          if (showCadidateCards) {
             return (
-              <UserCardsPage 
+              <CandidateCardsPage 
                 wallet={wallet} 
                 VotingSystemContractAddress={VotingSystemContractAddress} 
                 VotingSystemABI={VotingSystemABI} 

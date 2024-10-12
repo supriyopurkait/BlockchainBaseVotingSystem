@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Function to fetch candidate details from the database based on the wallet address
-def get_candidates_by_area(address):
+def get_candidates_from_db(address):
     if(address.lower() == (os.getenv('ADMIN_ADDRESS')).lower()):
         candidates = []
         candidates = get_all_candidates()
@@ -40,8 +40,8 @@ def get_candidates_by_area(address):
     candidates = []
     for candidate in results:
         candidates.append({
-            'candidate_id': candidate[1],
-            'name': candidate[0],
+            'candidate_id': candidate[0],
+            'name': candidate[1],
             'area': candidate[2],
             'party': candidate[3],
             'photo': base64.b64encode(candidate[4]).decode('utf-8')
@@ -58,8 +58,8 @@ def get_all_candidates():
     candidates = []
     for candidate in results:
         candidates.append({
-            'candidate_id': candidate[1],
-            'name': candidate[0],
+            'candidate_id': candidate[0],
+            'name': candidate[1],
             'area': candidate[2],
             'party': candidate[3],
             'photo': base64.b64encode(candidate[4]).decode('utf-8')

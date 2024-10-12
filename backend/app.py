@@ -1,10 +1,6 @@
 from flask import Flask, app, request, render_template, jsonify
 from flask_cors import CORS
-from numpy import delete
 from index import *
-from dotenv import load_dotenv
-import os
-
 
 app = Flask(__name__)
 CORS(app)
@@ -48,13 +44,13 @@ def get_kyc_data():
         tx_hash, vid_number = issue_sbt(wallet_address, area)
         print(f"Transaction hash: {tx_hash}")
         
-        insert_vid_number(wallet_address, vid_number)
-        if not tx_hash:
+        if not tx_hash and not vid_number:
             delete_data(wallet_address)
             return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500     
         elif tx_hash == "Minted":
             return jsonify({"error": "SBT already minted by this address."}), 400
-        elif tx_hash:
+        elif tx_hash and vid_number:
+            insert_vid_number(wallet_address, vid_number)
             return jsonify({"status": "success","tx_hash": str(tx_hash), "message": "Your KYC is done, you can now vote."}), 200
         else:
             delete_data(wallet_address)
@@ -130,7 +126,7 @@ def get_candidates():
         if not address:
             return jsonify({'status': 'error', 'message': 'Address is required'}), 400
         # Fetch the candidate details using the area
-        candidates = get_candidates_by_area(address)
+        candidates = get_candidates_from_db(address)
         print("Candidates:", candidates)  
         # Check if the area was found
         if not candidates:

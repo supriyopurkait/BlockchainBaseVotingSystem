@@ -14,28 +14,46 @@ jobs:
       with:
         fetch-depth: 0  # Ensure full commit history is fetched
 
-    - name: Send notification to Telegram Group
+    - name: Send notifications to Telegram Group
       env:
         TELEGRAM_TOKEN: 6440588108:AAEDYXXQL7L1jYGnxtChytq4dfajZQOqVGA
         TELEGRAM_GROUP_CHAT_ID: -1002261193147
       run: |
+        send_telegram_message() {
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_GROUP_CHAT_ID}" \
+            -d text="$1" \
+            -d parse_mode="Markdown"
+          sleep 1  # To avoid hitting rate limits
+        }
+
         # Check if this is a new branch
         if [ "${{ github.event.created }}" = "true" ]; then
           # This is a new branch
           branch_name="${{ github.ref_name }}"
           user_name="${{ github.actor }}"
           message="🌿 New branch created: *$branch_name* by *$user_name*"
+          send_telegram_message "$message"
         else
           # This is a push to an existing branch
           branch_name="${{ github.ref_name }}"
           user_name="${{ github.actor }}"
           commit_count=$(git rev-list --count ${{ github.event.before }}..${{ github.sha }})
-          message="🚀 Push to branch *$branch_name* by *$user_name*
+          
+          initial_message="🚀 Push to branch *$branch_name* by *$user_name*
         Number of commits: $commit_count"
+          send_telegram_message "$initial_message"
+          
+          # Send a separate message for each commit
+          git log --reverse --pretty=format:"%H" ${{ github.event.before }}..${{ github.sha }} | while read commit_hash; do
+            commit_message=$(git log -1 --pretty=format:"➡️ %s" $commit_hash)
+            commit_author=$(git log -1 --pretty=format:"%an" $commit_hash)
+            short_hash=$(git rev-parse --short $commit_hash)
+            
+            commit_info="Commit in *$branch_name* by *$commit_author*
+        $commit_message
+        Hash: \`$short_hash\`"
+            
+            send_telegram_message "$commit_info"
+          done
         fi
-
-        # Send the message to the group chat
-        curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-          -d chat_id="${TELEGRAM_GROUP_CHAT_ID}" \
-          -d text="$message" \
-          -d parse_mode="Markdown"

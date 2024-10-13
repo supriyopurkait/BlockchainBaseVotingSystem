@@ -238,6 +238,27 @@ def upload_image_ipfs():
         print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+@app.route('/api/unpin-image-ipfs', methods=['POST'])
+def unpin_image_ipfs():
+    try:
+        data = request.json
+        address = data.get('address')
+        ipfs_hash = data.get('ipfs_hash')
+        if(not address or not ipfs_hash):
+            return jsonify({'status': 'error', 'message': 'Missing required parameters'}), 400
+        if(address.lower() != (os.getenv('ADMIN_ADDRESS')).lower()):
+            return jsonify({'status': 'error', 'message': 'Unauthorized access'}), 401
+        if(unpin_from_ipfs(address, ipfs_hash)):
+            # Return a success response
+            return jsonify({'status': 'success', 'message': 'Image un-pinned successfully'}), 200
+        else:
+            # Return an error response
+            return jsonify({'status': 'error', 'message': 'Error un-pinning image'}), 400
+    except Exception as e:
+        # Handle any exceptions and return an error response
+        print(e)
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -7,7 +7,9 @@ import {
   Legend,
   Tooltip,
 } from "recharts";
-import { Trophy, Users, Flag } from "lucide-react";
+import { Trophy, Users, Flag, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+
 const ShowVoteResultPage = () => {
   const data = [
     {
@@ -32,27 +34,57 @@ const ShowVoteResultPage = () => {
     },
   ];
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+  const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
 
   const winnerPhoto = data[0].photo;
   const winner = data[0].name;
   const winnerVotes = data[0].votes;
   const partyName = "Party X";
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delayChildren: 0.3,
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gray-50 p-6">
-      <div className="max-w-7xl w-full">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+      <motion.div 
+        className="max-w-7xl w-full"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">
-          Election Results
-        </h1>
+        <motion.h1 
+          className="text-4xl md:text-5xl font-bold text-center text-indigo-900 mb-12"
+          variants={itemVariants}
+        >
+          Election Results 2024
+        </motion.h1>
 
         {/* Main Content: Pie Chart & Winner Section */}
         <div className="flex flex-col lg:flex-row justify-between gap-8">
-          {/* Pie Chart Section (65%) */}
-          <div className="lg:w-2/3 bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-center">
-              Voting Results
+          {/* Pie Chart Section */}
+          <motion.div 
+            className="lg:w-2/3 bg-white rounded-2xl shadow-xl p-6 backdrop-blur-sm bg-opacity-80"
+            variants={itemVariants}
+          >
+            <h2 className="text-2xl font-semibold text-indigo-800 mb-6 text-center">
+              Vote Distribution
             </h2>
             <div className="h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -84,73 +116,77 @@ const ShowVoteResultPage = () => {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Winner's Information Section (35%) */}
-          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-5">
+          {/* Winner's Information Section */}
+          <motion.div 
+            className="lg:w-1/3 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl shadow-xl p-6 text-white"
+            variants={itemVariants}
+          >
             <img
               src={winnerPhoto}
               alt="Winner"
-              className="w-24 h-24 rounded-full mx-auto mb-4"
+              className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-white shadow-lg"
             />
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-center">
+            <h2 className="text-3xl font-bold text-center mb-8">
               Winner
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* Name Section */}
-              <div className="flex flex-col items-center sm:items-start justify-center space-y-1">
-                <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" />
-                <p className="text-sm text-gray-500">Name</p>
-                <p className="text-base sm:text-lg font-semibold text-gray-800">
-                  {winner}
-                </p>
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4">
+                <Trophy className="w-8 h-8 text-yellow-400" />
+                <div>
+                  <p className="text-sm text-indigo-200">Name</p>
+                  <p className="text-xl font-semibold">{winner}</p>
+                </div>
               </div>
 
-              {/* Votes Section */}
-              <div className="flex flex-col items-center sm:items-start justify-center space-y-1">
-                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
-                <p className="text-sm text-gray-500">Votes</p>
-                <p className="text-base sm:text-lg font-semibold text-gray-800">
-                  {winnerVotes}
-                </p>
+              <div className="flex items-center space-x-4">
+                <Users className="w-8 h-8 text-green-400" />
+                <div>
+                  <p className="text-sm text-indigo-200">Total Votes</p>
+                  <p className="text-xl font-semibold">{winnerVotes.toLocaleString()}</p>
+                </div>
               </div>
 
-              {/* Party Section */}
-              <div className="flex flex-col items-center sm:items-start justify-center space-y-1">
-                <Flag className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
-                <p className="text-sm text-gray-500">Party</p>
-                <p className="text-base sm:text-lg font-semibold text-gray-800">
-                  {partyName}
-                </p>
+              <div className="flex items-center space-x-4">
+                <Flag className="w-8 h-8 text-red-400" />
+                <div>
+                  <p className="text-sm text-indigo-200">Party</p>
+                  <p className="text-xl font-semibold">{partyName}</p>
+                </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Additional Statistics for Other Candidates */}
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div 
+          className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          variants={containerVariants}
+        >
           {data.map((candidate, index) => (
-            <div
+            <motion.div
               key={index}
-              className="bg-white rounded-xl shadow-lg p-4 sm:p-6 text-center"
+              className="bg-white rounded-xl shadow-lg p-6 text-center transform transition duration-500 hover:scale-105"
+              variants={itemVariants}
             >
               <img
                 src={candidate.photo}
                 alt={candidate.name}
-                className="w-24 h-24 rounded-full mx-auto mb-3"
+                className="w-24 h-24 rounded-full mx-auto mb-4 border-2 border-indigo-200"
               />
-              <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
                 {candidate.name}
               </h3>
-              <p className="text-xl sm:text-2xl font-bold text-indigo-600">
-                {candidate.votes}
+              <p className="text-2xl font-bold text-indigo-600">
+                {candidate.votes.toLocaleString()}
               </p>
               <p className="text-sm text-gray-500 mt-1">votes</p>
-            </div>
+            </motion.div>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

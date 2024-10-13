@@ -6,6 +6,7 @@ from web3 import Web3
 import requests
 from io import BytesIO
 from PIL import Image
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 load_dotenv()
 # Set up the SQLite database
@@ -46,7 +47,6 @@ def setup_database():
         conn.commit()
     
 
-# Function to update the database with candidates from the blockchain
 def update_database_from_blockchain():
     # Connect to blockchain node
     w3 = Web3(Web3.HTTPProvider(os.getenv('ALCHEMY_RPC')))
@@ -57,30 +57,27 @@ def update_database_from_blockchain():
     contract_abi = data_votingSystem.get('abi')
 
     # Create a Web3 contract instance
-    contract = w3.eth.contract(address=contract_address, abi=contract_abi)  
-    
+    contract = w3.eth.contract(address=contract_address, abi=contract_abi)
+
     # Connect to SQLite database
     conn = sqlite3.connect('backend/db/candidates.db')
     cursor = conn.cursor()
-    
+
     # Clear the existing data in the table
     cursor.execute('DELETE FROM candidates')
-    
-    candidate_length = contract.functions.totalCandidates().call()
-    
-    # Fetch candidates from the blockchain
+
+    # Fetch all candidates at once from the blockchain
     candidate = contract.functions.getAllCandidates().call()
-    formatted_data = []
-    
-    for entry in candidate:
-        candidate_name, candidate_id, area, party, photo_url = entry
+
+    # Function to download the image in parallel
+    def download_image(candidate_entry):
+        candidate_name, candidate_id, area, party, photo_url = candidate_entry
         candidate_id = str(candidate_id)  # Converting candidate_id to string
-        # Download image from URL
+
         if photo_url:
             try:
-                # Attempt to download the image
                 response = requests.get(photo_url)
-                response.raise_for_status()  # Raise an exception for bad responses
+                response.raise_for_status()
                 
                 # Open the image and convert to bytes
                 image = Image.open(BytesIO(response.content))
@@ -92,8 +89,13 @@ def update_database_from_blockchain():
                 photo_data = None
         else:
             photo_data = None
-        
-        formatted_data.append((candidate_id, candidate_name, area, party, photo_data))
+
+        return (candidate_id, candidate_name, area, party, photo_data)
+
+    # Download images in parallel using ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        future_to_candidate = {executor.submit(download_image, entry): entry for entry in candidate}
+        formatted_data = [future.result() for future in as_completed(future_to_candidate)]
 
     # Insert data with conflict resolution: Update existing records on duplicate candidate_id
     cursor.executemany('''
@@ -105,12 +107,10 @@ def update_database_from_blockchain():
             party=excluded.party,
             photo=excluded.photo;
     ''', formatted_data)
-    
+
     print("Candidate details updated successfully.")
     conn.commit()
     conn.close()
-
-
 
 # Insert form data into the database
 def insert_data(name, document_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth):

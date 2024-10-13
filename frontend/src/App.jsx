@@ -404,7 +404,7 @@ const App = () => {
       {/* Admin Add Candidate Form */}
       {showAdminAddCandidateForm && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 ">
-          <AdminAddCandidateForm onSubmit={handleCandidateAdded} onCancel={() => setshowAdminAddCandidateForm(false)} walletAddress={wallet.address} />
+          <AdminAddCandidateForm onSubmit={handleCandidateAdded} onCancel={() => setshowAdminAddCandidateForm(false)} wallet={wallet} contract={getVotingContract()}/>
         </div>
       )}
 

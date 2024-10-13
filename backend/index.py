@@ -6,3 +6,4 @@ from get_user_details import *
 from get_areadata import *
 import sqlite3
 from execute_meta_tx import execute_meta_tx
+from upload_to_ipfs import upload_to_ipfs

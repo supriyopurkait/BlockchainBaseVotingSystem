@@ -146,11 +146,11 @@ const App = () => {
     console.log("Voting State:", votingStatus);
 
     if (votingStatus == 1) {
-      toastMsg("success", "Voting is ongoing.", 10000, "top-center");
+      toastMsg("success", "Voting is ongoing.", 5000, "top-center");
     } else if (votingStatus == 0) {
-      toastMsg("error", "Voting has not started yet.", 100000, "top-center");
+      toastMsg("error", "Voting has not started yet.", 5000, "top-center");
     } else if (votingStatus == 2) {
-      toastMsg("error", "Voting has ended.", 100000, "top-center");
+      toastMsg("error", "Voting has ended.", 5000, "top-center");
     } else if (votingStatus == -1) {
       toastMsg("error", "Error checking voting status. Please try again later.", 10000, "top-center");
     }
@@ -318,6 +318,12 @@ const App = () => {
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Toaster position="bottom-right" />
       <Header 
+        onLogo={() => {
+          setshowCandidateCards(false);
+          setAdminControlModal(false);
+          setAdminCandidateControlsPage(false);
+          setAdminUserControlsPage(false);
+        }} // Handling disconnect
         isConnected={isWalletConnected} 
         walletAddress={isWalletConnected ? wallet.address : null} 
         onConnect={handleConnectWallet} 

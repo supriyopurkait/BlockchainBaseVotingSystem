@@ -162,9 +162,9 @@ const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandi
           </button>
         </div>
       </div>
-      <div className="DashBoard flex flex-col lg:flex-row">
+      <div className="DashBoard flex flex-col xl:flex-row">
       {showStat && (
-        <div className="PieChart h-fit bg-white rounded-2xl shadow-md flex-grow m-0 p-2 pl-8">
+        <div className="PieChart h-fit bg-white rounded-2xl shadow-md flex-grow m-0 p-2 mt-8 pl-8">
           {/* Pie Chart % */}
           <div className="flex flex-row justify-between items-center">
             <h1 className="text-2xl font-bold flex-shrink my-4 mr-4">Statistics</h1>
@@ -180,22 +180,23 @@ const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandi
               </div>
             </button>
           </div>
-          <div className="grid grid-cols-1 2xl:grid-cols-2 gap-2 justify-items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2 gap-2 justify-items-stretch">
             { Object.entries(areaData).map(([areaId, area]) => (
                 ((showMore || areaId === "0" || areaId === "1") &&
                   <PieDiagram key={area.id} 
                     title={area.areaName}
                     total={area.totalVotes} 
                     data={area.statData} 
+                    winner={area.winner}
                     fontsize={12} 
-                    cx={80} 
-                    cy={110} 
-                    sizeH={300} 
+                    cx={150} 
+                    cy={120} 
+                    sizeH={410} 
                     sizeW={300} 
-                    outerRadius={100}
-                    innerRadius={20} 
-                    margin={{ left: 25, right: 25, top: 25, bottom: 25 }} 
-                    padding={{ left: 25, right: 25, top: 0, bottom: 0 }} 
+                    outerRadius={110}
+                    innerRadius={5} 
+                    margin={{ left: 5, right: 5, top: 5, bottom: 5 }} 
+                    padding={{ left: 5, right: 5, top: 5, bottom: 5 }} 
                   />
                 )
               ))
@@ -207,11 +208,11 @@ const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandi
         <div className="Stats h-max flex flex-col md:flex-col flex-grow-0 m-4">
           <div className="flex flex-col md:flex-row justify-around">
             {/* Add Candidate Button */}
-            <div className="md:w-fit m-4 flex justify-center">
+            <div className="md:w-full m-4 flex justify-center">
               <AdminAddCandidateCard onAdd={onAdd} />
             </div>
             {/* Total Vote */}
-            <div className="m-4 p-4 bg-white rounded-lg shadow-md flex flex-col flex-grow justify-around items-center">
+            <div className="md:w-full m-4 p-4 bg-white rounded-lg shadow-md flex flex-col flex-grow justify-around items-center">
               <h3 className="text-xl font-bold">Total Vote</h3>
               <p className="text-2xl text-blue-600 font-bold">{TotalVotes?TotalVotes:"Vote Has Not Started.."}</p>
               <button
@@ -232,17 +233,17 @@ const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandi
           </div>
           {/* Area Votes */}
           {showStat && (
-          <div className="m-4 p-4  w-full bg-white rounded-lg shadow-md text-center">
+          <div className="m-4 p-4  md:w-full bg-white rounded-lg shadow-md text-center">
             <h3 className="text-xl font-bold pb-2">Area Votes:</h3>
             <div className="text-center">
-              <div className="grid grid-cols-4 bg-gray-400 hover:bg-gray-100 m-2 rounded">
+              <div className="grid grid-cols-4 bg-gray-400 hover:bg-gray-300 m-2 rounded">
                 <span className="p-2 font-bold">Area </span>
                 <span className="p-2 font-bold">Votes Per Area</span>
                 <span className="p-2 font-bold">Winner of Area</span>
                 <span className="p-2 font-bold">Winner's Vote Count</span>
               </div>
               { Object.entries(areaData).map(([areaId, area]) => (
-                <div key={areaId + NumberOfArea} className="grid grid-cols-4 bg-gray-200 hover:bg-gray-100 m-2 rounded">
+                <div key={areaId + NumberOfArea} className="grid grid-cols-4 bg-gray-300 hover:bg-gray-200 m-2 rounded">
                   <span className="p-2">{area.areaName}</span>
                   <span className="p-2 font-bold">{area.totalVotes}</span>
                   <span className="p-2">{area.winner}</span>

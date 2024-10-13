@@ -5,7 +5,7 @@ import signOutIcon from "pub/picture/sign-out-icon.png?url";
 import metamask from "pub/icons/metamask-icon.svg?url";
 import { fetchUsers } from '@/utils/getDetails';
 
-const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet }) => {
+const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, wallet }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [data, setData] = useState([])
@@ -52,9 +52,11 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet })
 
   return (
     <header className="flex justify-between items-center p-4 bg-gray-900">
-      <div className="text-white font-bold text-2xl flex items-center">
-        <Vote className="ml-1 mt-1.5 mr-2" size={35} /> | On Chain Vote
-      </div>
+      <button  onClick={onLogo}>
+        <div className="text-white font-bold text-2xl flex items-center">
+          <Vote className="ml-1 mt-1.5 mr-2" size={35} /> | On Chain Vote
+        </div>
+      </button>
 
       <div className="">
         {/* Button displaying the connected wallet with dropdown functionality */}

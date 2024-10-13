@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { connectWallet, checkNFTOwnership, votingState } from '@/utils/web3Utils';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
-import CandidateCardsPage from '@/components/canditateCardPage';
+import CandidateCardsPage from '@/components/candidateCardPage';
 import KYCForm from '@/components/KYCForm';
 import KYCModal from '@/components/KYCModal';
 import AdminControl from '@/components/Admin/Admin';
@@ -19,7 +19,7 @@ const App = () => {
 
   const votingContractRef = useRef(null); // Add this at the top within your component, alongside other state variables.
 
-  const [showCadidateCards, setshowCadidateCards] = useState(false);
+  const [showCandidateCards, setshowCandidateCards] = useState(false);
   const [showVoteResultCards,setShowVoteResultCards] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [showKYCFormModal, setshowKYCFormModal] = useState(false);
@@ -69,7 +69,7 @@ const App = () => {
       //     toastMsg("error", "You do not have a Voter ID NFT! Please complete the KYC process first.", 5000);
       //     setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
       //   } else {
-      //     setshowCadidateCards(true); // Show user cards page if NFT is owned
+      //     setshowCandidateCards(true); // Show user cards page if NFT is owned
       //   }
       // }
       setIsWalletConnected(true);
@@ -146,11 +146,11 @@ const App = () => {
     console.log("Voting State:", votingStatus);
 
     if (votingStatus == 1) {
-      toastMsg("success", "Voting is ongoing.", 10000, "top-center");
+      toastMsg("success", "Voting is ongoing.", 5000, "top-center");
     } else if (votingStatus == 0) {
-      toastMsg("error", "Voting has not started yet.", 100000, "top-center");
+      toastMsg("error", "Voting has not started yet.", 5000, "top-center");
     } else if (votingStatus == 2) {
-      toastMsg("error", "Voting has ended.", 100000, "top-center");
+      toastMsg("error", "Voting has ended.", 5000, "top-center");
     } else if (votingStatus == -1) {
       toastMsg("error", "Error checking voting status. Please try again later.", 10000, "top-center");
     }
@@ -161,7 +161,7 @@ const App = () => {
         toastMsg("error", "You do not have a Voter ID NFT! Please complete the KYC process first.", 5000);
         setShowKYCConfirm(true);  // Show KYC confirmation prompt if NFT is not owned
       } else {
-        setshowCadidateCards(true); // Show user cards page if NFT is owned
+        setshowCandidateCards(true); // Show user cards page if NFT is owned
       }
       return;
     }
@@ -169,7 +169,7 @@ const App = () => {
     console.log("Admin address:", wallet.address, "is connected");
   };
   //here it will help to show vote result modal
-  const handelShowvoteResult = ()=>{
+  const handelShowVoteResult = ()=>{
     setShowVoteResultCards(true);
     
   };
@@ -183,7 +183,7 @@ const App = () => {
   const handleCompleteKYC = (formData) => {
     console.log("KYC data submitted:", formData);
     setshowKYCFormModal(false);
-    setshowCadidateCards(true); // Show user cards page after KYC is completed
+    setshowCandidateCards(true); // Show user cards page after KYC is completed
   };
 
   const handleAdminCandidateControls = () => {
@@ -318,12 +318,18 @@ const App = () => {
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Toaster position="bottom-right" />
       <Header 
+        onLogo={() => {
+          setshowCandidateCards(false);
+          setAdminControlModal(false);
+          setAdminCandidateControlsPage(false);
+          setAdminUserControlsPage(false);
+        }} // Handling disconnect
         isConnected={isWalletConnected} 
         walletAddress={isWalletConnected ? wallet.address : null} 
         onConnect={handleConnectWallet} 
         onDisconnect={() => {
           setIsWalletConnected(false);
-          setshowCadidateCards(false);
+          setshowCandidateCards(false);
           setAdminControlModal(false);
           setAdminCandidateControlsPage(false);
           setAdminUserControlsPage(false);
@@ -332,7 +338,7 @@ const App = () => {
       />
       <main className="w-svw flex flex-grow justify-center items-center">
         {(() => {
-          if (showCadidateCards) {
+          if (showCandidateCards) {
             return (
               <CandidateCardsPage 
                 wallet={wallet} 
@@ -381,7 +387,7 @@ const App = () => {
                   setAdminControlModal(true);
                 }} />;
           }
-          return <Hero onEnterDApp={handleEnterDApp} showVoteButton={votingStatusButton} onEnterShowResult= {handelShowvoteResult}/*here pass the show vote model hook*/ />;
+          return <Hero onEnterDApp={handleEnterDApp} showVoteButton={votingStatusButton} onEnterShowResult= {handelShowVoteResult}/*here pass the show vote model hook*/ />;
         })()}
       </main>
       <footer className="bg-gray-900 text-white text-center py-4">

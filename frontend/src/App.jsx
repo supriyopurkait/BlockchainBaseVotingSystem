@@ -343,13 +343,16 @@ const App = () => {
               <CandidateCardsPage 
                 wallet={wallet} 
                 VotingSystemContractAddress={VotingSystemContractAddress} 
-                VotingSystemABI={VotingSystemABI} 
+                VotingSystemABI={VotingSystemABI}
+                onBack = {()=>{setshowCandidateCards(false)}}
               />
             );
           }
           if(showVoteResultCards){
             return(
-              <ShowVoteResultPage/>
+              <ShowVoteResultPage
+              onBack = {()=>{setShowVoteResultCards(false)}}
+              />
             );
           }//here i have to add the voting result show modal 
           if (AdminControlModal) {
@@ -362,7 +365,9 @@ const App = () => {
                 onUser={handleAdminUserControls} 
                 onStartVote={handleAdminStartVote} 
                 onEndVote={handleAdminStopVote}
-                onClose={() => setAdminControlModal(false)} />;
+                onClose={() => setAdminControlModal(false)} 
+                onBack={()=>setAdminControlModal(false)}
+                />;
           }
           if (showAdminCandidateControlsPage) {
             return <AdminCandidateControlsPage
@@ -374,7 +379,9 @@ const App = () => {
                 onClose={() => {
                   setAdminCandidateControlsPage(false);
                   setAdminControlModal(true);
-                }} />;
+                }}
+                onBack={()=>{setAdminCandidateControlsPage(false);
+                  setAdminControlModal(true);}} />;
           }
           if (showAdminUserControlsPage) {
             return <AdminUserControlsPage 
@@ -385,7 +392,9 @@ const App = () => {
                 onClose={() => {
                   setAdminUserControlsPage(false);
                   setAdminControlModal(true);
-                }} />;
+                }}
+                onBack={() => {setAdminUserControlsPage(false);
+                  setAdminControlModal(true);}} />;
           }
           return <Hero onEnterDApp={handleEnterDApp} showVoteButton={votingStatusButton} onEnterShowResult= {handelShowVoteResult}/*here pass the show vote model hook*/ />;
         })()}

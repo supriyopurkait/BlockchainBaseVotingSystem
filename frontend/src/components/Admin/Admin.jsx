@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { CircleArrowLeft } from "lucide-react";
 import { toast, Toaster } from 'react-hot-toast';
 import { fetchStatData } from '@/utils/getDetails';
 import { Rss, AtSign, UserRoundCog, CirclePlay, CircleStop, Ellipsis, Search, X } from 'lucide-react';
@@ -9,7 +10,7 @@ import { processAreaData, calculateTotalVotes } from '@/utils/StatDataProcessor'
 
 import { sdata } from '@/utils/testData2';
 
-const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandidate, onUser, onStartVote, onEndVote, onClose }) => {
+const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandidate, onUser, onStartVote, onEndVote, onClose, onBack }) => {
   const [areaData, setAreaData] = useState({});
   const [NumberOfArea, setNumberOfArea] = useState(0);
   const [TotalVotes, setTotalVotes] = useState(0);
@@ -110,6 +111,14 @@ const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandi
 
   return (
     <div className="w-svw flex flex-col justify-self-start m-10">
+      <div className="relative w-full flex justify-start ltr items-start ">
+        <button
+          className="ps-[5rem] absolute top-[17px] -left-24 h-10 w-10 text-black-500 hover:text-gray-500" // Adjust size and position
+          onClick={onBack}
+        >
+          <CircleArrowLeft size={34} strokeWidth={1.75}/>
+        </button>
+      </div>
       <div className="TopBar mx-6 flex flex-col md:flex-row justify-between justify-items-center">
         <h1 className="text-4xl font-bold md:my-2 md:py-2 md:px-4 m-4 pt-4">Admin Controls</h1>
         <div className="flex flex-row justify-items-center my-2 py-2">

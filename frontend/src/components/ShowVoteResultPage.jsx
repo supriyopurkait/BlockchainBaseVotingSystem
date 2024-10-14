@@ -7,10 +7,10 @@ import {
   Legend,
   Tooltip,
 } from "recharts";
-import { Trophy, Users, Flag, ArrowRight } from "lucide-react";
+import { Trophy, Users, Flag, ArrowRight,CircleArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
-const ShowVoteResultPage = () => {
+const ShowVoteResultPage = ({onBack}) => {
   const data = [
     {
       photo: "https://xsgames.co/randomusers/assets/avatars/pixel/1.jpg",
@@ -61,25 +61,36 @@ const ShowVoteResultPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      <motion.div 
+    <div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+      {/* Arrow Container positioned at top-left */}
+      <div className="relative w-full flex justify-start items-start">
+  <button
+    className="relative ps-[2rem] h-10 w-10 text-purple-900 hover:text-purple-500" // Adjusted size and position
+    onClick={onBack}
+  >
+    <CircleArrowLeft size={34} strokeWidth={1.75} />
+  </button>
+</div>
+
+  
+      <motion.div
         className="max-w-7xl w-full"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Title */}
-        <motion.h1 
+        <motion.h1
           className="text-4xl md:text-5xl font-bold text-center text-indigo-900 mb-12"
           variants={itemVariants}
         >
           Election Results 2024
         </motion.h1>
-
+  
         {/* Main Content: Pie Chart & Winner Section */}
         <div className="flex flex-col lg:flex-row justify-between gap-8">
           {/* Pie Chart Section */}
-          <motion.div 
+          <motion.div
             className="lg:w-2/3 bg-white rounded-2xl shadow-xl p-6 backdrop-blur-sm bg-opacity-80"
             variants={itemVariants}
           >
@@ -117,9 +128,9 @@ const ShowVoteResultPage = () => {
               </ResponsiveContainer>
             </div>
           </motion.div>
-
+  
           {/* Winner's Information Section */}
-          <motion.div 
+          <motion.div
             className="lg:w-1/3 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl shadow-xl p-6 text-white"
             variants={itemVariants}
           >
@@ -128,10 +139,8 @@ const ShowVoteResultPage = () => {
               alt="Winner"
               className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-white shadow-lg"
             />
-            <h2 className="text-3xl font-bold text-center mb-8">
-              Winner
-            </h2>
-
+            <h2 className="text-3xl font-bold text-center mb-8">Winner</h2>
+  
             <div className="space-y-6">
               <div className="flex items-center space-x-4">
                 <Trophy className="w-8 h-8 text-yellow-400" />
@@ -140,15 +149,17 @@ const ShowVoteResultPage = () => {
                   <p className="text-xl font-semibold">{winner}</p>
                 </div>
               </div>
-
+  
               <div className="flex items-center space-x-4">
                 <Users className="w-8 h-8 text-green-400" />
                 <div>
                   <p className="text-sm text-indigo-200">Total Votes</p>
-                  <p className="text-xl font-semibold">{winnerVotes.toLocaleString()}</p>
+                  <p className="text-xl font-semibold">
+                    {winnerVotes.toLocaleString()}
+                  </p>
                 </div>
               </div>
-
+  
               <div className="flex items-center space-x-4">
                 <Flag className="w-8 h-8 text-red-400" />
                 <div>
@@ -159,9 +170,9 @@ const ShowVoteResultPage = () => {
             </div>
           </motion.div>
         </div>
-
+  
         {/* Additional Statistics for Other Candidates */}
-        <motion.div 
+        <motion.div
           className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
           variants={containerVariants}
         >
@@ -189,6 +200,7 @@ const ShowVoteResultPage = () => {
       </motion.div>
     </div>
   );
+  
 };
 
 export default ShowVoteResultPage;

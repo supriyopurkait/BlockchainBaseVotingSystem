@@ -52,8 +52,8 @@ const CopyComponent = ({ walletAddress, wallet }) => {
   );
 };
 
-const UserDeatils = ({ walletAddress, onEnter, onClose, details }) => {
-  const userName = "ABCD";
+const UserDeatils = ({ walletAddress, onEnter, onClose, details, kycStatus }) => {
+  const status = (kycStatus ? "Verified ✅" : "Not Verified ❌"); 
   let walletAddressShort = `${walletAddress.substring(
     0,
     12
@@ -92,8 +92,8 @@ const UserDeatils = ({ walletAddress, onEnter, onClose, details }) => {
       <hr className="my-2" />
 
       <div className="mb-4">
-        <h5 className="font-semibold">Kyc Status:</h5>
-        {/* Add voting status content here */}
+        <strong className="font-semibold">Kyc Status:</strong> {status}
+
       </div>
 
       <hr className="my-2" />

@@ -4,12 +4,13 @@ import UserDetails from "@/components/userDeatils"; // Corrected component name
 import signOutIcon from "pub/picture/sign-out-icon.png?url";
 import metamask from "pub/icons/metamask-icon.svg?url";
 import { fetchUsers } from '@/utils/getDetails';
-
+import { checkNFTOwnership } from "@/utils/web3Utils";
 const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, wallet, voterIDContract }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [data, setData] = useState([])
   const [userfetched, setUserfetched] = useState(false)
+  const [kycStatus, setKYCStatus] = useState(false)
 
   // Function to load user data
   const loadUserData = async () => {
@@ -28,6 +29,16 @@ const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, w
 
   // Handle clicks outside dropdown or UserDetails to close them
   useEffect(() => {
+    const checkForNFTOwnership = async () => {
+      const hasVID = await checkNFTOwnership(voterIDContract[1], voterIDContract[0], wallet);
+      if (hasVID) {
+        setKYCStatus(true);
+      }
+    }
+    const loadAreaAndVIDNumber = async () => {
+      const fetchedUsers = await fetchUsers(wallet, voterIDContract);
+      setData([fetchedUsers["area"], fetchedUsers["VIDNumber"]]);
+    }
     const handleOutsideClick = (event) => {
       const dropdownMenu = document.querySelector(".dropdown-menu");
       const userDetailsContainer = document.querySelector(".user-details-container");
@@ -42,11 +53,15 @@ const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, w
     };
 
     document.addEventListener("mousedown", handleOutsideClick);
-
+    if(voterIDContract && wallet){
+      checkForNFTOwnership();
+      loadAreaAndVIDNumber();
+    }
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [isDropdownOpen, showUserDetails]);
+
+  }, [isDropdownOpen, showUserDetails, voterIDContract, wallet]);
 
   return (
     <header className="flex justify-between items-center p-4 bg-gray-900">
@@ -135,6 +150,7 @@ const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, w
             wallet={wallet}
             onClose={() => setShowUserDetails(false)}
             details = {data}
+            kycStatus = {kycStatus}
           />
         </div>
       )}

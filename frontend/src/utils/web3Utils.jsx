@@ -125,5 +125,33 @@ const votingState = async (VotingSystemABI, VotingSystemContractAddress, wallet)
   }
 };
 
+const getNFTMetadata = async (voterIDContract , wallet) => {
+  const { provider, signer } = wallet;
+  console.log(voterIDContract);
+  
+  const contract = new ethers.Contract(voterIDContract[0], voterIDContract[1], signer);
+  const walletAddress = await signer.getAddress(); // Ensure address is fetched correctly
+  console.log("Wallet address:", walletAddress);
+  try {
+    const tokenID = await contract.tokenIdOfAddr(walletAddress);
+    console.log("Token ID:", tokenID.toString());  // Convert to string for logging
+    let metadata = await contract.tokenURI(tokenID);
+    metadata = JSON.parse(metadata);
+    return metadata;
+  } catch (error) {
+    console.error("Error getting NFT metadata:", error);
+    return null;
+  }
+};
 
-export { connectWallet, checkNFTOwnership, votingState };
+const getAreaAndVIDNumberFromSBT = async (voterIDContract, wallet) => {
+  const metadata = await getNFTMetadata(voterIDContract, wallet);
+  if (metadata) {
+    const data = { "area": metadata.attributes[3].value, "VIDNumber": metadata.attributes[0].value };
+    return data;
+  } else {
+    return { "area": "N/A", "VIDNumber": "N/A" };
+  }
+}
+
+export { connectWallet, checkNFTOwnership, votingState, getAreaAndVIDNumberFromSBT };

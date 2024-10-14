@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'; 
 import { ethers } from 'ethers';
-import { connectWallet, checkNFTOwnership, votingState } from '@/utils/web3Utils';
+import { connectWallet, checkNFTOwnership } from '@/utils/web3Utils';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import CandidateCardsPage from '@/components/candidateCardPage';
@@ -335,6 +335,7 @@ const App = () => {
           setAdminUserControlsPage(false);
         }} // Handling disconnect
         wallet={wallet}
+        voterIDContract={[VoterIDContractAddress, VoterIdABI]}
       />
       <main className="w-svw flex flex-grow justify-center items-center">
         {(() => {

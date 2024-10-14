@@ -5,7 +5,7 @@ import signOutIcon from "pub/picture/sign-out-icon.png?url";
 import metamask from "pub/icons/metamask-icon.svg?url";
 import { fetchUsers } from '@/utils/getDetails';
 
-const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, wallet }) => {
+const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, wallet, voterIDContract }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [data, setData] = useState([])
@@ -13,11 +13,9 @@ const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, w
 
   // Function to load user data
   const loadUserData = async () => {
-    const fetchedUsers = await fetchUsers(wallet);
-    console.log('Fetched users:', fetchedUsers);
+    const fetchedUsers = await fetchUsers(wallet, voterIDContract);
     setData([fetchedUsers["area"], fetchedUsers["VIDNumber"]]);
     setUserfetched(true)
-    
     
     // Use console.log instead of console.error for regular logging
     toggleDropdown(); // Toggling dropdown after fetching data

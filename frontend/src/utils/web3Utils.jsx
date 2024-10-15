@@ -8,7 +8,7 @@ const config = {
 };
 
 // Connect Wallet using ethers.js and setup the provider and signer
-export const connectWallet = async () => {
+const connectWallet = async () => {
   if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
     try {
       // Initialize ethers provider using window.ethereum (MetaMask or other provider)
@@ -87,7 +87,7 @@ export const connectWallet = async () => {
   }
 };
 
-export const checkNFTOwnership = async (VoterIdABI, VoterIDContractAddress, wallet) => {
+const checkNFTOwnership = async (VoterIdABI, VoterIDContractAddress, wallet) => {
   const { provider, signer } = wallet;
   console.log("Provider:", provider);
   console.log("Signer:", signer);
@@ -109,8 +109,8 @@ export const checkNFTOwnership = async (VoterIdABI, VoterIDContractAddress, wall
 
 };
 
-export const votingState = async (VotingSystemABI, VotingSystemContractAddress, wallet) => {
-  const { provider, signer } = wallet;
+const votingState = async (VotingSystemABI, VotingSystemContractAddress, wallet) => {
+  const { provider,signer } = wallet;
   const contract = new ethers.Contract(VotingSystemContractAddress, VotingSystemABI, signer);
   const walletAddress = await signer.getAddress(); // Ensure address is fetched correctly
   console.log("Wallet address:", walletAddress);
@@ -125,30 +125,33 @@ export const votingState = async (VotingSystemABI, VotingSystemContractAddress, 
   }
 };
 
-export const fetchUsers = async (wallet) => {
-  const url = 'http://127.0.0.1:5000/api/get-candidates';
+const getNFTMetadata = async (voterIDContract , wallet) => {
+  const { provider, signer } = wallet;
+  console.log(voterIDContract);
+  
+  const contract = new ethers.Contract(voterIDContract[0], voterIDContract[1], signer);
+  const walletAddress = await signer.getAddress(); // Ensure address is fetched correctly
+  console.log("Wallet address:", walletAddress);
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        address: wallet.address
-      })
-    });
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-
-    // Get the full response
-    const data = await response.json();
-    // console.log(data.candidates);
-    // Return only the candidates array
-    return data.candidates;
-
+    const tokenID = await contract.tokenIdOfAddr(walletAddress);
+    console.log("Token ID:", tokenID.toString());  // Convert to string for logging
+    let metadata = await contract.tokenURI(tokenID);
+    metadata = JSON.parse(metadata);
+    return metadata;
   } catch (error) {
-    console.error('Error fetching users:', error);
-    return [];
+    console.error("Error getting NFT metadata:", error);
+    return null;
   }
 };
+
+const getAreaAndVIDNumberFromSBT = async (voterIDContract, wallet) => {
+  const metadata = await getNFTMetadata(voterIDContract, wallet);
+  if (metadata) {
+    const data = { "area": metadata.attributes[3].value, "VIDNumber": metadata.attributes[0].value };
+    return data;
+  } else {
+    return { "area": "N/A", "VIDNumber": "N/A" };
+  }
+}
+
+export { connectWallet, checkNFTOwnership, votingState, getAreaAndVIDNumberFromSBT };

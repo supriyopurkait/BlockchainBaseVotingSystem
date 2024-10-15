@@ -1,10 +1,7 @@
+from cv2 import add
 from flask import Flask, app, request, render_template, jsonify
 from flask_cors import CORS
-from numpy import delete
 from index import *
-from dotenv import load_dotenv
-import os
-
 
 app = Flask(__name__)
 CORS(app)
@@ -48,13 +45,13 @@ def get_kyc_data():
         tx_hash, vid_number = issue_sbt(wallet_address, area)
         print(f"Transaction hash: {tx_hash}")
         
-        insert_vid_number(wallet_address, vid_number)
-        if not tx_hash:
+        if not tx_hash and not vid_number:
             delete_data(wallet_address)
             return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500     
         elif tx_hash == "Minted":
             return jsonify({"error": "SBT already minted by this address."}), 400
-        elif tx_hash:
+        elif tx_hash and vid_number:
+            insert_vid_number(wallet_address, vid_number)
             return jsonify({"status": "success","tx_hash": str(tx_hash), "message": "Your KYC is done, you can now vote."}), 200
         else:
             delete_data(wallet_address)
@@ -73,7 +70,7 @@ def get_newCandidate_data():
         party = request.form.get('party')
         human_image = request.files.get('photo')
         
-        candidate_id = 3 # Generate a unique candidate_id
+        candidate_id = 100 # Generate a unique candidate_id
         
         # Validate images
         if not human_image:
@@ -82,7 +79,7 @@ def get_newCandidate_data():
         photo = human_image.read() # Read the file content
 
         # Insert the data into the database
-        result = insert_newCandidate_data(candidate_name, candidate_id, area, party, photo)
+        result = insert_newCandidate_data(candidate_id, candidate_name, area, party, photo)
         if result == "Duplicate":
             return jsonify({"error": "A Candidate record already exists for this Candidate."}), 400
         elif result == False:
@@ -130,7 +127,7 @@ def get_candidates():
         if not address:
             return jsonify({'status': 'error', 'message': 'Address is required'}), 400
         # Fetch the candidate details using the area
-        candidates = get_candidates_by_area(address)
+        candidates = get_candidates_from_db(address)
         print("Candidates:", candidates)  
         # Check if the area was found
         if not candidates:
@@ -211,8 +208,56 @@ def execute_meta_transaction():
         print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
     
-    
 
+@app.route('/api/upload-image-ipfs', methods=['POST'])
+def upload_image_ipfs():
+    try:
+        # Retrieve the address from the form data
+        address = request.form.get('address').lower()
+        print("Address on upload-image-ipfs: ", address)
+
+        # Retrieve the image from the form data
+        if 'photo' not in request.files:
+            return jsonify({'status': 'error', 'message': 'No photo part in the request'}), 400
+
+        image = request.files['photo']
+        if image.filename == '':
+            return jsonify({'status': 'error', 'message': 'No selected file'}), 400
+
+        # Read the image file content for processing
+        image_data = image.read()
+
+        # Upload the image to IPFS (assuming you have a function for that)
+        ipfs_hash = upload_to_ipfs(image_data, address)
+
+        # Return the IPFS hash in the response
+        return jsonify({'status': 'success', 'ipfs_hash': ipfs_hash}), 200
+
+    except Exception as e:
+        # Handle any exceptions and return an error response
+        print(e)
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.route('/api/unpin-image-ipfs', methods=['POST'])
+def unpin_image_ipfs():
+    try:
+        data = request.json
+        address = data.get('address')
+        ipfs_hash = data.get('ipfs_hash')
+        if(not address or not ipfs_hash):
+            return jsonify({'status': 'error', 'message': 'Missing required parameters'}), 400
+        if(address.lower() != (os.getenv('ADMIN_ADDRESS')).lower()):
+            return jsonify({'status': 'error', 'message': 'Unauthorized access'}), 401
+        if(unpin_from_ipfs(address, ipfs_hash)):
+            # Return a success response
+            return jsonify({'status': 'success', 'message': 'Image un-pinned successfully'}), 200
+        else:
+            # Return an error response
+            return jsonify({'status': 'error', 'message': 'Error un-pinning image'}), 400
+    except Exception as e:
+        # Handle any exceptions and return an error response
+        print(e)
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 
 if __name__ == '__main__':

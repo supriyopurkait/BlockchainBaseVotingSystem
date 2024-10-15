@@ -4,20 +4,19 @@ import UserDetails from "@/components/userDeatils"; // Corrected component name
 import signOutIcon from "pub/picture/sign-out-icon.png?url";
 import metamask from "pub/icons/metamask-icon.svg?url";
 import { fetchUsers } from '@/utils/getDetails';
-
-const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet }) => {
+import { checkNFTOwnership } from "@/utils/web3Utils";
+const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, wallet, voterIDContract, adminModeOn }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [data, setData] = useState([])
   const [userfetched, setUserfetched] = useState(false)
+  const [kycStatus, setKYCStatus] = useState(false)
 
   // Function to load user data
   const loadUserData = async () => {
-    const fetchedUsers = await fetchUsers(wallet);
-    console.log('Fetched users:', fetchedUsers);
+    const fetchedUsers = await fetchUsers(wallet, voterIDContract);
     setData([fetchedUsers["area"], fetchedUsers["VIDNumber"]]);
     setUserfetched(true)
-    
     
     // Use console.log instead of console.error for regular logging
     toggleDropdown(); // Toggling dropdown after fetching data
@@ -30,6 +29,16 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet })
 
   // Handle clicks outside dropdown or UserDetails to close them
   useEffect(() => {
+    const checkForNFTOwnership = async () => {
+      const hasVID = await checkNFTOwnership(voterIDContract[1], voterIDContract[0], wallet);
+      if (hasVID) {
+        setKYCStatus(true);
+      }
+    }
+    const loadAreaAndVIDNumber = async () => {
+      const fetchedUsers = await fetchUsers(wallet, voterIDContract);
+      setData([fetchedUsers["area"], fetchedUsers["VIDNumber"]]);
+    }
     const handleOutsideClick = (event) => {
       const dropdownMenu = document.querySelector(".dropdown-menu");
       const userDetailsContainer = document.querySelector(".user-details-container");
@@ -44,17 +53,23 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet })
     };
 
     document.addEventListener("mousedown", handleOutsideClick);
-
+    if(voterIDContract && wallet){
+      checkForNFTOwnership();
+      loadAreaAndVIDNumber();
+    }
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [isDropdownOpen, showUserDetails]);
+
+  }, [isDropdownOpen, showUserDetails, voterIDContract, wallet]);
 
   return (
     <header className="flex justify-between items-center p-4 bg-gray-900">
-      <div className="text-white font-bold text-2xl flex items-center">
-        <Vote className="ml-1 mt-1.5 mr-2" size={35} /> | On Chain Vote
-      </div>
+      <button  onClick={onLogo}>
+        <div className="text-white font-bold text-2xl flex items-center">
+          <Vote className="ml-1 mt-1.5 mr-2" size={35} /> | On Chain Vote
+        </div>
+      </button>
 
       <div className="">
         {/* Button displaying the connected wallet with dropdown functionality */}
@@ -110,12 +125,12 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet })
             </button>
 
             {/* User Details button */}
-            <button
+            {(!adminModeOn) && (<button
               className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
               onClick={() => setShowUserDetails((prev) => !prev)} // Toggle user details visibility
             >
               User Details
-            </button>
+            </button>)}
           </div>
         )}
       </div>
@@ -135,6 +150,7 @@ const Header = ({ isConnected, onConnect, walletAddress, onDisconnect, wallet })
             wallet={wallet}
             onClose={() => setShowUserDetails(false)}
             details = {data}
+            kycStatus = {kycStatus}
           />
         </div>
       )}

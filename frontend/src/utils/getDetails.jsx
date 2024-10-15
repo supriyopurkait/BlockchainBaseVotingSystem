@@ -1,3 +1,5 @@
+import { getAreaAndVIDNumberFromSBT } from "./web3Utils";
+
 export const fetchCandidate = async (wallet) => {
     const url = 'http://127.0.0.1:5000/api/get-candidates';
     try {
@@ -27,7 +29,7 @@ export const fetchCandidate = async (wallet) => {
     }
   };
 
-export const fetchUsers = async (wallet) => {
+export const fetchUsers = async (wallet, voterIDContract) => {
     const url = 'http://127.0.0.1:5000/api/get-users';
     try {
       const response = await fetch(url, {
@@ -39,16 +41,17 @@ export const fetchUsers = async (wallet) => {
           address: wallet.address
         })
       });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      if (response.ok) {
+        // Get the full response
+        const data = await response.json();
+        console.error(data.users);
+        if((data.users.VIDNumber == null) || (data.users.area == null)){
+          return await getAreaAndVIDNumberFromSBT(voterIDContract, wallet);
+        }
+        return data.users;
+      } else {
+        return await getAreaAndVIDNumberFromSBT(voterIDContract, wallet);
       }
-      
-      // Get the full response
-      const data = await response.json();
-      // console.log(data.users);
-      // Return only the Users array
-      return data.users;
-      
     } catch (error) {
       console.error('Error fetching Users:', error);
       return [];

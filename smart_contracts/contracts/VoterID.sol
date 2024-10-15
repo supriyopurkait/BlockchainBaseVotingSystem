@@ -14,6 +14,8 @@ contract VoterID is ERC721URIStorage, Ownable {
 
     uint256 public nextTokenID;
 
+    mapping (address => uint) public tokenIdOfAddr;
+
     constructor() ERC721("VoterID", "VID") {
         nextTokenID = _tokenIDCounter.current();  // Initialize nextTokenID to 0 at deployment
     }
@@ -26,10 +28,13 @@ contract VoterID is ERC721URIStorage, Ownable {
 
         _safeMint(to, tokenID);
         _setTokenURI(tokenID, uri);
+        // Update tokenIdOfAddr mapping to reflect the minted tokenID
+        tokenIdOfAddr[to] = tokenID;
         emit TokenMinted(to, tokenID);  // Emit event
 
         // Update nextTokenID to reflect the next available tokenID after minting
         nextTokenID = _tokenIDCounter.current() + 1;
+
     }
 
     function revoke(uint256 _tokenID) external onlyOwner {

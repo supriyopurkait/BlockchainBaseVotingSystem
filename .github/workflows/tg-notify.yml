@@ -1,5 +1,4 @@
 name: Notify Telegram on Push
-
 on:
   push:
     branches:
@@ -15,46 +14,46 @@ jobs:
       with:
         fetch-depth: 0  # Ensure full commit history is fetched
 
-    - name: Send notification to Telegram Group
+    - name: Send notifications to Telegram Group
       env:
         TELEGRAM_TOKEN: 6440588108:AAEDYXXQL7L1jYGnxtChytq4dfajZQOqVGA
         TELEGRAM_GROUP_CHAT_ID: -1002261193147
       run: |
-        # Fallback to the first commit if this is the first push or no valid range is found
-        if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-          echo "First push or no previous commit found, getting the full commit history."
-          commit_range=$(git rev-list --max-parents=0 HEAD)..${{ github.sha }}
-        else
-          commit_range=${{ github.event.before }}..${{ github.sha }}
-        fi
-
-        # Check if the commit range is valid
-        if git rev-list $commit_range >/dev/null 2>&1; then
-          echo "Commit range is valid: $commit_range"
-        else
-          echo "Invalid commit range. Using last commit only."
-          commit_range=${{ github.sha }}^..${{ github.sha }}
-        fi
-
-        # Get the list of commits pushed in the current push
-        commit_list=$(git rev-list --reverse $commit_range)
-
-        # Loop through each commit and send a separate message
-        for commit in $commit_list; do
-          commit_message=$(git log -1 --pretty=format:"➡️ %s" $commit)
-          commit_author=$(git log -1 --pretty=format:"%an" $commit)
-          commit_hash=$(git rev-parse --short $commit)
-
-          message="🚀 New commit by *$commit_author* on branch *${{ github.ref_name }}*
-        Commit: $commit_message
-        Hash: \`$commit_hash\`"
-
-          # Send the message to the group chat
+        send_telegram_message() {
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
             -d chat_id="${TELEGRAM_GROUP_CHAT_ID}" \
-            -d text="$message" \
+            -d text="$1" \
             -d parse_mode="Markdown"
+          sleep 1  # To avoid hitting rate limits
+        }
 
-          # Add a small delay to avoid hitting rate limits
-          sleep 1
-        done
+        # Check if this is a new branch
+        if [ "${{ github.event.created }}" = "true" ]; then
+          # This is a new branch
+          branch_name="${{ github.ref_name }}"
+          user_name="${{ github.actor }}"
+          message="🌿 New branch created: *$branch_name* by *$user_name*"
+          send_telegram_message "$message"
+        else
+          # This is a push to an existing branch
+          branch_name="${{ github.ref_name }}"
+          user_name="${{ github.actor }}"
+          commit_count=$(git rev-list --count ${{ github.event.before }}..${{ github.sha }})
+          
+          initial_message="🚀 Push to branch *$branch_name* by *$user_name*
+        Number of commits: $commit_count"
+          send_telegram_message "$initial_message"
+          
+          # Send a separate message for each commit
+          git log --reverse --pretty=format:"%H" ${{ github.event.before }}..${{ github.sha }} | while read commit_hash; do
+            commit_message=$(git log -1 --pretty=format:"➡️ %s" $commit_hash)
+            commit_author=$(git log -1 --pretty=format:"%an" $commit_hash)
+            short_hash=$(git rev-parse --short $commit_hash)
+            
+            commit_info="Commit in *$branch_name* by *$commit_author*
+        $commit_message
+        Hash: \`$short_hash\`"
+            
+            send_telegram_message "$commit_info"
+          done
+        fi

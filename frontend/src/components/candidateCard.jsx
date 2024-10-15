@@ -1,12 +1,13 @@
 import React from 'react';
 import { User } from 'lucide-react';
 
-const UserCard = ({ user, onVote }) => (
+const CandidateCard = ({ candidate, onVote }) => (
   <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center">
-    <img src={`${user.photo}&${user.id}`} alt={user.name} className="w-24 h-24 rounded-full mb-4" />
-    <h3 className="text-xl font-semibold mb-2">{user.name}</h3>
+    <img src={`data:image/jpeg;base64,${candidate.photo}`} alt={candidate.name} className="w-24 h-24 rounded-full mb-4" />
+    <h3 className="text-xl font-semibold mb-2">{candidate.name}</h3>
+    <h4 className="text-lg font-semibold mb-2">{candidate.party}</h4>
     <button
-      onClick={() => onVote(user.candidate_id)}
+      onClick={() => onVote(candidate.candidate_id)}
       className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-full flex items-center"
     >
       Vote
@@ -15,4 +16,4 @@ const UserCard = ({ user, onVote }) => (
   </div>
 );
 
-export default UserCard;
+export default CandidateCard;

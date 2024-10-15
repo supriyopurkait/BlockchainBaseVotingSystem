@@ -16,6 +16,7 @@
     "@mui/x-charts": "^7.19.0",
     "dotenv-reader": "^1.0.1-b",
     "ethers": "^6.13.3",
+    "framer-motion": "^11.11.8",
     "lucide-react": "^0.447.0",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",

@@ -3,3 +3,9 @@ pytz
 datetime
 python-dotenv
 flask_cors
+keras-facenet
+mtcnn
+opencv-python-headless
+numpy
+scikit-learn
+easyocr

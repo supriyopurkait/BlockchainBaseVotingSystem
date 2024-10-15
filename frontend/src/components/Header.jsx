@@ -5,7 +5,7 @@ import signOutIcon from "pub/picture/sign-out-icon.png?url";
 import metamask from "pub/icons/metamask-icon.svg?url";
 import { fetchUsers } from '@/utils/getDetails';
 import { checkNFTOwnership } from "@/utils/web3Utils";
-const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, wallet, voterIDContract }) => {
+const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, wallet, voterIDContract, adminModeOn }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
   const [data, setData] = useState([])
@@ -125,12 +125,12 @@ const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, w
             </button>
 
             {/* User Details button */}
-            <button
+            {(!adminModeOn) && (<button
               className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
               onClick={() => setShowUserDetails((prev) => !prev)} // Toggle user details visibility
             >
               User Details
-            </button>
+            </button>)}
           </div>
         )}
       </div>

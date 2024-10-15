@@ -336,6 +336,7 @@ const App = () => {
         }} // Handling disconnect
         wallet={wallet}
         voterIDContract={[VoterIDContractAddress, VoterIdABI]}
+        adminModeOn={AdminControlModal}
       />
       <main className="w-svw flex flex-grow justify-center items-center">
         {(() => {

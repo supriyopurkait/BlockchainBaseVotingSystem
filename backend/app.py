@@ -10,6 +10,56 @@ CORS(app)
 def index():
     return render_template('index.html')
 
+# Initialize FaceNet model, MTCNN, and EasyOCR
+embedder = FaceNet()
+detector = MTCNN()
+reader = easyocr.Reader(['en'], gpu=False)  # Set gpu=True if CUDA is available
+
+def detect_and_crop_face(image_data):
+    """Detects and crops a face from an image."""
+    np_img = np.frombuffer(image_data, np.uint8)
+    img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    faces = detector.detect_faces(img_rgb)
+    if faces:
+        x, y, width, height = faces[0]['box']
+        face = img_rgb[y:y + height, x:x + width]
+        face = cv2.resize(face, (160, 160))
+        face = face.astype('float32') / 255.0
+        return np.expand_dims(face, axis=0)
+    return None
+
+def are_same_person(image_data1, image_data2, threshold=0.7):
+    """Compares two images and checks if they are of the same person."""
+    img1 = detect_and_crop_face(image_data1)
+    img2 = detect_and_crop_face(image_data2)
+
+    if img1 is None or img2 is None:
+        return False
+
+    embedding1 = embedder.embeddings(img1)[0]
+    embedding2 = embedder.embeddings(img2)[0]
+    similarity = cosine_similarity([embedding1], [embedding2])[0][0]
+
+    print(f"Similarity Score: {similarity:.2f}")
+    return similarity >= threshold
+
+def extract_text_from_image(image_data):
+    """Extracts text from an image using EasyOCR."""
+    np_img = np.frombuffer(image_data, np.uint8)
+    img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+    result = reader.readtext(img)
+    return [text for (_, text, _) in result]
+
+def check_substrings_in_text(text_list, name, dob, docn):
+    """Checks if name, DOB, and document number are present in the text."""
+    combined_text = ' '.join(text_list).lower()
+    name_match = name.lower() in combined_text
+    dob_match = dob in combined_text
+    docn_match = docn in combined_text
+    return name_match, dob_match, docn_match
+
 @app.route('/api/kyc', methods=['POST'])
 def get_kyc_data():
     try:
@@ -31,11 +81,26 @@ def get_kyc_data():
         if not doc_image or not human_image:
             return jsonify({"error": "Missing required images"}), 400
         
-        doc_image_data = doc_image.read()  # Read the file content
+        # Perform face matching
+        doc_image_data = doc_image.read()
         human_image_data = human_image.read()
 
+        if not are_same_person(human_image_data, doc_image_data):
+            return jsonify({"error": "Face mismatch between document and selfie"}), 400
+
+
+        # Perform KYC data verification using EasyOCR
+        extracted_text = extract_text_from_image(doc_image_data)
+        name_found, dob_found, docn_found = check_substrings_in_text(
+            extracted_text, name, D_O_B, document_number
+        )
+
+        if not (name_found and dob_found and docn_found):
+            return jsonify({"error": "KYC data does not match the document"}), 400
+
         # Insert the data into the database
-        result = insert_data(name, document_number, area, phone_number, wallet_address, doc_image_data, human_image_data, D_O_B)
+        if (name_found and dob_found and docn_found):
+            result = insert_data(name, document_number, area, phone_number, wallet_address, doc_image_data, human_image_data, D_O_B)
         if result == "Duplicate":
             return jsonify({"error": "A KYC record already exists for this wallet address."}), 400
         elif result == False:

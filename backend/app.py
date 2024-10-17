@@ -323,7 +323,33 @@ def unpin_image_ipfs():
         # Handle any exceptions and return an error response
         print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
-
-
+    
+@app.route('/api/get-result', methods=['POST'])
+def get_result():
+    if (get_vote_state() == 0):
+        return jsonify({'status': 'error', 'message': 'Vote not started'}), 400
+    elif (get_vote_state() == 1):
+        return jsonify({'status': 'error', 'message': 'Voting process is ongoing'}), 400
+    elif (get_vote_state() == 2):
+        try:
+            wallet_address = request.json.get('wallet_address')
+            
+            if not wallet_address:
+                    return jsonify({'status': 'error', 'message': 'Address is required'}), 400
+                
+            vote_data = get_candidates_by_area(wallet_address)
+            if not vote_data:
+                return jsonify({'status': 'error', 'message': 'Area not found for the given address'}), 404
+            winners = determine_winners(vote_data)
+            if not winners:
+                return jsonify({'status': 'error', 'message': 'No Candidates found'}), 404
+            
+            response = process_results(vote_data, winners)
+            return jsonify({"status": "success", "data": response}), 200
+        except Exception as e:
+            print(e)
+            return jsonify({'status': 'error', 'message': str(e)}), 500
+    
+    
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

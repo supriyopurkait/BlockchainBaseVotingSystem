@@ -1,6 +1,7 @@
 from flask import Flask, app, request, render_template, jsonify
 from flask_cors import CORS
 from index import *
+import re
 
 app = Flask(__name__)
 CORS(app)
@@ -71,6 +72,26 @@ def get_kyc_data():
         doc_image = request.files.get('documentImage') 
         human_image = request.files.get('faceImage')
         D_O_B = request.form.get('DOB')
+
+        def convert_date_format(dob):
+        # Check if the date is in the format DD-MM-YYYY
+        if re.match(r'^\d{2}-\d{2}-\d{4}$', dob):
+            # Split the date string by '-'
+            parts = dob.split('-')
+            # Join the parts with '/'
+            return '/'.join(parts)
+        else:
+            return 1
+        D_O_B=convert_date_format(D_O_B)
+        def insert_spaces(number_str):
+        # Check if the input string has exactly 16 digits
+        if len(number_str) == 12 and number_str.isdigit():
+            # Insert a space after every 4 digits
+            spaced_number = ' '.join(number_str[i:i+4] for i in range(0, 12, 4))
+            return spaced_number
+        else:
+            return 1 
+        document_number=str(insert_spaces(document_number))
         
         # Validate input fields
         if not name or not document_number or not area or not phone_number or not wallet_address or not D_O_B:

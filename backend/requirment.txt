@@ -4,8 +4,9 @@ datetime
 python-dotenv
 flask_cors
 keras-facenet
-mtcnn
+mtcnn[tensorflow]
 opencv-python-headless
 numpy
 scikit-learn
 easyocr
+icecream

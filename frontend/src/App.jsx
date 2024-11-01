@@ -31,6 +31,7 @@ const App = () => {
   const [VotingSystemABI, setVotingSystemABI] = useState(null);
   const [VotingSystemContractAddress, setVotingSystemContractAddress] = useState(null);
   const [AdminControlModal, setAdminControlModal] = useState(false);
+  const [AdminMode, setAdminMode] = useState(false);
   const [showAdminCandidateControlsPage, setAdminCandidateControlsPage] = useState(false);
   const [showAdminAddCandidateForm, setshowAdminAddCandidateForm] = useState(false);
   const [showAdminUserControlsPage, setAdminUserControlsPage] = useState(false);
@@ -57,6 +58,7 @@ const App = () => {
         //   toastMsg("error", "Error checking voting status. Please try again later.", 10000, "top-center");
         // }
         setAdminControlModal(true);
+        setAdminMode(true);
         // console.log("Admin address:", connectedWallet.address, "is connected");
         // const votingStatus = await votingState(VotingSystemABI, VotingSystemContractAddress, connectedWallet);
         // console.log("Voting State:", votingStatus);
@@ -330,13 +332,14 @@ const App = () => {
         onDisconnect={() => {
           setIsWalletConnected(false);
           setshowCandidateCards(false);
+          setAdminMode(false);
           setAdminControlModal(false);
           setAdminCandidateControlsPage(false);
           setAdminUserControlsPage(false);
         }} // Handling disconnect
         wallet={wallet}
         voterIDContract={[VoterIDContractAddress, VoterIdABI]}
-        adminModeOn={AdminControlModal}
+        adminModeOn={AdminMode}
       />
       <main className="w-svw flex flex-grow justify-center items-center">
         {(() => {

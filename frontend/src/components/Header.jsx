@@ -110,7 +110,7 @@ const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, w
           <div className="z-3 absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-1 z-10 dropdown-menu">
             {/* Disconnect button */}
             <button
-              className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
+              className="block w-48 px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
               onClick={() => {
                 onDisconnect();
                 setDropdownOpen(false); // Close the dropdown after disconnecting
@@ -126,7 +126,7 @@ const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, w
 
             {/* User Details button */}
             {(!adminModeOn) && (<button
-              className="block w-48 text-left px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
+              className="block w-48 px-4 py-2 text-center text-sm text-gray-700 hover:bg-gray-100"
               onClick={() => setShowUserDetails((prev) => !prev)} // Toggle user details visibility
             >
               User Details

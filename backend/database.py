@@ -7,6 +7,7 @@ import requests
 from io import BytesIO
 from PIL import Image
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
 
 load_dotenv()
 # Set up the SQLite database
@@ -67,7 +68,9 @@ def update_database_from_blockchain():
     cursor.execute('DELETE FROM candidates')
 
     # Fetch all candidates at once from the blockchain
+    print("Fetching candidates from blockchain...")
     candidate = contract.functions.getAllCandidates().call()
+    print(f"Found {len(candidate)} candidates")
 
     # Function to download the image in parallel
     def download_image(candidate_entry):
@@ -79,24 +82,57 @@ def update_database_from_blockchain():
                 response = requests.get(photo_url)
                 response.raise_for_status()
                 
-                # Open the image and convert to bytes
+                # Open the image and resize it
                 image = Image.open(BytesIO(response.content))
+                
+                # Calculate new height maintaining aspect ratio
+                width = 150
+                aspect_ratio = image.height / image.width
+                height = int(width * aspect_ratio)
+                
+                # Resize image
+                image = image.resize((width, height), Image.Resampling.LANCZOS)
+                
+                # Convert to RGB if image is in RGBA mode
+                if image.mode in ('RGBA', 'LA') or (image.mode == 'P' and 'transparency' in image.info):
+                    # Convert to RGB while handling transparency
+                    background = Image.new('RGB', image.size, (255, 255, 255))
+                    if image.mode == 'P':
+                        image = image.convert('RGBA')
+                    background.paste(image, mask=image.split()[3] if image.mode == 'RGBA' else None)
+                    image = background
+                elif image.mode != 'RGB':
+                    image = image.convert('RGB')
+                    
+                # Compress and convert to bytes
                 img_byte_arr = BytesIO()
-                image.save(img_byte_arr, format='PNG')
+                image.save(img_byte_arr, format='JPEG', quality=85, optimize=True)
                 photo_data = img_byte_arr.getvalue()
             except Exception as e:
-                print(f"Error downloading image for candidate {candidate_id}: {str(e)}")
+                print(f"\nError downloading image for candidate {candidate_id}: {str(e)}")
                 photo_data = None
         else:
             photo_data = None
 
         return (candidate_id, candidate_name, area, party, photo_data)
 
-    # Download images in parallel using ThreadPoolExecutor
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        future_to_candidate = {executor.submit(download_image, entry): entry for entry in candidate}
-        formatted_data = [future.result() for future in as_completed(future_to_candidate)]
+    # Download images in parallel using ThreadPoolExecutor with progress bar
+    print("\nDownloading and processing candidate images...")
+    formatted_data = []
+    with ThreadPoolExecutor(max_workers=100) as executor:
+        futures = [executor.submit(download_image, entry) for entry in candidate]
+        
+        # Create progress bar
+        for future in tqdm(as_completed(futures), 
+                         total=len(futures),
+                         desc="Processing images",
+                         unit="candidate",
+                         ncols=80,
+                         bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]'):
+            result = future.result()
+            formatted_data.append(result)
 
+    print("\nUpdating database...")
     # Insert data with conflict resolution: Update existing records on duplicate candidate_id
     cursor.executemany('''
         INSERT INTO candidates (candidate_id, candidate_name, area, party, photo)
@@ -108,11 +144,10 @@ def update_database_from_blockchain():
             photo=excluded.photo;
     ''', formatted_data)
 
-    print("Candidate details updated successfully.")
+    print("\nCandidate details updated successfully.")
     conn.commit()
     conn.close()
 
-# Insert form data into the database
 def insert_data(name, document_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth):
     wallet_address = wallet_address.strip().lower()
     try:
@@ -154,7 +189,6 @@ def insert_newCandidate_data(candidate_name, candidate_id, area, party, photo):
         print("An unexpected error occurred:", e)
         return False
 
-# Delete data from the database incase of any issues
 def delete_data(wallet_address):
     wallet_address = wallet_address.strip().lower()
     with sqlite3.connect('backend/db/voter_data.db') as conn:

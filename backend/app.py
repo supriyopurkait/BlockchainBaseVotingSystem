@@ -1,15 +1,9 @@
-from cv2 import add
 from flask import Flask, app, request, render_template, jsonify
 from flask_cors import CORS
 from index import *
 
 app = Flask(__name__)
 CORS(app)
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 # Initialize FaceNet model, MTCNN, and EasyOCR
 embedder = FaceNet()
 detector = MTCNN()
@@ -59,6 +53,11 @@ def check_substrings_in_text(text_list, name, dob, docn):
     dob_match = dob in combined_text
     docn_match = docn in combined_text
     return name_match, dob_match, docn_match
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 
 @app.route('/api/kyc', methods=['POST'])
 def get_kyc_data():

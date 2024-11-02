@@ -3,12 +3,13 @@ from flask_cors import CORS
 from index import *
 import re
 
-app = Flask(__name__)
-CORS(app)
 # Initialize FaceNet model, MTCNN, and EasyOCR
 embedder = FaceNet()
 detector = MTCNN()
 reader = easyocr.Reader(['en'], gpu=False)  # Set gpu=True if CUDA is available
+
+app = Flask(__name__)
+CORS(app)
 
 def detect_and_crop_face(image_data):
     """Detects and crops a face from an image."""

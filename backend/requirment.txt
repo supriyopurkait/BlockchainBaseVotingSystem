@@ -12,3 +12,4 @@ easyocr
 icecream
 re01
 tqdm
+fuzzywuzzy

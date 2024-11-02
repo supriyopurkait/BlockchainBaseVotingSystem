@@ -1,6 +1,7 @@
 from flask import Flask, app, request, render_template, jsonify
 from flask_cors import CORS
 from index import *
+from fuzzywuzzy import fuzz
 import re
 
 # Initialize FaceNet model, MTCNN, and EasyOCR
@@ -48,13 +49,18 @@ def extract_text_from_image(image_data):
     result = reader.readtext(img)
     return [text for (_, text, _) in result]
 
-def check_substrings_in_text(text_list, name, dob, docn):
-    """Checks if name, DOB, and document number are present in the text."""
+def check_substrings_in_text(text_list, name, dob, docn, threshold=80):
+    """Checks if name, DOB, and document number are present in the text with approximate matching for name."""
     combined_text = ' '.join(text_list).lower()
-    name_match = name.lower() in combined_text
+    
+    # Check for approximate match for the name
+    name_found = any(fuzz.ratio(name.lower(), word) >= threshold for word in combined_text.split())
+    
+    # Direct matching for DOB and document number
     dob_match = dob in combined_text
     docn_match = docn in combined_text
-    return name_match, dob_match, docn_match
+    
+    return name_found, dob_match, docn_match
 
 @app.route('/')
 def index():

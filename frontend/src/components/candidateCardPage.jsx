@@ -102,7 +102,7 @@ const CandidateCardsPage = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          candidateAddress: address,
+          userAddress: address,
           functionSignature,
           r,
           s,

@@ -10,4 +10,5 @@ numpy
 scikit-learn
 easyocr
 icecream
-re
+re01
+tqdm

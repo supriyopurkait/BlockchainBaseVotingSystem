@@ -74,23 +74,23 @@ def get_kyc_data():
         D_O_B = request.form.get('DOB')
 
         def convert_date_format(dob):
-        # Check if the date is in the format DD-MM-YYYY
-        if re.match(r'^\d{2}-\d{2}-\d{4}$', dob):
-            # Split the date string by '-'
-            parts = dob.split('-')
-            # Join the parts with '/'
-            return '/'.join(parts)
-        else:
-            return 1
+            # Check if the date is in the format DD-MM-YYYY
+            if re.match(r'^\d{4}-\d{2}-\d{2}$', dob):
+                # Split the date string by '-'
+                parts = dob.split('-')
+                # Join the parts with '/'
+                return '/'.join(parts[::-1])
+            else:
+                return 1
         D_O_B=convert_date_format(D_O_B)
         def insert_spaces(number_str):
-        # Check if the input string has exactly 16 digits
-        if len(number_str) == 12 and number_str.isdigit():
-            # Insert a space after every 4 digits
-            spaced_number = ' '.join(number_str[i:i+4] for i in range(0, 12, 4))
-            return spaced_number
-        else:
-            return 1 
+            # Check if the input string has exactly 16 digits
+            if len(number_str) == 12 and number_str.isdigit():
+                # Insert a space after every 4 digits
+                spaced_number = ' '.join(number_str[i:i+4] for i in range(0, 12, 4))
+                return spaced_number
+            else:
+                return 1 
         document_number=str(insert_spaces(document_number))
         
         # Validate input fields
@@ -111,10 +111,11 @@ def get_kyc_data():
 
         # Perform KYC data verification using EasyOCR
         extracted_text = extract_text_from_image(doc_image_data)
+        print(f"extracted text: '{extracted_text}'")
         name_found, dob_found, docn_found = check_substrings_in_text(
             extracted_text, name, D_O_B, document_number
         )
-
+        print(f"name: {name_found}, dob: {dob_found}, docno:{docn_found}")
         if not (name_found and dob_found and docn_found):
             return jsonify({"error": "KYC data does not match the document"}), 400
 

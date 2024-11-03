@@ -1,7 +1,7 @@
 import { getAreaAndVIDNumberFromSBT } from "./web3Utils";
 
 export const fetchCandidate = async (wallet) => {
-    const url = 'http://127.0.0.1:5000/api/get-candidates';
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/get-candidates`;
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -30,7 +30,7 @@ export const fetchCandidate = async (wallet) => {
   };
 
 export const fetchUsers = async (wallet, voterIDContract) => {
-    const url = 'http://127.0.0.1:5000/api/get-users';
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/get-users`;
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -59,7 +59,7 @@ export const fetchUsers = async (wallet, voterIDContract) => {
   };
 
 export const fetchStatData = async (wallet) => {
-    const url = 'http://127.0.0.1:5000/api/get-statdata';
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/get-statdata`;
     try {
       const response = await fetch(url, {
         method: 'POST',

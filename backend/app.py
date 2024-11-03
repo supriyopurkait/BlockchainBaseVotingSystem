@@ -1,16 +1,15 @@
 from flask import Flask, app, request, render_template, jsonify
 from flask_cors import CORS
+from difflib import SequenceMatcher
 from index import *
-from fuzzywuzzy import fuzz
 import re
 
+app = Flask(__name__)
+CORS(app)
 # Initialize FaceNet model, MTCNN, and EasyOCR
 embedder = FaceNet()
 detector = MTCNN()
 reader = easyocr.Reader(['en'], gpu=False)  # Set gpu=True if CUDA is available
-
-app = Flask(__name__)
-CORS(app)
 
 def detect_and_crop_face(image_data):
     """Detects and crops a face from an image."""
@@ -49,18 +48,35 @@ def extract_text_from_image(image_data):
     result = reader.readtext(img)
     return [text for (_, text, _) in result]
 
-def check_substrings_in_text(text_list, name, dob, docn, threshold=80):
+def check_substrings_in_text(text_list, dob, docn):
     """Checks if name, DOB, and document number are present in the text with approximate matching for name."""
-    combined_text = ' '.join(text_list).lower()
-    
-    # Check for approximate match for the name
-    name_found = any(fuzz.ratio(name.lower(), word) >= threshold for word in combined_text.split())
-    
+    combined_text = ' '.join(text_list).lower()  
+        
     # Direct matching for DOB and document number
     dob_match = dob in combined_text
     docn_match = docn in combined_text
     
-    return name_found, dob_match, docn_match
+    return dob_match, docn_match
+def is_close_match(word, word_list, threshold=0.8):
+    """Check if the word has a close match in the word_list based on the threshold."""
+    for item in word_list:
+        if SequenceMatcher(None, word, item).ratio() >= threshold:
+            return True
+    return False
+
+def searchname_in_list(multi_word_string, word_list):
+    # Check for an exact match of the entire multi-word string
+    if multi_word_string in word_list:
+        return True
+    
+    # Split the multi-word string into individual words
+    words = multi_word_string.split()
+    
+    # Check for exact or close match for each word
+    for word in words:
+        if word in word_list or is_close_match(word, word_list):
+            return True
+    return False
 
 @app.route('/')
 def index():
@@ -118,11 +134,13 @@ def get_kyc_data():
 
         # Perform KYC data verification using EasyOCR
         extracted_text = extract_text_from_image(doc_image_data)
-        print(f"extracted text: '{extracted_text}'")
-        name_found, dob_found, docn_found = check_substrings_in_text(
-            extracted_text, name, D_O_B, document_number
+        dob_found, docn_found = check_substrings_in_text(
+            extracted_text,D_O_B, document_number
         )
-        print(f"name: {name_found}, dob: {dob_found}, docno:{docn_found}")
+        name_found=searchname_in_list(name,extracted_text)
+        
+        print(name_found,dob_found,docn_found)
+
         if not (name_found and dob_found and docn_found):
             return jsonify({"error": "KYC data does not match the document"}), 400
 

@@ -143,7 +143,7 @@ def get_kyc_data():
 
         if not (name_found and dob_found and docn_found):
             return jsonify({"error": "KYC data does not match the document"}), 400
-
+        result=None
         # Insert the data into the database
         if (name_found and dob_found and docn_found):
             result = insert_data(name, document_number, area, phone_number, wallet_address, doc_image_data, human_image_data, D_O_B)
@@ -151,6 +151,8 @@ def get_kyc_data():
             return jsonify({"error": "A KYC record already exists for this wallet address."}), 400
         elif result == False:
             return jsonify({"error": "An error occurred while inserting data into the database."}), 500
+        else:
+             return jsonify({"success": True, "message": "Data inserted successfully."}), 200
         
         # Issue SBT and get hash value
         tx_hash, vid_number = issue_sbt(wallet_address, area)

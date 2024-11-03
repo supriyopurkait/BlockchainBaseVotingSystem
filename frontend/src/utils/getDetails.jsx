@@ -45,9 +45,10 @@ export const fetchUsers = async (wallet, voterIDContract) => {
         // Get the full response
         const data = await response.json();
         console.error(data.users);
-        if((data.users.VIDNumber == null) || (data.users.area == null)){
-          return await getAreaAndVIDNumberFromSBT(voterIDContract, wallet);
-        }
+        console.log("voterIDContract:", voterIDContract);
+        // if((voterIDContract !== null) && (data.users.VIDNumber === null) || (data.users.area === null)){
+        //   return await getAreaAndVIDNumberFromSBT(voterIDContract, wallet);
+        // }
         return data.users;
       } else {
         return await getAreaAndVIDNumberFromSBT(voterIDContract, wallet);

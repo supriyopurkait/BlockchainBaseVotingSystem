@@ -144,6 +144,9 @@ const ShowVoteResultPage = ({ onBack, wallet }) => {
   if (errorData) {
     return <div className="Error">Something went wrong, data could not be retrieved.</div>;
   }
+  if (electionData?.status === "Voting process is ongoing") {
+    return <div className="Error">Voting is currently ongoing. Results will be available after voting concludes.</div>;
+  }
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4 md:p-6">

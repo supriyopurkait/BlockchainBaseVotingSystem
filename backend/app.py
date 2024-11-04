@@ -268,7 +268,7 @@ def get_result():
     elif (get_vote_state() == 2):
         try:
             wallet_address = request.json.get('wallet_address')
-            print(wallet_address)
+            wallet_address = wallet_address.lower().strip()
             
             if not wallet_address:
                     return jsonify({'status': 'error', 'message': 'Address is required'}), 400

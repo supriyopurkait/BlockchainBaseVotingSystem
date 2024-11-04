@@ -121,7 +121,7 @@ const ShowVoteResultPage = ({ onBack, wallet }) => {
       try {
         const fetchResultData = await fetchResult(wallet);
         console.log(fetchResultData);
-        setElectionData(dummydata);
+        setElectionData(fetchResultData);
       } catch (err) {
         setErrorData(true);
         console.error(err);

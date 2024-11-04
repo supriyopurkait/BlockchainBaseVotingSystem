@@ -5,6 +5,8 @@ import signOutIcon from "pub/picture/sign-out-icon.png?url";
 import metamask from "pub/icons/metamask-icon.svg?url";
 import { fetchUsers } from '@/utils/getDetails';
 import { checkNFTOwnership } from "@/utils/web3Utils";
+import { getAreaAndVIDNumberFromSBT } from "@/utils/web3Utils";
+
 const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, wallet, voterIDContract, adminModeOn }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [showUserDetails, setShowUserDetails] = useState(false);
@@ -14,7 +16,10 @@ const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, w
 
   // Function to load user data
   const loadUserData = async () => {
-    const fetchedUsers = await fetchUsers(wallet, voterIDContract);
+    let fetchedUsers = await fetchUsers(wallet, voterIDContract);
+    if(fetchedUsers["area"] === null || fetchedUsers["VIDNumber"] === null){
+      fetchedUsers = await getAreaAndVIDNumberFromSBT(voterIDContract, wallet);
+    } 
     setData([fetchedUsers["area"], fetchedUsers["VIDNumber"]]);
     setUserfetched(true)
     

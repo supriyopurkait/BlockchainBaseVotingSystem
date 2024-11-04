@@ -1,14 +1,87 @@
-
 from flask import Flask, app, request, render_template, jsonify
 from flask_cors import CORS
+from difflib import SequenceMatcher
 from index import *
+import re
 
 app = Flask(__name__)
 CORS(app)
+# Initialize FaceNet model, MTCNN, and EasyOCR
+embedder = FaceNet()
+detector = MTCNN()
+reader = easyocr.Reader(['en'], gpu=False)  # Set gpu=True if CUDA is available
+
+def detect_and_crop_face(image_data):
+    """Detects and crops a face from an image."""
+    np_img = np.frombuffer(image_data, np.uint8)
+    img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+    faces = detector.detect_faces(img_rgb)
+    if faces:
+        x, y, width, height = faces[0]['box']
+        face = img_rgb[y:y + height, x:x + width]
+        face = cv2.resize(face, (160, 160))
+        face = face.astype('float32') / 255.0
+        return np.expand_dims(face, axis=0)
+    return None
+
+def are_same_person(image_data1, image_data2, threshold=0.7):
+    """Compares two images and checks if they are of the same person."""
+    img1 = detect_and_crop_face(image_data1)
+    img2 = detect_and_crop_face(image_data2)
+
+    if img1 is None or img2 is None:
+        return False
+
+    embedding1 = embedder.embeddings(img1)[0]
+    embedding2 = embedder.embeddings(img2)[0]
+    similarity = cosine_similarity([embedding1], [embedding2])[0][0]
+
+    print(f"Similarity Score: {similarity:.2f}")
+    return similarity >= threshold
+
+def extract_text_from_image(image_data):
+    """Extracts text from an image using EasyOCR."""
+    np_img = np.frombuffer(image_data, np.uint8)
+    img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+    result = reader.readtext(img)
+    return [text for (_, text, _) in result]
+
+def check_substrings_in_text(text_list, dob, docn):
+    """Checks if name, DOB, and document number are present in the text with approximate matching for name."""
+    combined_text = ' '.join(text_list).lower()  
+        
+    # Direct matching for DOB and document number
+    dob_match = dob in combined_text
+    docn_match = docn in combined_text
+    
+    return dob_match, docn_match
+def is_close_match(word, word_list, threshold=0.8):
+    """Check if the word has a close match in the word_list based on the threshold."""
+    for item in word_list:
+        if SequenceMatcher(None, word, item).ratio() >= threshold:
+            return True
+    return False
+
+def searchname_in_list(multi_word_string, word_list):
+    # Check for an exact match of the entire multi-word string
+    if multi_word_string in word_list:
+        return True
+    
+    # Split the multi-word string into individual words
+    words = multi_word_string.split()
+    
+    # Check for exact or close match for each word
+    for word in words:
+        if word in word_list or is_close_match(word, word_list):
+            return True
+    return False
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/api/kyc', methods=['POST'])
 def get_kyc_data():
@@ -22,6 +95,26 @@ def get_kyc_data():
         doc_image = request.files.get('documentImage') 
         human_image = request.files.get('faceImage')
         D_O_B = request.form.get('DOB')
+
+        def convert_date_format(dob):
+            # Check if the date is in the format DD-MM-YYYY
+            if re.match(r'^\d{4}-\d{2}-\d{2}$', dob):
+                # Split the date string by '-'
+                parts = dob.split('-')
+                # Join the parts with '/'
+                return '/'.join(parts[::-1])
+            else:
+                return 1
+        D_O_B=convert_date_format(D_O_B)
+        def insert_spaces(number_str):
+            # Check if the input string has exactly 16 digits
+            if len(number_str) == 12 and number_str.isdigit():
+                # Insert a space after every 4 digits
+                spaced_number = ' '.join(number_str[i:i+4] for i in range(0, 12, 4))
+                return spaced_number
+            else:
+                return 1 
+        document_number=str(insert_spaces(document_number))
         
         # Validate input fields
         if not name or not document_number or not area or not phone_number or not wallet_address or not D_O_B:
@@ -31,11 +124,30 @@ def get_kyc_data():
         if not doc_image or not human_image:
             return jsonify({"error": "Missing required images"}), 400
         
-        doc_image_data = doc_image.read()  # Read the file content
+        # Perform face matching
+        doc_image_data = doc_image.read()
         human_image_data = human_image.read()
 
+        if not are_same_person(human_image_data, doc_image_data):
+            return jsonify({"error": "Face mismatch between document and selfie"}), 400
+
+
+        # Perform KYC data verification using EasyOCR
+        extracted_text = extract_text_from_image(doc_image_data)
+        dob_found, docn_found = check_substrings_in_text(
+            extracted_text,D_O_B, document_number
+        )
+        name_found=searchname_in_list(name,extracted_text)
+        
+        print(name_found,dob_found,docn_found)
+
+        if not (name_found and dob_found and docn_found):
+            return jsonify({"error": "KYC data does not match the document"}), 400
+        result=None
         # Insert the data into the database
-        result = insert_data(name, document_number, area, phone_number, wallet_address, doc_image_data, human_image_data, D_O_B)
+        if (name_found and dob_found and docn_found):
+            result = insert_data(name, document_number, area, phone_number, wallet_address, doc_image_data, human_image_data, D_O_B)
+            return jsonify({"success": True, "message": "Data inserted successfully."}), 200
         if result == "Duplicate":
             return jsonify({"error": "A KYC record already exists for this wallet address."}), 400
         elif result == False:
@@ -258,7 +370,7 @@ def unpin_image_ipfs():
         # Handle any exceptions and return an error response
         print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
-
+    
 @app.route('/api/get-result', methods=['POST'])
 def get_result():
     if (get_vote_state() == 0):

@@ -354,6 +354,7 @@ const App = () => {
             return(
               <ShowVoteResultPage
               onBack = {()=>{setShowVoteResultCards(false)}}
+              wallet={wallet}
               />
             );
           }//here i have to add the voting result show modal 

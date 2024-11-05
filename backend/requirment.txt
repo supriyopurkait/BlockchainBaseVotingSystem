@@ -13,3 +13,5 @@ icecream
 re01
 tqdm
 fuzzywuzzy
+insightface
+onnxruntime

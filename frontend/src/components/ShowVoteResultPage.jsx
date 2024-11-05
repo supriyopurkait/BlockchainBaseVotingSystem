@@ -17,104 +17,104 @@ const ShowVoteResultPage = ({ onBack, wallet }) => {
   const [errorData, setErrorData] = useState(false);
 
   useEffect(() => {
-    const dummydata = {
-      "data": [
-          {
-              "area": "area2",
-              "candidates": [
-                  {
-                      "candidate_id": "6",
-                      "candidate_name": "donald",
-                      "photo": "img url",
-                      "vote_count": 6
-                  },
-                  {
-                      "candidate_id": "4",
-                      "candidate_name": "cand1",
-                      "photo": "img url",
-                      "vote_count": 3
-                  },
-                  {
-                      "candidate_id": "5",
-                      "candidate_name": "candidate X",
-                      "photo": "img url",
-                      "vote_count": 2
-                  }
-              ],
-              "max_votes": 11,
-              "message": "winner determined",
-              "winners": [
-                  {
-                      "candidate_id": "6",
-                      "candidate_name": "donald",
-                      "photo": "img url",
-                      "vote_count": 6
-                  }
-              ]
-          },
-          {
-              "area": "area4",
-              "candidates": [
-                  {
-                      "candidate_id": "7",
-                      "candidate_name": "some",
-                      "photo": "img url",
-                      "vote_count": 0
-                  }
-              ],
-              "max_votes": 0,
-              "message": "winner determined",
-              "winners": [
-                  {
-                      "candidate_id": "7",
-                      "candidate_name": "some",
-                      "photo": "img url",
-                      "vote_count": 0
-                  }
-              ]
-          },
-          {
-              "area": "area1",
-              "candidates": [
-                  {
-                      "candidate_id": "2",
-                      "candidate_name": "cand2",
-                      "photo": "img url",
-                      "vote_count": 2
-                  },
-                  {
-                      "candidate_id": "1",
-                      "candidate_name": "cand1",
-                      "photo": "img url",
-                      "vote_count": 5
-                  },
-                  {
-                      "candidate_id": "3",
-                      "candidate_name": "cand3",
-                      "photo": "img url",
-                      "vote_count": 3
-                  },
-                  {
-                      "candidate_id": "8",
-                      "candidate_name": "candidate 10",
-                      "photo": "img url",
-                      "vote_count": 3
-                  }
-              ],
-              "max_votes": 13,
-              "message": "winner determined",
-              "winners": [
-                  {
-                      "candidate_id": "1",
-                      "candidate_name": "cand1",
-                      "photo": "img url",
-                      "vote_count": 5
-                  }
-              ]
-          }
-      ],
-      "status": "success"
-  }
+  //   const dummydata = {
+  //     "data": [
+  //         {
+  //             "area": "area2",
+  //             "candidates": [
+  //                 {
+  //                     "candidate_id": "6",
+  //                     "candidate_name": "donald",
+  //                     "photo": "img url",
+  //                     "vote_count": 6
+  //                 },
+  //                 {
+  //                     "candidate_id": "4",
+  //                     "candidate_name": "cand1",
+  //                     "photo": "img url",
+  //                     "vote_count": 3
+  //                 },
+  //                 {
+  //                     "candidate_id": "5",
+  //                     "candidate_name": "candidate X",
+  //                     "photo": "img url",
+  //                     "vote_count": 2
+  //                 }
+  //             ],
+  //             "max_votes": 11,
+  //             "message": "winner determined",
+  //             "winners": [
+  //                 {
+  //                     "candidate_id": "6",
+  //                     "candidate_name": "donald",
+  //                     "photo": "img url",
+  //                     "vote_count": 6
+  //                 }
+  //             ]
+  //         },
+  //         {
+  //             "area": "area4",
+  //             "candidates": [
+  //                 {
+  //                     "candidate_id": "7",
+  //                     "candidate_name": "some",
+  //                     "photo": "img url",
+  //                     "vote_count": 0
+  //                 }
+  //             ],
+  //             "max_votes": 0,
+  //             "message": "winner determined",
+  //             "winners": [
+  //                 {
+  //                     "candidate_id": "7",
+  //                     "candidate_name": "some",
+  //                     "photo": "img url",
+  //                     "vote_count": 0
+  //                 }
+  //             ]
+  //         },
+  //         {
+  //             "area": "area1",
+  //             "candidates": [
+  //                 {
+  //                     "candidate_id": "2",
+  //                     "candidate_name": "cand2",
+  //                     "photo": "img url",
+  //                     "vote_count": 2
+  //                 },
+  //                 {
+  //                     "candidate_id": "1",
+  //                     "candidate_name": "cand1",
+  //                     "photo": "img url",
+  //                     "vote_count": 5
+  //                 },
+  //                 {
+  //                     "candidate_id": "3",
+  //                     "candidate_name": "cand3",
+  //                     "photo": "img url",
+  //                     "vote_count": 3
+  //                 },
+  //                 {
+  //                     "candidate_id": "8",
+  //                     "candidate_name": "candidate 10",
+  //                     "photo": "img url",
+  //                     "vote_count": 3
+  //                 }
+  //             ],
+  //             "max_votes": 13,
+  //             "message": "winner determined",
+  //             "winners": [
+  //                 {
+  //                     "candidate_id": "1",
+  //                     "candidate_name": "cand1",
+  //                     "photo": "img url",
+  //                     "vote_count": 5
+  //                 }
+  //             ]
+  //         }
+  //     ],
+  //     "status": "success"
+  // }
   
     const loadResult = async () => {
       setLoading(true);
@@ -216,8 +216,8 @@ const ShowVoteResultPage = ({ onBack, wallet }) => {
               {areaData.message === "winner determined" && (
                 <div className="lg:w-1/3 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl shadow-xl p-6 text-white">
                   <img
-                    src={areaData.winners[0].photo}
-                    alt="Winner"
+                    src={`data:image/jpeg;base64,${areaData.winners[0].photo}`}
+                    // alt="Winner"
                     className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-white shadow-lg object-cover"
                   />
                   <h2 className="text-3xl font-bold text-center mb-8">Winner</h2>
@@ -265,7 +265,7 @@ const ShowVoteResultPage = ({ onBack, wallet }) => {
                   className="bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300"
                 >
                   <img
-                    src={candidate.photo}
+                    src={`data:image/jpeg;base64,${candidate.photo}`}
                     alt={candidate.candidate_name}
                     className="w-24 h-24 rounded-full mx-auto mb-4 border-2 border-indigo-200 object-cover"
                   />

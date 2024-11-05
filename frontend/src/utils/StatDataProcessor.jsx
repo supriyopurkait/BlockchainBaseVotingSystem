@@ -1,5 +1,5 @@
 export function calculateTotalVotes(data) {
-    const totalVotes = data.reduce((sum, area) => sum + area.maxVotes, 0).toLocaleString();
+    const totalVotes = data.data.reduce((sum, area) => sum + area.max_votes, 0).toLocaleString();
     return totalVotes;
 }
 export function processAreaData(data) {
@@ -18,8 +18,8 @@ export function processAreaData(data) {
         id: index,
         areaName: area.area,
         totalVotes: area.max_votes,
-        winner: area.winner.candidate_name,
-        wonByVotes: area.winner.vote_count,
+        winner: area.winners[0].candidate_name,
+        wonByVotes: area.winners[0].vote_count,
         statData: area.candidates.map((candidate, idx) => ({
             id: idx,
             value: candidate.vote_count,

@@ -129,6 +129,7 @@ def process_results(vote_data, winners):
             area_result["candidates"].append({
                 "candidate_id": candidate["candidate_id"],
                 "candidate_name": candidate["candidate_name"],
+                "party": candidate["party"],
                 "photo": candidate["photo"],
                 "vote_count": candidate["vote_count"]
             })
@@ -138,6 +139,7 @@ def process_results(vote_data, winners):
         area_result["winners"].append({
             "candidate_id": winners[area]["candidate_id"],
             "candidate_name": winners[area]["candidate_name"],
+            "party": winners[area]["party"],
             "photo": winners[area]["photo"],
             "vote_count": winners[area]["vote_count"]
         })

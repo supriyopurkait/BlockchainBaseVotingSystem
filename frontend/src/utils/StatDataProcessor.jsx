@@ -10,18 +10,23 @@ export function processAreaData(data) {
 
         return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
     }
-    const AreaData = data.map((area, index) => ({
+    console.log('recived data before process: ', data.data[0].candidates[0].candidate_name);
+    console.log('data.data.candidates before process: ', typeof(data.data[0].candidates));
+    console.log('data.data before process: ', typeof(data.data));
+    const AreaData = data.data.map((area, index) => ({
+    // const AreaData = Object.entries(data).map((index, area) => ({
         id: index,
         areaName: area.area,
-        totalVotes: area.maxVotes,
-        winner: area.winner.candidateName,
-        wonByVotes: area.winner.voteCount,
+        totalVotes: area.max_votes,
+        winner: area.winner.candidate_name,
+        wonByVotes: area.winner.vote_count,
         statData: area.candidates.map((candidate, idx) => ({
             id: idx,
-            value: candidate.voteCount,
-            label: candidate.candidateName,
+            value: candidate.vote_count,
+            label: candidate.candidate_name,
             color: getRandomColor()
         }))
     }));
+    console.log('data after process: ', AreaData)
     return (AreaData);
 }

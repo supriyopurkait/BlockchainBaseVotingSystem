@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CircleArrowLeft } from "lucide-react";
 import { toast, Toaster } from 'react-hot-toast';
-import { fetchStatData } from '@/utils/getDetails';
+import { fetchResult } from '@/utils/getDetails';
 import { Rss, AtSign, UserRoundCog, CirclePlay, CircleStop, Ellipsis, Search, X } from 'lucide-react';
 import LoadingModal from '@/components/LoadingModal';
 import AdminAddCandidateCard from '@/components/Admin/AdminAddCandidateCard';
@@ -58,8 +58,9 @@ const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandi
     const loadStatData = async () => {
       setLoading(true);
       try {
-        const fetchedStatData = await fetchStatData(wallet);
-        if (fetchStatData) {
+        const fetchedStatData = await fetchResult(wallet);
+        if (fetchedStatData) {
+          console.log(typeof(fetchedStatData));
           setAreaData(processAreaData(fetchedStatData));
           setNumberOfArea(areaData.length);
           setTotalVotes(calculateTotalVotes(fetchedStatData));

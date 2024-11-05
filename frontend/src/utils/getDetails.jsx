@@ -28,6 +28,34 @@ export const fetchCandidate = async (wallet) => {
       return [];
     }
   };
+  export const fetchResult = async (wallet) => {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/get-result`;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          wallet_address: wallet.address
+        })
+      });
+      console.log("Sent data:", JSON.stringify({ wallet_address: wallet.address }));
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      // Get the full response
+      const data = await response.json();
+      console.log(data);
+      // Return only the candidates array
+      return data;
+      
+    } catch (error) {
+      console.error('Error fetching Candidate:', error);
+      return [];
+    }
+  };
 
 export const fetchUsers = async (wallet, voterIDContract) => {
     const url = `${import.meta.env.VITE_API_BASE_URL}/api/get-users`;

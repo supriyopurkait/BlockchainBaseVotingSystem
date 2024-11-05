@@ -336,6 +336,7 @@ const App = () => {
           setAdminControlModal(false);
           setAdminCandidateControlsPage(false);
           setAdminUserControlsPage(false);
+          setShowVoteResultCards(false)
         }} // Handling disconnect
         wallet={wallet}
         voterIDContract={[VoterIDContractAddress, VoterIdABI]}
@@ -357,6 +358,7 @@ const App = () => {
             return(
               <ShowVoteResultPage
               onBack = {()=>{setShowVoteResultCards(false)}}
+              wallet={wallet}
               />
             );
           }//here i have to add the voting result show modal 

@@ -3,43 +3,111 @@ from flask_cors import CORS
 from difflib import SequenceMatcher
 from index import *
 import re
+import cv2
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+import insightface
+from insightface.app import FaceAnalysis
 
 app = Flask(__name__)
 CORS(app)
 # Initialize FaceNet model, MTCNN, and EasyOCR
-embedder = FaceNet()
-detector = MTCNN()
+# embedder = FaceNet()
+# detector = MTCNN()
 reader = easyocr.Reader(['en'], gpu=False)  # Set gpu=True if CUDA is available
 
-def detect_and_crop_face(image_data):
-    """Detects and crops a face from an image."""
-    np_img = np.frombuffer(image_data, np.uint8)
-    img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+# def detect_and_crop_face(image_data):
+#     """Detects and crops a face from an image."""
+#     np_img = np.frombuffer(image_data, np.uint8)
+#     img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+#     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-    faces = detector.detect_faces(img_rgb)
+#     faces = detector.detect_faces(img_rgb)
+#     if faces:
+#         x, y, width, height = faces[0]['box']
+#         face = img_rgb[y:y + height, x:x + width]
+#         face = cv2.resize(face, (160, 160))
+#         face = face.astype('float32') / 255.0
+#         return np.expand_dims(face, axis=0)
+#     return None
+
+# def are_same_person(image_data1, image_data2, threshold=0.7):
+#     """Compares two images and checks if they are of the same person."""
+#     img1 = detect_and_crop_face(image_data1)
+#     img2 = detect_and_crop_face(image_data2)
+
+#     if img1 is None or img2 is None:
+#         return False
+
+#     embedding1 = embedder.embeddings(img1)[0]
+#     embedding2 = embedder.embeddings(img2)[0]
+#     similarity = cosine_similarity([embedding1], [embedding2])[0][0]
+
+#     print(f"Similarity Score: {similarity:.2f}")
+#     return similarity >= threshold
+
+# Initialize the InsightFace FaceAnalysis app
+def initialize_face_analyzer():
+    faceapp = FaceAnalysis(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])  # Use CUDA if available
+    faceapp.prepare(ctx_id=0, det_size=(640, 640))  # Prepare with a suitable detection size
+    return faceapp 
+
+# Use the faceapp to detect and embed faces
+def detect_and_embed_face(image_path, faceapp):
+    # Read the image using cv2
+    img = cv2.imread(image_path)
+    if img is None:
+        print(f"Error: Could not read image at {image_path}")
+        return None
+
+    # Detect faces and extract the first detected face for simplicity
+    faces = faceapp.get(img)
     if faces:
-        x, y, width, height = faces[0]['box']
-        face = img_rgb[y:y + height, x:x + width]
-        face = cv2.resize(face, (160, 160))
-        face = face.astype('float32') / 255.0
-        return np.expand_dims(face, axis=0)
+        # Access the first face's embedding (assumes single face per image for KYC)
+        embedding = faces[0].embedding
+
+        # Normalize embedding to unit vector for consistent cosine similarity
+        embedding /= np.linalg.norm(embedding)
+
+        return embedding
+
+    # Return None if no face was detected
     return None
+def are_same_person(image_path1, image_path2, faceapp, threshold=0.5):
+    
+    # Get embeddings for both images
+    embedding1 = detect_and_embed_face(image_path1, faceapp)
+    embedding2 = detect_and_embed_face(image_path2, faceapp)
 
-def are_same_person(image_data1, image_data2, threshold=0.7):
-    """Compares two images and checks if they are of the same person."""
-    img1 = detect_and_crop_face(image_data1)
-    img2 = detect_and_crop_face(image_data2)
-
-    if img1 is None or img2 is None:
+    # Ensure both embeddings were created
+    if embedding1 is None or embedding2 is None:
+        print("Error: Could not detect a face in one or both images.")
         return False
 
-    embedding1 = embedder.embeddings(img1)[0]
-    embedding2 = embedder.embeddings(img2)[0]
+    # Calculate cosine similarity
     similarity = cosine_similarity([embedding1], [embedding2])[0][0]
-
     print(f"Similarity Score: {similarity:.2f}")
+
+    # Compare similarity to threshold
     return similarity >= threshold
+# Initialize the FaceAnalysis app once and reuse it for all comparisons
+faceapp = initialize_face_analyzer()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def extract_text_from_image(image_data):
     """Extracts text from an image using EasyOCR."""

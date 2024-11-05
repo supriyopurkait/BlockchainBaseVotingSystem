@@ -64,6 +64,7 @@ def get_candidates_by_area(address):
                 'candidate_name': candidate['name'],
                 'party': candidate['party'],
                 'candidate_id': candidate['candidate_id'],
+                'photo': candidate['photo'],
                 'vote_count': vote_count
             })
 

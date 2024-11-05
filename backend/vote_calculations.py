@@ -1,11 +1,12 @@
 import os
 import random
+from sympy import fu
 from web3 import Web3
 from get_abi import get_abi_votingSystem
 from dotenv import load_dotenv
 from get_candidates_details import get_candidates_from_db
 from icecream import ic
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
 # Load environment variables from .env file
 load_dotenv()
 
@@ -24,6 +25,9 @@ except Exception as e:
     raise ValueError(f"Error creating contract instance: {e}")
 
 
+# Cache dictionary to store vote counts by candidate_id
+vote_count_cache = {}
+
 def get_candidates_by_area(address):
     """
     Given a wallet address, fetch the voter's area and return the area and list of candidates in that area.
@@ -32,43 +36,75 @@ def get_candidates_by_area(address):
         address (str): Wallet address of the voter.
 
     Returns:
-        Tuple: (area, list of candidates, error message)
+        dict: A dictionary with area as keys and list of candidates with vote counts as values.
     """
-    # wallet_address= 0xf438e59f19aa18aa3e70ff13ac7f47fb0e73a78c
-    candidate = get_candidates_from_db(address)
-    # print (candidate)
-    # Group by area
-    grouped_data = {}
+    # Fetch candidates based on wallet address
+    candidates = get_candidates_from_db(address)
 
-    for entry in candidate:
+    # Group candidates by area
+    grouped_data = {}
+    for entry in candidates:
         area = entry['area']
         if area not in grouped_data:
             grouped_data[area] = []
         grouped_data[area].append(entry)
-    # ic(grouped_data)
+
+    # Dictionary to hold the vote counts by area
     vote_counts = {}
 
-    vote_counts = {}
+    # Set max_workers to 10 or the number of CPUs (whichever is higher) for safe concurrency
+    max_workers = max(10, os.cpu_count() or 1)  # Falls back to 1 if os.cpu_count() returns None
 
-    # Traverse grouped data by area and candidates
+    # Process vote counts concurrently with increased worker count
     for area, candidates_in_area in grouped_data.items():
         if area not in vote_counts:
-            vote_counts[area] = []  # Initialize an empty list for each area
+            vote_counts[area] = []
 
-        for candidate in candidates_in_area:
-            candidate_id = candidate['candidate_id']
-            vote_count = get_vote_count(candidate_id)  # Fetch the vote count from smart contract
-            
-            # Append candidate details to the list for the area
-            vote_counts[area].append({
-                'candidate_name': candidate['name'],
-                'party': candidate['party'],
-                'candidate_id': candidate['candidate_id'],
-                'photo': candidate['photo'],
-                'vote_count': vote_count
-            })
+        # List of all candidate IDs in the area
+        all_ids = [candidate['candidate_id'] for candidate in candidates_in_area]
 
- 
+        # Using ThreadPoolExecutor with increased max_workers to fetch vote counts concurrently
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_candidate = {}
+
+            # Populate the future_to_candidate only for uncached IDs
+            for candidate_id in all_ids:
+                if candidate_id in vote_count_cache:
+                    # Directly use the cached value
+                    cached_vote_count = vote_count_cache[candidate_id]
+                    candidate_details = next(candidate for candidate in candidates_in_area if candidate['candidate_id'] == candidate_id)
+                    vote_counts[area].append({
+                        'candidate_name': candidate_details['name'],
+                        'party': candidate_details['party'],
+                        'candidate_id': candidate_id,
+                        'photo': candidate_details['photo'],
+                        'vote_count': cached_vote_count
+                    })
+                else:
+                    # Submit only if vote count is not cached
+                    future = executor.submit(get_vote_count, candidate_id)
+                    future_to_candidate[future] = candidate_id
+
+            # Process the futures as they complete
+            for future in as_completed(future_to_candidate):
+                candidate_id = future_to_candidate[future]
+                try:
+                    vote_count = future.result()  # Get the vote count from the function
+                    vote_count_cache[candidate_id] = vote_count  # Cache the result
+                except Exception as e:
+                    # Log or handle the error if needed
+                    vote_count = 0  # Fallback or log error if get_vote_count fails
+
+                # Find the candidate details by candidate_id to append to vote_counts
+                candidate_details = next(candidate for candidate in candidates_in_area if candidate['candidate_id'] == candidate_id)
+                vote_counts[area].append({
+                    'candidate_name': candidate_details['name'],
+                    'party': candidate_details['party'],
+                    'candidate_id': candidate_id,
+                    'photo': candidate_details['photo'],
+                    'vote_count': vote_count
+                })
+
     return vote_counts
 
 def get_vote_state():
@@ -129,6 +165,7 @@ def process_results(vote_data, winners):
             area_result["candidates"].append({
                 "candidate_id": candidate["candidate_id"],
                 "candidate_name": candidate["candidate_name"],
+                "party": candidate["party"],
                 "photo": candidate["photo"],
                 "vote_count": candidate["vote_count"]
             })
@@ -138,6 +175,7 @@ def process_results(vote_data, winners):
         area_result["winners"].append({
             "candidate_id": winners[area]["candidate_id"],
             "candidate_name": winners[area]["candidate_name"],
+            "party": winners[area]["party"],
             "photo": winners[area]["photo"],
             "vote_count": winners[area]["vote_count"]
         })

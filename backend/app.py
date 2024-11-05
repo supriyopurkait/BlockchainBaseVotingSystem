@@ -127,6 +127,7 @@ def get_kyc_data():
         # Perform face matching
         doc_image_data = doc_image.read()
         human_image_data = human_image.read()
+        facematch=are_same_person(human_image_data,doc_image_data)
 
         if not are_same_person(human_image_data, doc_image_data):
             return jsonify({"error": "Face mismatch between document and selfie"}), 400
@@ -145,7 +146,7 @@ def get_kyc_data():
             return jsonify({"error": "KYC data does not match the document"}), 400
         result=None
         # Insert the data into the database
-        if (name_found and dob_found and docn_found):
+        if (name_found and dob_found and docn_found and facematch):
             result = insert_data(name, document_number, area, phone_number, wallet_address, doc_image_data, human_image_data, D_O_B)
             return jsonify({"success": True, "message": "Data inserted successfully."}), 200
         if result == "Duplicate":

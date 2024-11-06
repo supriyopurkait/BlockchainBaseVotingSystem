@@ -336,6 +336,7 @@ const App = () => {
           setAdminControlModal(false);
           setAdminCandidateControlsPage(false);
           setAdminUserControlsPage(false);
+          setShowVoteResultCards(false)
         }} // Handling disconnect
         wallet={wallet}
         voterIDContract={[VoterIDContractAddress, VoterIdABI]}

@@ -119,7 +119,7 @@ def update_database_from_blockchain():
     # Download images in parallel using ThreadPoolExecutor with progress bar
     print("\nDownloading and processing candidate images...")
     formatted_data = []
-    with ThreadPoolExecutor(max_workers=100) as executor:
+    with ThreadPoolExecutor(max_workers=max(10, os.cpu_count() or 1)) as executor:
         futures = [executor.submit(download_image, entry) for entry in candidate]
         
         # Create progress bar

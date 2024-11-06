@@ -88,7 +88,7 @@ const AdminAddCandidateForm = ({ onSubmit, onCancel, wallet, contract }) => {
 
     try {
       toastMsg("info", "Uploading image to IPFS...", 5000, "bottom-right");
-      const response = await fetch("http://127.0.0.1:5000/api/upload-image-ipfs", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/upload-image-ipfs`, {
         method: "POST",
         body: formData, // FormData is automatically encoded as multipart/form-data
       });
@@ -173,7 +173,7 @@ const AdminAddCandidateForm = ({ onSubmit, onCancel, wallet, contract }) => {
     console.log("Request data:", requestData);
   
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/unpin-image-ipfs", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/unpin-image-ipfs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

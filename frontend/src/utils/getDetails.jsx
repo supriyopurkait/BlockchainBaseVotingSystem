@@ -1,7 +1,7 @@
 import { getAreaAndVIDNumberFromSBT } from "./web3Utils";
 
 export const fetchCandidate = async (wallet) => {
-    const url = 'http://127.0.0.1:5000/api/get-candidates';
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/get-candidates`;
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -28,9 +28,37 @@ export const fetchCandidate = async (wallet) => {
       return [];
     }
   };
+  export const fetchResult = async (wallet) => {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/get-result`;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          wallet_address: wallet.address
+        })
+      });
+      console.log("Sent data:", JSON.stringify({ wallet_address: wallet.address }));
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      
+      // Get the full response
+      const data = await response.json();
+      console.log(data);
+      // Return only the candidates array
+      return data;
+      
+    } catch (error) {
+      console.error('Error fetching Candidate:', error);
+      return [];
+    }
+  };
 
 export const fetchUsers = async (wallet, voterIDContract) => {
-    const url = 'http://127.0.0.1:5000/api/get-users';
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/get-users`;
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -45,9 +73,10 @@ export const fetchUsers = async (wallet, voterIDContract) => {
         // Get the full response
         const data = await response.json();
         console.error(data.users);
-        if((data.users.VIDNumber == null) || (data.users.area == null)){
-          return await getAreaAndVIDNumberFromSBT(voterIDContract, wallet);
-        }
+        console.log("voterIDContract:", voterIDContract);
+        // if((voterIDContract !== null) && (data.users.VIDNumber === null) || (data.users.area === null)){
+        //   return await getAreaAndVIDNumberFromSBT(voterIDContract, wallet);
+        // }
         return data.users;
       } else {
         return await getAreaAndVIDNumberFromSBT(voterIDContract, wallet);
@@ -59,7 +88,7 @@ export const fetchUsers = async (wallet, voterIDContract) => {
   };
 
 export const fetchStatData = async (wallet) => {
-    const url = 'http://127.0.0.1:5000/api/get-statdata';
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/get-statdata`;
     try {
       const response = await fetch(url, {
         method: 'POST',

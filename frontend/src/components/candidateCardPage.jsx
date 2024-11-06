@@ -45,7 +45,6 @@ const CandidateCardsPage = ({
   const handleVote = async (candidateId) => {
     setVotingLoading(true);
     try {
-      const RELAYER_URL = "http://127.0.0.1:5000/api";
       console.log("Voting for candidate:", candidateId);
       const { provider, signer } = wallet;
       const address = await signer.getAddress();
@@ -98,7 +97,7 @@ const CandidateCardsPage = ({
       }
       const { r, s, v } = ethers.Signature.from(signature);
 
-      const response = await fetch(`${RELAYER_URL}/execute-meta-tx`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/execute-meta-tx`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

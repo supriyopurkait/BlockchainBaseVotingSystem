@@ -90,13 +90,13 @@ const App = () => {
   };
   
   const handleGetABI = async () => {
-    const VoterIDabi = await fetch('http://'+'127.0.0.1'+':5000/api/get_abi/VoterID');
+    const VoterIDabi = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/get_abi/VoterID`);
     const VoterIDjson = await VoterIDabi.json();
     console.log("Json", VoterIDjson);
     setVoterIdABI(VoterIDjson.abi);
     setContractAddress(VoterIDjson.ca);
 
-    const votingSystemAbi = await fetch('http://'+'127.0.0.1'+':5000/api/get_abi/VotingSystem');
+    const votingSystemAbi = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/get_abi/VotingSystem`);
     const votingSystemJson = await votingSystemAbi.json();
     setVotingSystemABI(votingSystemJson.abi);
     setVotingSystemContractAddress(votingSystemJson.ca);
@@ -336,6 +336,7 @@ const App = () => {
           setAdminControlModal(false);
           setAdminCandidateControlsPage(false);
           setAdminUserControlsPage(false);
+          setShowVoteResultCards(false)
         }} // Handling disconnect
         wallet={wallet}
         voterIDContract={[VoterIDContractAddress, VoterIdABI]}
@@ -357,6 +358,7 @@ const App = () => {
             return(
               <ShowVoteResultPage
               onBack = {()=>{setShowVoteResultCards(false)}}
+              wallet={wallet}
               />
             );
           }//here i have to add the voting result show modal 

@@ -83,6 +83,8 @@ const connectWallet = async () => {
 
   } else {
     console.log("Ethereum provider not found. Please install MetaMask.");
+    alert("Metamask is not installed. Please install MetaMask to continue.");
+    window.open("https://metamask.io/", "_blank");
     return null;
   }
 };

@@ -1,155 +1,13 @@
 from flask import Flask, app, request, render_template, jsonify
 from flask_cors import CORS
-from difflib import SequenceMatcher
 from index import *
-import re
-import cv2
-import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
-import insightface
-from insightface.app import FaceAnalysis
 
 app = Flask(__name__)
 CORS(app)
-# Initialize FaceNet model, MTCNN, and EasyOCR
-# embedder = FaceNet()
-# detector = MTCNN()
-reader = easyocr.Reader(['en'], gpu=False)  # Set gpu=True if CUDA is available
-
-# def detect_and_crop_face(image_data):
-#     """Detects and crops a face from an image."""
-#     np_img = np.frombuffer(image_data, np.uint8)
-#     img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
-#     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-#     faces = detector.detect_faces(img_rgb)
-#     if faces:
-#         x, y, width, height = faces[0]['box']
-#         face = img_rgb[y:y + height, x:x + width]
-#         face = cv2.resize(face, (160, 160))
-#         face = face.astype('float32') / 255.0
-#         return np.expand_dims(face, axis=0)
-#     return None
-
-# def are_same_person(image_data1, image_data2, threshold=0.7):
-#     """Compares two images and checks if they are of the same person."""
-#     img1 = detect_and_crop_face(image_data1)
-#     img2 = detect_and_crop_face(image_data2)
-
-#     if img1 is None or img2 is None:
-#         return False
-
-#     embedding1 = embedder.embeddings(img1)[0]
-#     embedding2 = embedder.embeddings(img2)[0]
-#     similarity = cosine_similarity([embedding1], [embedding2])[0][0]
-
-#     print(f"Similarity Score: {similarity:.2f}")
-#     return similarity >= threshold
-
-# Initialize the InsightFace FaceAnalysis app
-def initialize_face_analyzer():
-    faceapp = FaceAnalysis(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])  # Use CUDA if available
-    faceapp.prepare(ctx_id=0, det_size=(640, 640))  # Prepare with a suitable detection size
-    return faceapp 
-
-# Use the faceapp to detect and embed faces
-def detect_and_embed_face(image_path, faceapp):
-    # Read the image using cv2
-    img = cv2.imread(image_path)
-    if img is None:
-        print(f"Error: Could not read image at {image_path}")
-        return None
-
-    # Detect faces and extract the first detected face for simplicity
-    faces = faceapp.get(img)
-    if faces:
-        # Access the first face's embedding (assumes single face per image for KYC)
-        embedding = faces[0].embedding
-
-        # Normalize embedding to unit vector for consistent cosine similarity
-        embedding /= np.linalg.norm(embedding)
-
-        return embedding
-
-    # Return None if no face was detected
-    return None
-def are_same_person(image_path1, image_path2, faceapp, threshold=0.5):
-    
-    # Get embeddings for both images
-    embedding1 = detect_and_embed_face(image_path1, faceapp)
-    embedding2 = detect_and_embed_face(image_path2, faceapp)
-
-    # Ensure both embeddings were created
-    if embedding1 is None or embedding2 is None:
-        print("Error: Could not detect a face in one or both images.")
-        return False
-
-    # Calculate cosine similarity
-    similarity = cosine_similarity([embedding1], [embedding2])[0][0]
-    print(f"Similarity Score: {similarity:.2f}")
-
-    # Compare similarity to threshold
-    return similarity >= threshold
-# Initialize the FaceAnalysis app once and reuse it for all comparisons
-faceapp = initialize_face_analyzer()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def extract_text_from_image(image_data):
-    """Extracts text from an image using EasyOCR."""
-    np_img = np.frombuffer(image_data, np.uint8)
-    img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
-    result = reader.readtext(img)
-    return [text for (_, text, _) in result]
-
-def check_substrings_in_text(text_list, dob, docn):
-    """Checks if name, DOB, and document number are present in the text with approximate matching for name."""
-    combined_text = ' '.join(text_list).lower()  
-        
-    # Direct matching for DOB and document number
-    dob_match = dob in combined_text
-    docn_match = docn in combined_text
-    
-    return dob_match, docn_match
-def is_close_match(word, word_list, threshold=0.8):
-    """Check if the word has a close match in the word_list based on the threshold."""
-    for item in word_list:
-        if SequenceMatcher(None, word, item).ratio() >= threshold:
-            return True
-    return False
-
-def searchname_in_list(multi_word_string, word_list):
-    # Check for an exact match of the entire multi-word string
-    if multi_word_string in word_list:
-        return True
-    
-    # Split the multi-word string into individual words
-    words = multi_word_string.split()
-    
-    # Check for exact or close match for each word
-    for word in words:
-        if word in word_list or is_close_match(word, word_list):
-            return True
-    return False
 
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 @app.route('/api/kyc', methods=['POST'])
 def get_kyc_data():
@@ -265,22 +123,6 @@ def get_newCandidate_data():
             return jsonify({"error": "A Candidate record already exists for this Candidate."}), 400
         elif result == False:
             return jsonify({"error": "An error occurred while inserting data into the database."}), 500
-        
-        # # Issue SBT and get hash value
-        # tx_hash, vid_number = issue_sbt(wallet_address, area)
-        # print(f"Transaction hash: {tx_hash}")
-        
-        # insert_vid_number(wallet_address, vid_number)
-        # if not tx_hash:
-        #     delete_data(wallet_address)
-        #     return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500     
-        # elif tx_hash == "Minted":
-        #     return jsonify({"error": "SBT already minted by this address."}), 400
-        # elif tx_hash:
-        #     return jsonify({"status": "success","tx_hash": str(tx_hash), "message": "Your KYC is done, you can now vote."}), 200
-        # else:
-        #     delete_data(wallet_address)
-        #     return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500
 
     except Exception as e:
         print("An unexpected error occurred:", e)
@@ -342,31 +184,6 @@ def get_users():
     except Exception as e:
         print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
-    
-@app.route('/api/get-statdata', methods=['POST'])
-def get_statdata():
-    try:
-        # Get the JSON data from the request
-        requestdata = request.json
-        print("Received address:", requestdata.get('address'))  
-        # Extract the address from the JSON data
-        address = requestdata.get('address').lower()
-        
-        if not address:
-            return jsonify({'status': 'error', 'message': 'Address is required'}), 400
-        # Fetch the user details using the area
-        statdata = getstatdata(address)
-        print("Statdata:", statdata)  
-        # Check if data is received
-        if not statdata:
-            return jsonify({'status': 'error', 'message': 'Area Data not found'}), 404
-        # Return the user details
-        return jsonify({'status': 'success', 'data': statdata}), 200
-
-    except Exception as e:
-        print(e)
-        return jsonify({'status': 'error', 'message': str(e)}), 500
-    
 
 @app.route('/api/execute-meta-tx', methods=['POST'])
 def execute_meta_transaction():

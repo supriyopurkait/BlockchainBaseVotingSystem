@@ -15,11 +15,13 @@ reader = easyocr.Reader(['en'], gpu=False)  # Set gpu=True if CUDA is available
 faceapp = initialize_face_analyzer()
 
 # Use the faceapp to detect and embed faces
-def detect_and_embed_face(image_path, faceapp):
+def detect_and_embed_face(image_data, faceapp):
     # Read the image using cv2
-    img = cv2.imread(image_path)
+    np_img = np.frombuffer(image_data, np.uint8)
+    img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
+    
     if img is None:
-        print(f"Error: Could not read image at {image_path}")
+        print(f"Error: Could not read image at {image_data}")
         return None
 
     # Detect faces and extract the first detected face for simplicity
@@ -35,11 +37,11 @@ def detect_and_embed_face(image_path, faceapp):
 
     # Return None if no face was detected
     return None
-def are_same_person(image_path1, image_path2, faceapp, threshold=0.5):
+def are_same_person(image_data1, image_data2, faceapp, threshold=0.5):
     
     # Get embeddings for both images
-    embedding1 = detect_and_embed_face(image_path1, faceapp)
-    embedding2 = detect_and_embed_face(image_path2, faceapp)
+    embedding1 = detect_and_embed_face(image_data1, faceapp)
+    embedding2 = detect_and_embed_face(image_data2, faceapp)
 
     # Ensure both embeddings were created
     if embedding1 is None or embedding2 is None:

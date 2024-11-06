@@ -1,5 +1,5 @@
 export function calculateTotalVotes(data) {
-    const totalVotes = data.reduce((sum, area) => sum + area.maxVotes, 0).toLocaleString();
+    const totalVotes = data.data.reduce((sum, area) => sum + area.max_votes, 0).toLocaleString();
     return totalVotes;
 }
 export function processAreaData(data) {
@@ -10,16 +10,16 @@ export function processAreaData(data) {
 
         return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
     }
-    const AreaData = data.map((area, index) => ({
+    const AreaData = data.data.map((area, index) => ({
         id: index,
         areaName: area.area,
-        totalVotes: area.maxVotes,
-        winner: area.winner.candidateName,
-        wonByVotes: area.winner.voteCount,
+        totalVotes: area.max_votes,
+        winner: area.winners[0].candidate_name,
+        wonByVotes: area.winners[0].vote_count,
         statData: area.candidates.map((candidate, idx) => ({
             id: idx,
-            value: candidate.voteCount,
-            label: candidate.candidateName,
+            value: candidate.vote_count,
+            label: candidate.candidate_name,
             color: getRandomColor()
         }))
     }));

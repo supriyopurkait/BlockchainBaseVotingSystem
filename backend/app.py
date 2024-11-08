@@ -5,10 +5,6 @@ from index import *
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 @app.route('/api/kyc', methods=['POST'])
 def get_kyc_data():
     try:

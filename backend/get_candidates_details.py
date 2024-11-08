@@ -5,9 +5,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+def is_wallet_address_present_in_db(address):
+    with sqlite3.connect('backend/db/voter_data.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute('SELECT COUNT(*) FROM voters WHERE wallet_address = ?', (address,))
+        count = cursor.fetchone()[0]
+        return count > 0
+
 # Function to fetch candidate details from the database based on the wallet address
-def get_candidates_from_db(address):
-    if(address.lower() == (os.getenv('ADMIN_ADDRESS')).lower()):
+def get_candidates_from_db(address=None):
+    if(address == None):
         candidates = []
         candidates = get_all_candidates()
         return candidates

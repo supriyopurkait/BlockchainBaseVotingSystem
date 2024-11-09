@@ -317,7 +317,7 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-indigo-100">
       <Toaster position="bottom-right" />
       <Header 
         onLogo={() => {

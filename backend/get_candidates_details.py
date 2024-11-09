@@ -14,7 +14,7 @@ def is_wallet_address_present_in_db(address):
 
 # Function to fetch candidate details from the database based on the wallet address
 def get_candidates_from_db(address=None):
-    if(address == None):
+    if(address == None or address.lower() == (os.getenv('ADMIN_ADDRESS')).lower()):
         candidates = []
         candidates = get_all_candidates()
         return candidates

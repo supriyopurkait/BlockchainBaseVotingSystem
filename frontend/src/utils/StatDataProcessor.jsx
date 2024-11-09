@@ -18,9 +18,9 @@ export function processAreaData(data) {
         wonByVotes: area.winners[0].vote_count,
         statData: area.candidates.map((candidate, idx) => ({
             id: idx,
-            value: candidate.vote_count,
+            value: area.max_votes?candidate.vote_count:1,
             label: candidate.candidate_name,
-            color: getRandomColor()
+            color: area.max_votes?getRandomColor():'#D1CFD6'
         }))
     }));
     return (AreaData);

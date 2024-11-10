@@ -212,7 +212,7 @@ const ShowVoteResultPage = ({ onBack, wallet }) => {
                         <p className="text-sm text-indigo-200">Vote obtained
                         </p>
                         <p className="text-xl font-semibold">
-                        {areaData.max_votes.toLocaleString()}
+                        {areaData.winners[0].vote_count.toLocaleString()}
                         </p>
                       </div>
                     </div>
@@ -222,7 +222,8 @@ const ShowVoteResultPage = ({ onBack, wallet }) => {
                       <div>
                         <p className="text-sm text-indigo-200">Out of</p>
                         <p className="text-xl font-semibold">
-                          {areaData.winners[0].vote_count.toLocaleString()}
+                          
+                          {areaData.max_votes.toLocaleString()}
                         </p>
                       </div>
                     </div>

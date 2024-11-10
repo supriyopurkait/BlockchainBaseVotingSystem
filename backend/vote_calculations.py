@@ -3,7 +3,7 @@ import random
 from web3 import Web3
 from get_abi import get_abi_votingSystem
 from dotenv import load_dotenv
-from get_candidates_details import get_candidates_from_db, is_wallet_address_present_in_db
+from get_candidates_details import get_candidates_from_db, is_wallet_address_present_in_db, get_all_candidates
 from icecream import ic
 from concurrent.futures import ThreadPoolExecutor, as_completed
 # Load environment variables from .env file
@@ -39,12 +39,12 @@ def get_candidates_by_area(address):
     """
     
     # Fetch candidates based on wallet address
-    if is_wallet_address_present_in_db(address) and address != None and address.lower() != (os.getenv('ADMIN_ADDRESS')).lower():
+    if address != None and is_wallet_address_present_in_db(address):
         # retrieve for a specific address
         candidates = get_candidates_from_db(address)
     else:
         # retrieve all data irrespective of address
-        candidates = get_candidates_from_db()
+        candidates = get_all_candidates()
     # Group candidates by area
     grouped_data = {}
     for entry in candidates:

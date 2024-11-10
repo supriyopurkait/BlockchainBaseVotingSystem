@@ -13,12 +13,7 @@ def is_wallet_address_present_in_db(address):
         return count > 0
 
 # Function to fetch candidate details from the database based on the wallet address
-def get_candidates_from_db(address=None):
-    if(address == None or address.lower() == (os.getenv('ADMIN_ADDRESS')).lower()):
-        candidates = []
-        candidates = get_all_candidates()
-        return candidates
-        
+def get_candidates_from_db(address):
     # Retrieve the area from the database
     with sqlite3.connect('backend/db/voter_data.db') as conn:
         cursor = conn.cursor()
@@ -26,7 +21,7 @@ def get_candidates_from_db(address=None):
         # Query to find the area corresponding to the address
         cursor.execute('SELECT area FROM voters WHERE wallet_address = ?', (address,))
         area = cursor.fetchone()
-
+        
     # If no area is found, return None
     if area is None:
         return None

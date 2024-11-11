@@ -60,7 +60,7 @@ def extract_text_from_image(image_data):
     np_img = np.frombuffer(image_data, np.uint8)
     img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
     result = reader.readtext(img)
-    return [text for (_, text, _) in result]
+    return [text.lower() for (_, text, _) in result]
 
 def check_substrings_in_text(text_list, dob, docn):
     """Checks if name, DOB, and document number are present in the text with approximate matching for name."""

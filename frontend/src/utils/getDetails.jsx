@@ -115,3 +115,23 @@ export const fetchStatData = async (wallet) => {
       return null;
     }
   };
+
+  export const updateCandidateDb = async (address) => {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/refresh-candidate-db`;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          address: address
+        })
+      })
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+    } catch (error) {
+      console.error('Error updating Candidate DB:', error);
+    }
+  }

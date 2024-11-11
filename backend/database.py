@@ -213,6 +213,9 @@ def insert_vid_number(address, vid_number):
         ''', (vid_number, address))
         conn.commit()
 
+def refresh_candidate_details(address):
+    if address == os.getenv('ADMIN_ADDRESS').lower():
+        update_database_from_blockchain()
 
 if __name__ == '__main__':
     setup_database()

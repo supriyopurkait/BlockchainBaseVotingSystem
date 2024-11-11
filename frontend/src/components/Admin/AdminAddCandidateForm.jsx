@@ -11,6 +11,7 @@ import {
 import Loading from "@/components/LoadingModal";
 // import toast from 'react-hot-toast';
 import toastMsg from "@/utils/toastMsg";
+import { updateCandidateDb } from "@/utils/getDetails";
 
 const AdminAddCandidateForm = ({ onSubmit, onCancel, wallet, contract }) => {
   const [formData, setFormData] = useState({
@@ -153,7 +154,9 @@ const AdminAddCandidateForm = ({ onSubmit, onCancel, wallet, contract }) => {
       const receipt = await tx.wait();
       console.log("Transaction receipt:", receipt);
       toastMsg("success", `Transaction confirmed! ${formData.candidateName} Added to candidates.`, 10000, "top-center");
-
+      
+      updateCandidateDb(wallet.address); // Call the updateCandidateDb function
+      
     } catch (error) {
       unpinFileFromIPFS(ipfsHash);
       console.error("Error during form submission:", error);

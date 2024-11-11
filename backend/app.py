@@ -279,6 +279,18 @@ def get_result():
             print(e)
             return jsonify({'status': 'error', 'message': str(e)}), 500
     
-    
+@app.route('/api/refresh-candidate-db', methods=['POST'])
+def refresh_candidate_db():
+    try:
+        address = request.json.get('address')
+        address = address.lower().strip()
+        print("Address on refresh-candidate-db: ", address)
+        if not address:
+            return jsonify({'status': 'error', 'message': 'Address is required'}), 400
+        refresh_candidate_details(address)
+        return jsonify({'status': 'success', 'message': 'Candidate details refreshed successfully'}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

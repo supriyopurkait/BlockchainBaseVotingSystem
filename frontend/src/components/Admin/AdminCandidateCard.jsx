@@ -6,7 +6,7 @@ const AdminCandidateCard = ({ candidate, onRemove }) => (
       <img src={`data:image/jpeg;base64,${candidate.photo}`} alt={candidate.name} className="w-24 h-24 rounded-full mb-4" />
     <h3 onClick={() => alert("hi")} className="text-xl font-semibold mb-2"><b>Name:</b> {candidate.name}</h3>
     <h4 className="text-lg font-semibold mb-2"><b>Party:</b> {candidate.party}</h4>
-    <h4 className="text-lg font-semibold mb-2"><b>Area:</b> {candidate.area}</h4>
+    <h4 className="text-lg font-semibold mb-2"><b>Booth:</b> {candidate.area}</h4>
 
     <button
       onClick={() => onRemove(candidate.candidate_id)}

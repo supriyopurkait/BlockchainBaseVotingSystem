@@ -108,7 +108,7 @@ const UserDeatils = ({ walletAddress, onEnter, onClose, details, kycStatus }) =>
             <strong className="text-gray-800">VID Number:</strong> {details[1]}
           </li>
           <li className="text-gray-700">
-            <strong className="text-gray-800">Area:</strong> {details[0]}
+            <strong className="text-gray-800">Booth:</strong> {details[0]}
           </li>
         </ul>
       </div>

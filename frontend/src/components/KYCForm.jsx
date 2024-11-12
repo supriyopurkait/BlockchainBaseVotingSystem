@@ -103,7 +103,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
   
     // Area selection validation (must select a non-empty value)
     if (!formData.area || formData.area === "") {
-      validationErrors.area = "You must select an area";
+      validationErrors.area = "You must select an Booth";
     }
   
     setErrors(validationErrors);
@@ -270,7 +270,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
             htmlFor="areaSelect"
             className="flex items-center text-sm font-medium text-gray-700 mb-1"
           >
-            <MapPin size={18} className="mr-2" /> Area
+            <MapPin size={18} className="mr-2" /> Booth
           </label>
           <select
             name="areaSelect"
@@ -280,10 +280,12 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="" disabled>
-              Select Area
+              Select Booth
             </option>
-            <option value="area1">area1</option>
-            <option value="area2">area2</option>
+            <option value="Sarisha">Sarisha</option>
+            <option value="Laxmikantapur">Laxmikantapur</option>
+            <option value="Daimond-Harbour">Daimond-Harbour</option>
+            <option value="Budge-Budge">Budge-Budge</option>
           </select>
           {errors.area && (
             <p className="text-red-500 text-sm mt-1">{errors.area}</p>

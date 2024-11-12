@@ -244,12 +244,12 @@ const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandi
           {/* Area Votes */}
           {showStat && (
           <div className="m-4 p-4  md:w-full bg-white rounded-lg shadow-md text-center">
-            <h3 className="text-xl font-bold pb-2">Area Votes:</h3>
+            <h3 className="text-xl font-bold pb-2">Booth Votes Table:</h3>
             <div className="text-center">
               <div className="grid grid-cols-4 bg-gray-400 hover:bg-gray-300 m-2 rounded">
-                <span className="p-2 font-bold">Area </span>
-                <span className="p-2 font-bold">Votes Per Area</span>
-                <span className="p-2 font-bold">Winner of Area</span>
+                <span className="p-2 font-bold">Booth </span>
+                <span className="p-2 font-bold">Votes Per Booth</span>
+                <span className="p-2 font-bold">Winner of Booth</span>
                 <span className="p-2 font-bold">Winner's Vote Count</span>
               </div>
               { Object.entries(areaData).map(([areaId, area]) => (

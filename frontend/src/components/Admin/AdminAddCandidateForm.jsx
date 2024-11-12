@@ -3,10 +3,8 @@ import {
   User,
   MapPin,
   Building,
-  FileText,
   Upload,
-  ArrowRight,
-  Camera,
+  ArrowRight
 } from "lucide-react";
 import Loading from "@/components/LoadingModal";
 // import toast from 'react-hot-toast';
@@ -69,7 +67,7 @@ const AdminAddCandidateForm = ({ onSubmit, onCancel, wallet, contract }) => {
 
     // Area selection validation (must select a non-empty value)
     if (!formData.area || formData.area === "") {
-      validationErrors.area = "You must select an area";
+      validationErrors.area = "You must select an Booth";
     }
     if (!formData.party || formData.party === "") {
       validationErrors.party = "You must select an party";
@@ -239,7 +237,7 @@ const AdminAddCandidateForm = ({ onSubmit, onCancel, wallet, contract }) => {
             htmlFor="areaSelect"
             className="flex items-center text-sm font-medium text-gray-700 mb-1"
           >
-            <MapPin size={18} className="mr-2" /> Area
+            <MapPin size={18} className="mr-2" /> Booth
           </label>
           <select
             name="areaSelect"
@@ -250,12 +248,12 @@ const AdminAddCandidateForm = ({ onSubmit, onCancel, wallet, contract }) => {
           >
             {/* <div className="w-full"> */}
             <option value="" disabled>
-              Select Area
+              Select Booth
             </option>
-            <option value="area1">area1</option>
-            <option value="area2">area2</option>
-            <option value="area3">area3</option>
-            <option value="area4">area4</option>
+            <option value="Sarisha">Sarisha</option>
+            <option value="Laxmikantapur">Laxmikantapur</option>
+            <option value="Daimond-Harbour">Daimond-Harbour</option>
+            <option value="Budge-Budge">Budge-Budge</option>
             {/* </div> */}
           </select>
           {errors.area && (

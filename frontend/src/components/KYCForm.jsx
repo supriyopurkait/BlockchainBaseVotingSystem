@@ -159,7 +159,7 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
 
       if (response.ok) {
         setLoadingModel(false);
-        console.log("KYC submitted successfully:", data);
+        //console.log("KYC submitted successfully:", data);
         if (data.status === "success") {
           // Show toast notification with hyperlinked TxHash
           toast.success(
@@ -184,17 +184,17 @@ const KYCForm = ({ onSubmit, onCancel, walletAddress }) => {
           );
           onSubmit({ ...formData, txHash: data.tx_hash });
         } else {
-          console.error("Unexpected success response:", data);
+          //console.error("Unexpected success response:", data);
           toast.error("Unexpected response from server", { duration: 10000, position: 'bottom-right' });
         }
       } else {
         setLoadingModel(false);
-        console.error("Error submitting KYC:", data.error);
+        //console.error("Error submitting KYC:", data.error);
         toast.error(`Error submitting KYC: ${data.error}`, { duration: 10000, position: 'bottom-right' });
       }
     } catch (error) {
       setLoadingModel(false);
-      console.error("Error during API call:", error);
+      //console.error("Error during API call:", error);
       toast.error("Error submitting KYC. Please try again.", { duration: 10000, position: 'bottom-right' });
     }
   };

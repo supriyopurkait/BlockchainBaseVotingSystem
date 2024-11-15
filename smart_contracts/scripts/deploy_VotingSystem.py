@@ -52,7 +52,7 @@ def compile_code(path):
 def deploy_contract():
     w3 = Web3(Web3.HTTPProvider(RPC_URL))
     if not w3.is_connected():
-        print("Failed to connect to the blockchain")
+        # print("Failed to connect to the blockchain")
         return
     
     private_key = os.getenv('PRIVATE_KEY')
@@ -63,7 +63,7 @@ def deploy_contract():
     file_path = "smart_contracts/artifacts/VoterID/CA.txt"
     # Check if the file exists
     if not os.path.isfile(file_path):
-        print(f"Failed to get the contract address. Please deploy VoterID contract first.")
+        # print(f"Failed to get the contract address. Please deploy VoterID contract first.")
     with open(file_path, 'r') as f:
         VID_addr = f.read().strip()
     
@@ -84,11 +84,11 @@ def deploy_contract():
     tx_reciept = w3.eth.wait_for_transaction_receipt(send_tx)
     tx_hash = send_tx.to_0x_hex()
     # TX details
-    print("Transaction hash: ", tx_hash)
-    print(f"https://base-sepolia.blockscout.com/tx/{tx_hash}")
-    print
-    print("Contract address of VotingSystem smart contaract: ", tx_reciept['contractAddress'])
-    print(f"https://base-sepolia.blockscout.com/address/{tx_reciept['contractAddress']}")
+    # print("Transaction hash: ", tx_hash)
+    # print(f"https://base-sepolia.blockscout.com/tx/{tx_hash}")
+    # print
+    # print("Contract address of VotingSystem smart contaract: ", tx_reciept['contractAddress'])
+    # print(f"https://base-sepolia.blockscout.com/address/{tx_reciept['contractAddress']}")
     # store contract address in file
     with open(f"{output_dir}/CA.txt", 'w') as f:
         f.write(tx_reciept['contractAddress'])

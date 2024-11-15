@@ -20,12 +20,12 @@ const AdminCandidateControlsPage = ({ wallet, onAdd, onRemove, onClose, onBack }
       setLoading(true);
       try {
         const fetchedCandidates = await fetchCandidate(wallet);
-        console.log('Fetched candidates:', fetchedCandidates);
+        //console.log('Fetched candidates:', fetchedCandidates);
         setCandidates(fetchedCandidates);
         // setCandidates(dummyCandidates); // Using Dummy data for testing
       } catch (err) {
         setError('Failed to load Candidates. Please try again later.');
-        console.error(err);
+        //console.error(err);
       } finally {
         setLoading(false);
       }

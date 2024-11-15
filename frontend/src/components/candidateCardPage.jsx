@@ -31,7 +31,7 @@ const CandidateCardsPage = ({
         // setcandidates(dummyCandidates); // Using Dummy data for testing
       } catch (err) {
         setError("Failed to load candidates. Please try again later.");
-        console.error(err);
+        //console.error(err);
       } finally {
         setLoading(false);
       }
@@ -45,7 +45,7 @@ const CandidateCardsPage = ({
   const handleVote = async (candidateId) => {
     setVotingLoading(true);
     try {
-      console.log("Voting for candidate:", candidateId);
+      //console.log("Voting for candidate:", candidateId);
       const { provider, signer } = wallet;
       const address = await signer.getAddress();
 
@@ -55,9 +55,9 @@ const CandidateCardsPage = ({
         !provider ||
         !signer
       ) {
-        console.error(
-          "Invalid contract address, ABI, or wallet provider/signers."
-        );
+        // console.error(
+        //   "Invalid contract address, ABI, or wallet provider/signers."
+        // );
         return;
       }
 
@@ -111,7 +111,7 @@ const CandidateCardsPage = ({
 
       const data = await response.json();
       if (data.status === "success") {
-        console.log("Voting successful:", data.txHash);
+        //console.log("Voting successful:", data.txHash);
         setMessageData(`Congratulations! You successfully voted.`);
         setTxHash(data.txHash);
       } else {
@@ -122,7 +122,7 @@ const CandidateCardsPage = ({
       setShowAftervoteMessage(true);
     } catch (error) {
       setMessageData("An unexpected error occurred. Please try again later.");
-      console.error(error);
+      //console.error(error);
       setShowAftervoteMessage(true);
     } finally {
       setVotingLoading(false);

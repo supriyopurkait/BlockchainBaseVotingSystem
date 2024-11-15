@@ -31,7 +31,7 @@ const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandi
         position,
       });
     } else {
-      console.error(`Invalid status: ${status}`);
+      //console.error(`Invalid status: ${status}`);
     }
   };
   const handleShowMore = () => {
@@ -60,7 +60,7 @@ const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandi
       try {
         const fetchedStatData = await fetchResult(wallet);
         if (fetchedStatData) {
-          console.log(typeof(fetchedStatData));
+          //console.log(typeof(fetchedStatData));
           setAreaData(processAreaData(fetchedStatData));
           setNumberOfArea(areaData.length);
           setTotalVotes(calculateTotalVotes(fetchedStatData));
@@ -68,7 +68,7 @@ const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandi
         }
       } catch (err) {
         setError('Failed to load Vote Data. Please try again later.');
-        console.error(err);
+        //console.error(err);
       } finally {
         setLoading(false);
       }
@@ -81,7 +81,7 @@ const AdminControl = ({ wallet, votingContract, onAdd, onDeclareResults, onCandi
           setVoteStatus(fetchedVoteStatus);
         }
       } catch (err) {
-        console.error('Failed to fetch voting status:', err);
+        //console.error('Failed to fetch voting status:', err);
         setVoteStatus(-1);
       } finally {
         setContractLoading(false); // Voting contract is now done loading

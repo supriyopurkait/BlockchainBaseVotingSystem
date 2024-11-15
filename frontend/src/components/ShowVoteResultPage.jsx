@@ -21,11 +21,11 @@ const ShowVoteResultPage = ({ onBack, wallet }) => {
       setLoading(true);
       try {
         const fetchResultData = await fetchResult(wallet);
-        console.log(fetchResultData);
+        //console.log(fetchResultData);
         setElectionData(fetchResultData);
       } catch (err) {
         setErrorData(true);
-        console.error(err);
+        //console.error(err);
       } finally {
         setLoading(false);
       }

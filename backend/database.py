@@ -68,9 +68,9 @@ def update_database_from_blockchain():
     cursor.execute('DELETE FROM candidates')
 
     # Fetch all candidates at once from the blockchain
-    print("Fetching candidates from blockchain...")
+    # print("Fetching candidates from blockchain...")
     candidate = contract.functions.getAllCandidates().call()
-    print(f"Found {len(candidate)} candidates")
+    # print(f"Found {len(candidate)} candidates")
 
     # Function to download the image in parallel
     def download_image(candidate_entry):
@@ -109,7 +109,7 @@ def update_database_from_blockchain():
                 image.save(img_byte_arr, format='JPEG', quality=85, optimize=True)
                 photo_data = img_byte_arr.getvalue()
             except Exception as e:
-                print(f"\nError downloading image for candidate {candidate_id}: {str(e)}")
+                # print(f"\nError downloading image for candidate {candidate_id}: {str(e)}")
                 photo_data = None
         else:
             photo_data = None
@@ -117,7 +117,7 @@ def update_database_from_blockchain():
         return (candidate_id, candidate_name, area, party, photo_data)
 
     # Download images in parallel using ThreadPoolExecutor with progress bar
-    print("\nDownloading and processing candidate images...")
+    # print("\nDownloading and processing candidate images...")
     formatted_data = []
     with ThreadPoolExecutor(max_workers=max(10, os.cpu_count() or 1)) as executor:
         futures = [executor.submit(download_image, entry) for entry in candidate]
@@ -132,7 +132,7 @@ def update_database_from_blockchain():
             result = future.result()
             formatted_data.append(result)
 
-    print("\nUpdating database...")
+    # print("\nUpdating database...")
     # Insert data with conflict resolution: Update existing records on duplicate candidate_id
     cursor.executemany('''
         INSERT INTO candidates (candidate_id, candidate_name, area, party, photo)
@@ -144,7 +144,7 @@ def update_database_from_blockchain():
             photo=excluded.photo;
     ''', formatted_data)
 
-    print("\nCandidate details updated successfully.")
+    # print("\nCandidate details updated successfully.")
     conn.commit()
     conn.close()
 
@@ -158,15 +158,15 @@ def insert_data(name, document_number, area, phone_number, wallet_address, doc_i
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ''', (name, document_number, area, phone_number, wallet_address, doc_image, human_image, date_of_birth))
             conn.commit()
-            print("Data inserted successfully.")
+            # print("Data inserted successfully.")
     except sqlite3.IntegrityError as e:
-        print("Error: Duplicate entry detected. Details:", e)
+        # print("Error: Duplicate entry detected. Details:", e)
         return "Duplicate"
     except sqlite3.OperationalError as e:
-        print("Error: Database is locked. Details:", e)
+        # print("Error: Database is locked. Details:", e)
         return False
     except Exception as e:
-        print("An unexpected error occurred:", e)
+        # print("An unexpected error occurred:", e)
         return False
 
 def insert_newCandidate_data(candidate_name, candidate_id, area, party, photo):
@@ -178,15 +178,15 @@ def insert_newCandidate_data(candidate_name, candidate_id, area, party, photo):
                 VALUES (?, ?, ?, ? , ?)
             ''', (candidate_name, candidate_id, area, party, photo))
             conn.commit()
-            print("Data inserted successfully.")
+            # print("Data inserted successfully.")
     except sqlite3.IntegrityError as e:
-        print("Error: Duplicate entry detected. Details:", e)
+        # print("Error: Duplicate entry detected. Details:", e)
         return "Duplicate"
     except sqlite3.OperationalError as e:
-        print("Error: Database is locked. Details:", e)
+        # print("Error: Database is locked. Details:", e)
         return False
     except Exception as e:
-        print("An unexpected error occurred:", e)
+        # print("An unexpected error occurred:", e)
         return False
 
 def delete_data(wallet_address):
@@ -197,9 +197,9 @@ def delete_data(wallet_address):
             DELETE FROM voters
             WHERE wallet_address = ?
         ''', (wallet_address,))
-        print("Deleting wallet address...")  # Log before commit
+        # print("Deleting wallet address...")  # Log before commit
         conn.commit()
-        print("Changes committed to the database.")  # Log after commit
+        # print("Changes committed to the database.")  # Log after commit
     return True
 
 def insert_vid_number(address, vid_number):

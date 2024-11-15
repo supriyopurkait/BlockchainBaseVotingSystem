@@ -40,7 +40,7 @@ const App = () => {
   const handleConnectWallet = async () => {
     const connectedWallet = await connectWallet();
     if (connectedWallet) {
-      console.log(connectedWallet);
+      //console.log(connectedWallet);
       setWallet(connectedWallet);
       handleGetABI();
       if ((connectedWallet.address == import.meta.env.VITE_ADMINADDRESS)) {
@@ -84,7 +84,7 @@ const App = () => {
   const getVotingContract = () => {
     if (!votingContractRef.current && VotingSystemABI && VotingSystemContractAddress && wallet) {
       votingContractRef.current = new ethers.Contract(VotingSystemContractAddress, VotingSystemABI, wallet.signer);
-      console.log("Contract created:", votingContractRef.current);
+      //console.log("Contract created:", votingContractRef.current);
     }
     return votingContractRef.current;
   };
@@ -92,7 +92,7 @@ const App = () => {
   const handleGetABI = async () => {
     const VoterIDabi = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/get_abi/VoterID`);
     const VoterIDjson = await VoterIDabi.json();
-    console.log("Json", VoterIDjson);
+    //console.log("Json", VoterIDjson);
     setVoterIdABI(VoterIDjson.abi);
     setContractAddress(VoterIDjson.ca);
 
@@ -109,22 +109,22 @@ const App = () => {
 
   useEffect(() => {
     if (VoterIdABI && VoterIDContractAddress && VotingSystemABI && VotingSystemContractAddress) {
-      console.log("Voter ID ABI:", VoterIdABI);
-      console.log("Voter ID Contract Address:", VoterIDContractAddress);
-      console.log("VotingSystemABI:", VotingSystemABI);
-      console.log("VotingSystemContractAddress:", VotingSystemContractAddress);
-      console.log("Wallet Address:", wallet.address);
+      // console.log("Voter ID ABI:", VoterIdABI);
+      // console.log("Voter ID Contract Address:", VoterIDContractAddress);
+      // console.log("VotingSystemABI:", VotingSystemABI);
+      // console.log("VotingSystemContractAddress:", VotingSystemContractAddress);
+      // console.log("Wallet Address:", wallet.address);
       // Check if results have been declared
       const checkResultsDeclared = async () => {
         try {
           const declared = await isDeclared();    //// true for testing only
-          console.log("Result declared:", declared);
+          //console.log("Result declared:", declared);
           setVotingStatusButton(declared);
           if (declared) {
             toastMsg("success", "Results have been declared.", 10000, "top-center");
           }
         } catch (error) {
-          console.error("Error in declaring results:", error);
+          //console.error("Error in declaring results:", error);
         }
       }
       checkResultsDeclared(); 
@@ -145,7 +145,7 @@ const App = () => {
     // if(true){
     //   setVotingStatusButton(true);
     // }
-    console.log("Voting State:", votingStatus);
+    //console.log("Voting State:", votingStatus);
 
     if (votingStatus == 1) {
       toastMsg("success", "Voting is ongoing.", 5000, "top-center");
@@ -156,7 +156,7 @@ const App = () => {
     } else if (votingStatus == -1) {
       toastMsg("error", "Error checking voting status. Please try again later.", 10000, "top-center");
     }
-    console.log("ENV Admin address:", import.meta.env.VITE_ADMINADDRESS)
+    //console.log("ENV Admin address:", import.meta.env.VITE_ADMINADDRESS)
     if (!(wallet.address == import.meta.env.VITE_ADMINADDRESS)) { // Use for Admin Debug
       const hasNFT = await checkNFTOwnership(VoterIdABI, VoterIDContractAddress, wallet);
       if (!hasNFT) {
@@ -168,12 +168,11 @@ const App = () => {
       return;
     }
     setAdminControlModal(true);
-    console.log("Admin address:", wallet.address, "is connected");
+    //console.log("Admin address:", wallet.address, "is connected");
   };
   //here it will help to show vote result modal
   const handelShowVoteResult = ()=>{
     setShowVoteResultCards(true);
-    
   };
 
   // Show KYC form when "Complete KYC" button is clicked
@@ -183,7 +182,7 @@ const App = () => {
   };
 
   const handleCompleteKYC = (formData) => {
-    console.log("KYC data submitted:", formData);
+    //console.log("KYC data submitted:", formData);
     setshowKYCFormModal(false);
     setshowCandidateCards(true); // Show user cards page after KYC is completed
   };
@@ -216,7 +215,7 @@ const App = () => {
       toastMsg("success", "Voting has started successfully.", 10000, "top-center");
     } catch (error) {
       // Log the error for debugging
-      console.error('Failed to start voting:', error);
+      //console.error('Failed to start voting:', error);
       toastMsg("error", "Failed to start voting", 10000, "top-center");
     }
   };
@@ -240,24 +239,24 @@ const App = () => {
       toastMsg("success", "Voting has stopped successfully.", 10000, "top-center");
     } catch (error) {
       // Log the error for debugging
-      console.error('Failed to stop voting:', error);
+      //console.error('Failed to stop voting:', error);
       toastMsg("error", "Failed to stop voting", 10000, "top-center");
     }
     
   };
   const handleCandidateAdd  = () => {
     setshowAdminAddCandidateForm(true);
-    console.log('Adding candidate:');
+    //console.log('Adding candidate:');
   }
 
   const handleCandidateAdded  = () => {
     setshowAdminAddCandidateForm(false);
     setAdminCandidateControlsPage(true);
-    console.log('Added candidate:');
+    //console.log('Added candidate:');
   }
 
   const handleCandidateRemove  = async (candidateId) => {
-    console.error('Removing candidate:', candidateId);
+    //console.error('Removing candidate:', candidateId);
     const contract = getVotingContract();
     const state = await contract.votingState();
     if(state == 1) {
@@ -269,12 +268,12 @@ const App = () => {
     }
     try {
       const tx = await getVotingContract().deleteCandidate(candidateId);
-      console.log("Transaction sent:", tx.hash);
+      //console.log("Transaction sent:", tx.hash);
       await tx.wait();
       toastMsg("success", "Candidate Removed.", 5000, "top-center");
     } catch (error) {
       toastMsg("error", `Failed to remove candidate`, 10000, "top-center");
-      console.error('Failed to remove candidate:', error);
+      //console.error('Failed to remove candidate:', error);
     }
   }
 
@@ -300,19 +299,19 @@ const App = () => {
       }
       
       if(!resultsDeclared) {
-        console.log("Attempting to declare results...");
+        //console.log("Attempting to declare results...");
         const tx = await contract.declareResults();
-        console.log("Transaction sent:", tx.hash);
+        //console.log("Transaction sent:", tx.hash);
         await tx.wait();
-        console.log("Transaction confirmed");
+        //console.log("Transaction confirmed");
         toastMsg("success", "Results Declared.", 10000, "top-center");
       } else {
         toastMsg("error", "Results Already Declared.", 10000, "top-center");
-        console.error("resultsDeclared:", resultsDeclared);
+        //console.error("resultsDeclared:", resultsDeclared);
       }
     } catch (error) {
       toastMsg("error", `Failed to declare results`, 10000, "top-center");
-      console.error('Failed to declare results:', error);
+      //console.error('Failed to declare results:', error);
     }
   };
 

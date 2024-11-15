@@ -24,7 +24,7 @@ const AdminUserControlsPage = ({ wallet, onRemove, onClose, onBack }) => {
         // setUsers(dummyUsers); // Using Dummy data for testing
       } catch (err) {
         setError("Failed to load Users. Please try again later.");
-        console.error(err);
+        //console.error(err);
       } finally {
         setLoading(false);
       }

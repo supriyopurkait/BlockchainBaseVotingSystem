@@ -26,11 +26,11 @@ const CopyComponent = ({ walletAddress, wallet }) => {
       try {
         setLoading(true);
         const fetchedUsers = await fetchUsers(wallet);
-        console.error("Fetched users:", fetchedUsers);
+        //console.error("Fetched users:", fetchedUsers);
         setUsers(fetchedUsers);
       } catch (err) {
         setError("Failed to load users. Please try again later.");
-        console.error(err);
+        //console.error(err);
       } finally {
         setLoading(false);
       }

@@ -21,12 +21,12 @@ def upload_to_ipfs(img, address):
 
 def unpin_from_ipfs(address, ipfs_hash):
     if(address.lower() == (os.getenv('ADMIN_ADDRESS')).lower()):
-        print("removing", ipfs_hash)
+        # print("removing", ipfs_hash)
         url = f"https://api.pinata.cloud/pinning/unpin/{ipfs_hash}"
         headers = {"Authorization": f"Bearer {os.getenv('JWT')}"}
         
         response = requests.request("DELETE", url, headers=headers)
-        print(response.text)
+        # print(response.text)
         if response.text == "OK" or response.text == "ok":
             return True
     else:

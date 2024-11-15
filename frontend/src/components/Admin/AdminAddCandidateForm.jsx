@@ -96,17 +96,16 @@ const AdminAddCandidateForm = ({ onSubmit, onCancel, wallet, contract }) => {
 
       if (response.ok) {
         toastMsg("success", "Image uploaded successfully", 5000, "bottom-right");
-        console.log("File uploaded successfully:", data);
-
+        //console.log("File uploaded successfully:", data);
         return data.ipfs_hash;
       } else {
         toastMsg("error", "Error uploading image", 5000, "bottom-right");
-        console.error("Unexpected error response:", data);
+        //console.error("Unexpected error response:", data);
         throw new Error("Error uploading file to IPFS");
       }
     } catch (error) {
       toastMsg("error", "Error uploading image", 5000, "bottom-right");
-      console.error("Error uploading image:", error);
+      //console.error("Error uploading image:", error);
       throw error;
     }
   };
@@ -143,21 +142,21 @@ const AdminAddCandidateForm = ({ onSubmit, onCancel, wallet, contract }) => {
       const _party = formData.party;
 
       // Debugging: Log the contract and arguments to ensure correctness
-      console.log("Arguments for addCandidate:", _candidateName, _area, _party, imageUrl);
+      //console.log("Arguments for addCandidate:", _candidateName, _area, _party, imageUrl);
 
       // Send the transaction to the smart contract
       const tx = await contract.addCandidate(_candidateName, _area, _party, imageUrl);
 
       // Wait for the transaction to be mined
       const receipt = await tx.wait();
-      console.log("Transaction receipt:", receipt);
+      //console.log("Transaction receipt:", receipt);
       toastMsg("success", `Transaction confirmed! ${formData.candidateName} Added to candidates.`, 10000, "top-center");
       
       updateCandidateDb(wallet.address); // Call the updateCandidateDb function
       
     } catch (error) {
       unpinFileFromIPFS(ipfsHash);
-      console.error("Error during form submission:", error);
+      //console.error("Error during form submission:", error);
       toastMsg("error", "Error adding candidate. Please try again.", 5000, "top-center");
     } finally {
       setLoadingModel(false); // Hide loading indicator
@@ -171,7 +170,7 @@ const AdminAddCandidateForm = ({ onSubmit, onCancel, wallet, contract }) => {
       address: wallet.address,
     };
   
-    console.log("Request data:", requestData);
+    //console.log("Request data:", requestData);
   
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/unpin-image-ipfs`, {
@@ -185,13 +184,13 @@ const AdminAddCandidateForm = ({ onSubmit, onCancel, wallet, contract }) => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("File un-pinned successfully:", data);
+        //console.log("File un-pinned successfully:", data);
       } else {
-        console.error("Unexpected error response:", data);
+        //console.error("Unexpected error response:", data);
         throw new Error("Error un-pinning file from IPFS");
       }
     } catch (error) {
-      console.error("Error un-pinning image:", error);
+      //console.error("Error un-pinning image:", error);
       throw error;
     }
   }

@@ -62,7 +62,7 @@ def get_kyc_data():
         )
         name_found=searchname_in_list(name,extracted_text)
         
-        print(name_found,dob_found,docn_found)
+        # print(name_found,dob_found,docn_found)
 
         if not (name_found and dob_found and docn_found):
             return jsonify({"error": "KYC data does not match the document"}), 400
@@ -77,7 +77,7 @@ def get_kyc_data():
         
         # Issue SBT and get hash value
         tx_hash, vid_number = issue_sbt(wallet_address, area)
-        print(f"Transaction hash: {tx_hash}")
+        # print(f"Transaction hash: {tx_hash}")
         
         if not tx_hash and not vid_number:
             delete_data(wallet_address)
@@ -92,7 +92,7 @@ def get_kyc_data():
             return jsonify({"error": "Some error occurred while issuing SBT. Please try again later."}), 500
 
     except Exception as e:
-        print("An unexpected error occurred:", e)
+        # print("An unexpected error occurred:", e)
         return jsonify({"error": "An unexpected error occurred. Please try again later."}), 500
 
 @app.route('/api/newCandidate', methods=['POST'])
@@ -120,7 +120,7 @@ def get_newCandidate_data():
             return jsonify({"error": "An error occurred while inserting data into the database."}), 500
 
     except Exception as e:
-        print("An unexpected error occurred:", e)
+        # print("An unexpected error occurred:", e)
         return jsonify({"error": "An unexpected error occurred. Please try again later."}), 500
 
 @app.route('/api/get_abi/<contract>', methods=['GET'])
@@ -146,7 +146,7 @@ def get_candidates():
             return jsonify({'status': 'error', 'message': 'Address is required'}), 400
         # Fetch the candidate details using the area
         candidates = get_candidates_from_db(address)
-        print("Candidates:", candidates)  
+        # print("Candidates:", candidates)  
         # Check if the area was found
         if not candidates:
             return jsonify({'status': 'error', 'message': 'Area not found for the given address'}), 404
@@ -154,7 +154,7 @@ def get_candidates():
         return jsonify({'status': 'success', 'candidates': candidates}), 200
 
     except Exception as e:
-        print(e)
+        # print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/api/get-users', methods=['POST'])
@@ -162,7 +162,7 @@ def get_users():
     try:
         # Get the JSON data from the request
         data = request.json
-        print("Received address:", data.get('address'))  
+        # print("Received address:", data.get('address'))  
         # Extract the address from the JSON data
         address = data.get('address').lower()
         
@@ -177,7 +177,7 @@ def get_users():
         return jsonify({'status': 'success', 'users': users}), 200
 
     except Exception as e:
-        print(e)
+        # print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/api/execute-meta-tx', methods=['POST'])
@@ -198,7 +198,7 @@ def execute_meta_transaction():
     
     except Exception as e:
         # Catch any other exceptions and return an internal server error
-        print(e)
+        # print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
     
 
@@ -207,7 +207,7 @@ def upload_image_ipfs():
     try:
         # Retrieve the address from the form data
         address = request.form.get('address').lower()
-        print("Address on upload-image-ipfs: ", address)
+        # print("Address on upload-image-ipfs: ", address)
 
         # Retrieve the image from the form data
         if 'photo' not in request.files:
@@ -228,7 +228,7 @@ def upload_image_ipfs():
 
     except Exception as e:
         # Handle any exceptions and return an error response
-        print(e)
+        # print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 @app.route('/api/unpin-image-ipfs', methods=['POST'])
@@ -249,7 +249,7 @@ def unpin_image_ipfs():
             return jsonify({'status': 'error', 'message': 'Error un-pinning image'}), 400
     except Exception as e:
         # Handle any exceptions and return an error response
-        print(e)
+        # print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
     
 @app.route('/api/get-result', methods=['POST'])
@@ -276,7 +276,7 @@ def get_result():
             response = process_results(vote_data, winners)
             return jsonify({"status": "success", "data": response}), 200
         except Exception as e:
-            print(e)
+            # print(e)
             return jsonify({'status': 'error', 'message': str(e)}), 500
     
 @app.route('/api/refresh-candidate-db', methods=['POST'])
@@ -284,13 +284,13 @@ def refresh_candidate_db():
     try:
         address = request.json.get('address')
         address = address.lower().strip()
-        print("Address on refresh-candidate-db: ", address)
+        # print("Address on refresh-candidate-db: ", address)
         if not address:
             return jsonify({'status': 'error', 'message': 'Address is required'}), 400
         refresh_candidate_details(address)
         return jsonify({'status': 'success', 'message': 'Candidate details refreshed successfully'}), 200
     except Exception as e:
-        print(e)
+        # print(e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -122,7 +122,7 @@ def get_vote_count(candidate_id):
         # vote_count = random.randint(0, 100)
         return vote_count
     except Exception as e:
-        print(f"Error fetching vote count for candidate_id {candidate_id}: {e}")
+        # print(f"Error fetching vote count for candidate_id {candidate_id}: {e}")
         return 0
     
     
@@ -146,7 +146,7 @@ def determine_winners(vote_counts):
         else:
             selected_winner = random.choice(top_candidates)
             winners[area] = selected_winner
-            print(f"Tie detected in {area}. Randomly selected winner: {selected_winner['candidate_name']}")
+            # print(f"Tie detected in {area}. Randomly selected winner: {selected_winner['candidate_name']}")
 
     return winners
 

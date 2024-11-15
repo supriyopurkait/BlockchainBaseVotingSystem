@@ -65,9 +65,9 @@ def issue_sbt(reciever_addr, area):
         data = get_abi_voterID()
         contract_addr = data['ca']
         if contract_addr == "":
-            print("========================================")
-            print("Pls deploy VoterID contract first...")
-            print("========================================")
+            # print("========================================")
+            # print("Pls deploy VoterID contract first...")
+            # print("========================================")
             return ""
         # contract object creation
         contract = w3.eth.contract(address=contract_addr ,abi=data['abi'])
@@ -91,7 +91,7 @@ def issue_sbt(reciever_addr, area):
         # print("hash of transaction: ", tx_hash)
         return str(tx_hash), str(vid_number)
     except Exception as e:
-        print(e)
+        # print(e)
         return None, None
     
 if __name__ == "__main__":

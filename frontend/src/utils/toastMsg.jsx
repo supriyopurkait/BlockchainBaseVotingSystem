@@ -8,7 +8,7 @@ const toastMsg = (status, msg, duration, position) => {
         position,
       });
     } else {
-      console.error(`Invalid status: ${status}`);
+      //console.error(`Invalid status: ${status}`);
     }
   };
 

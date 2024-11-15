@@ -12,7 +12,7 @@ export const fetchCandidate = async (wallet) => {
           address: wallet.address
         })
       });
-      console.log("Sent data:", JSON.stringify({ address: wallet.address }));
+      //console.log("Sent data:", JSON.stringify({ address: wallet.address }));
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -24,7 +24,7 @@ export const fetchCandidate = async (wallet) => {
       return data.candidates;
       
     } catch (error) {
-      console.error('Error fetching Candidate:', error);
+      //console.error('Error fetching Candidate:', error);
       return [];
     }
   };
@@ -40,19 +40,19 @@ export const fetchCandidate = async (wallet) => {
           wallet_address: wallet.address
         })
       });
-      console.log("Sent data:", JSON.stringify({ wallet_address: wallet.address }));
+      //console.log("Sent data:", JSON.stringify({ wallet_address: wallet.address }));
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       
       // Get the full response
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       // Return only the candidates array
       return data;
       
     } catch (error) {
-      console.error('Error fetching Candidate:', error);
+      //console.error('Error fetching Candidate:', error);
       return [];
     }
   };
@@ -72,8 +72,8 @@ export const fetchUsers = async (wallet, voterIDContract) => {
       if (response.ok) {
         // Get the full response
         const data = await response.json();
-        console.error(data.users);
-        console.log("voterIDContract:", voterIDContract);
+        //console.error(data.users);
+        //console.log("voterIDContract:", voterIDContract);
         // if((voterIDContract !== null) && (data.users.VIDNumber === null) || (data.users.area === null)){
         //   return await getAreaAndVIDNumberFromSBT(voterIDContract, wallet);
         // }
@@ -82,7 +82,7 @@ export const fetchUsers = async (wallet, voterIDContract) => {
         return await getAreaAndVIDNumberFromSBT(voterIDContract, wallet);
       }
     } catch (error) {
-      console.error('Error fetching Users:', error);
+      //console.error('Error fetching Users:', error);
       return [];
     }
   };
@@ -111,7 +111,7 @@ export const fetchStatData = async (wallet) => {
       return responseData.data;
       
     } catch (error) {
-      console.error('Error fetching Statistics Data:', error);
+      //console.error('Error fetching Statistics Data:', error);
       return null;
     }
   };
@@ -132,6 +132,6 @@ export const fetchStatData = async (wallet) => {
         throw new Error('Network response was not ok');
       }
     } catch (error) {
-      console.error('Error updating Candidate DB:', error);
+      //console.error('Error updating Candidate DB:', error);
     }
   }

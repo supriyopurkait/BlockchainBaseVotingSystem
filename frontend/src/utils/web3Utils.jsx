@@ -18,12 +18,12 @@ const connectWallet = async () => {
       // Get signer from the provider
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
-      console.log("Account Address: ", address);
+      //console.log("Account Address: ", address);
 
       // Switching to the correct chain (Base Chain in this case)
       const selectedChainId = await window.ethereum.request({ method: "eth_chainId" });
 
-      console.log("Connected Chain ID:", selectedChainId);
+      //console.log("Connected Chain ID:", selectedChainId);
 
       if (selectedChainId !== config.chainId) {
         try {
@@ -44,14 +44,14 @@ const connectWallet = async () => {
               },
             ],
           });
-          console.log("Base Sepolia Testnet added successfully.");
+          //console.log("Base Sepolia Testnet added successfully.");
         } catch (addChainError) {
           // If the chain is already added, switch to it or handle errors
           if (addChainError.code === 4001) {
-            console.error("User rejected the chain addition.");
+            //console.error("User rejected the chain addition.");
             return null;
           } else {
-            console.error("Failed to add the chain:", addChainError.message);
+            //console.error("Failed to add the chain:", addChainError.message);
             return null;
           }
         }
@@ -62,13 +62,13 @@ const connectWallet = async () => {
             method: "wallet_switchEthereumChain",
             params: [{ chainId: config.chainId }],
           });
-          console.log("Switched to Base Sepolia Testnet.");
+          //console.log("Switched to Base Sepolia Testnet.");
         } catch (switchError) {
           if (switchError.code === 4001) {
-            console.error("User rejected the chain switch.");
+            //console.error("User rejected the chain switch.");
             return null;
           } else {
-            console.error("Failed to switch chain:", switchError.message);
+            //console.error("Failed to switch chain:", switchError.message);
             return null;
           }
         }
@@ -77,12 +77,12 @@ const connectWallet = async () => {
       return { provider, signer, address };
 
     } catch (err) {
-      console.error("Failed to connect wallet:", err.message);
+      //console.error("Failed to connect wallet:", err.message);
       return null;
     }
 
   } else {
-    console.log("Ethereum provider not found. Please install MetaMask.");
+    //console.log("Ethereum provider not found. Please install MetaMask.");
     alert("Metamask is not installed. Please install MetaMask to continue.");
     window.open("https://metamask.io/", "_blank");
     return null;
@@ -91,21 +91,21 @@ const connectWallet = async () => {
 
 const checkNFTOwnership = async (VoterIdABI, VoterIDContractAddress, wallet) => {
   const { provider, signer } = wallet;
-  console.log("Provider:", provider);
-  console.log("Signer:", signer);
+  //console.log("Provider:", provider);
+  //console.log("Signer:", signer);
   const contract = new ethers.Contract(VoterIDContractAddress, VoterIdABI, signer);
   const walletAddress = await signer.getAddress(); // Ensure address is fetched correctly
-  console.log("Wallet address:", walletAddress);
+  //console.log("Wallet address:", walletAddress);
   try {
     // Check NFT balance
     const balance = await contract.balanceOf(walletAddress);
-    console.log("Balance:", balance.toString());  // Convert to string for logging
+    //console.log("Balance:", balance.toString());  // Convert to string for logging
 
     // Convert balance to a number and check if it's greater than zero
     const balanceNumber = Number(balance);
     return balanceNumber > 0;
   } catch (error) {
-    console.error("Error checking NFT balance:", error);
+    //console.error("Error checking NFT balance:", error);
     return false;
   }
 
@@ -115,33 +115,33 @@ const votingState = async (VotingSystemABI, VotingSystemContractAddress, wallet)
   const { provider,signer } = wallet;
   const contract = new ethers.Contract(VotingSystemContractAddress, VotingSystemABI, signer);
   const walletAddress = await signer.getAddress(); // Ensure address is fetched correctly
-  console.log("Wallet address:", walletAddress);
+  //console.log("Wallet address:", walletAddress);
   try {
     // Check NFT balance
     const state = await contract.votingState();
-    console.log("Voting State:", state.toString());  // Convert to string for logging
+    //console.log("Voting State:", state.toString());  // Convert to string for logging
     return state;
   } catch (error) {
-    console.error("Error checking voting state:", error);
+    //console.error("Error checking voting state:", error);
     return -1;
   }
 };
 
 const getNFTMetadata = async (voterIDContract , wallet) => {
   const { provider, signer } = wallet;
-  console.log(voterIDContract);
+  //console.log(voterIDContract);
   
   const contract = new ethers.Contract(voterIDContract[0], voterIDContract[1], signer);
   const walletAddress = await signer.getAddress(); // Ensure address is fetched correctly
-  console.log("Wallet address:", walletAddress);
+  //console.log("Wallet address:", walletAddress);
   try {
     const tokenID = await contract.tokenIdOfAddr(walletAddress);
-    console.log("Token ID:", tokenID.toString());  // Convert to string for logging
+    //console.log("Token ID:", tokenID.toString());  // Convert to string for logging
     let metadata = await contract.tokenURI(tokenID);
     metadata = JSON.parse(metadata);
     return metadata;
   } catch (error) {
-    console.error("Error getting NFT metadata:", error);
+    //console.error("Error getting NFT metadata:", error);
     return null;
   }
 };

@@ -21,7 +21,7 @@ def detect_and_embed_face(image_data, faceapp):
     img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
     
     if img is None:
-        print(f"Error: Could not read image at {image_data}")
+        # print(f"Error: Could not read image at {image_data}")
         return None
 
     # Detect faces and extract the first detected face for simplicity
@@ -45,12 +45,12 @@ def are_same_person(image_data1, image_data2, faceapp, threshold=0.5):
 
     # Ensure both embeddings were created
     if embedding1 is None or embedding2 is None:
-        print("Error: Could not detect a face in one or both images.")
+        # print("Error: Could not detect a face in one or both images.")
         return False
 
     # Calculate cosine similarity
     similarity = cosine_similarity([embedding1], [embedding2])[0][0]
-    print(f"Similarity Score: {similarity:.2f}")
+    # print(f"Similarity Score: {similarity:.2f}")
 
     # Compare similarity to threshold
     return similarity >= threshold

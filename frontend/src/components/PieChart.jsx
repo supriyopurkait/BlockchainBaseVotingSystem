@@ -12,7 +12,7 @@ const toastMsg = (msg, status="success", duration=1000, position="top-center") =
         position,
       });
     } else {
-      console.error(`Invalid status: ${status}`);
+      //console.error(`Invalid status: ${status}`);
     }
   };
 

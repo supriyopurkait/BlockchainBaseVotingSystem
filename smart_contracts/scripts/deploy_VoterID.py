@@ -43,7 +43,7 @@ def compile(contract_path):
 def deploy_contract():
     w3 = Web3(Web3.HTTPProvider(RPC_URL))
     if not w3.is_connected():
-        print("Failed to connect to the blockchain")
+        # print("Failed to connect to the blockchain")
         return
     
     private_key = os.getenv('PRIVATE_KEY')
@@ -63,11 +63,11 @@ def deploy_contract():
     send_tx = w3.eth.send_raw_transaction(sign_tx.raw_transaction)
     tx_reciept = w3.eth.wait_for_transaction_receipt(send_tx)
     tx_hash = send_tx.to_0x_hex()
-    print("Transaction hash: ", tx_hash)
-    print(f"https://base-sepolia.blockscout.com/tx/{tx_hash}")
-    print
-    print("Contract address of VoterID SBT: ", tx_reciept['contractAddress'])
-    print(f"https://base-sepolia.blockscout.com/address/{tx_reciept['contractAddress']}")
+    # print("Transaction hash: ", tx_hash)
+    # print(f"https://base-sepolia.blockscout.com/tx/{tx_hash}")
+    # print
+    # print("Contract address of VoterID SBT: ", tx_reciept['contractAddress'])
+    # print(f"https://base-sepolia.blockscout.com/address/{tx_reciept['contractAddress']}")
     with open(f"{output_dir}/CA.txt", 'w') as f:
         f.write(tx_reciept['contractAddress'])
 

@@ -145,7 +145,10 @@ def get_candidates():
         if not address:
             return jsonify({'status': 'error', 'message': 'Address is required'}), 400
         # Fetch the candidate details using the area
-        candidates = get_candidates_from_db(address)
+        if address.lower() == (os.getenv('ADMIN_ADDRESS')).lower():
+            candidates = get_all_candidates()
+        else:    
+            candidates = get_candidates_from_db(address)
         # print("Candidates:", candidates)  
         # Check if the area was found
         if not candidates:

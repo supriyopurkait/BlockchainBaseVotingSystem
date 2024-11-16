@@ -2,6 +2,34 @@
 	{
 		"inputs": [
 			{
+				"internalType": "string",
+				"name": "_candidateName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_area",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_party",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_imageUrl",
+				"type": "string"
+			}
+		],
+		"name": "addCandidate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "_VID_Address",
 				"type": "address"
@@ -33,123 +61,6 @@
 		],
 		"name": "CandidateAdded",
 		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [],
-		"name": "ResultsDeclared",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "voter",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "candidateId",
-				"type": "uint256"
-			}
-		],
-		"name": "VoteCast",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [],
-		"name": "VotingStarted",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [],
-		"name": "VotingStopped",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "VID_Address",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_candidateName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_area",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_party",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_imageUrl",
-				"type": "string"
-			}
-		],
-		"name": "addCandidate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "candidates",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "candidateName",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "candidateId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "area",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "party",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "imageUrl",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -213,6 +124,115 @@
 			}
 		],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [],
+		"name": "ResultsDeclared",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "startVote",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "stopVote",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_candidateId",
+				"type": "uint256"
+			}
+		],
+		"name": "vote",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "voter",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "candidateId",
+				"type": "uint256"
+			}
+		],
+		"name": "VoteCast",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [],
+		"name": "VotingStarted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [],
+		"name": "VotingStopped",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "candidates",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "candidateName",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "candidateId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "area",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "party",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "imageUrl",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -411,20 +431,6 @@
 	},
 	{
 		"inputs": [],
-		"name": "startVote",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "stopVote",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "totalCandidates",
 		"outputs": [
 			{
@@ -450,22 +456,16 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_candidateId",
-				"type": "uint256"
-			}
-		],
-		"name": "vote",
+		"inputs": [],
+		"name": "VID_Address",
 		"outputs": [
 			{
-				"internalType": "string",
+				"internalType": "address",
 				"name": "",
-				"type": "string"
+				"type": "address"
 			}
 		],
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{

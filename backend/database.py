@@ -54,9 +54,9 @@ def update_database_from_blockchain():
 
     # Contract details
     data_votingSystem = get_abi_votingSystem()
-    contract_address = data_votingSystem.get('ca')
+    contract_address = data_votingSystem.get('ca').lower()
     contract_abi = data_votingSystem.get('abi')
-
+    contract_address = w3.to_checksum_address(contract_address)
     # Create a Web3 contract instance
     contract = w3.eth.contract(address=contract_address, abi=contract_abi)
 

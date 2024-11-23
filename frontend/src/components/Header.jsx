@@ -72,7 +72,7 @@ const Header = ({ onLogo, isConnected, onConnect, walletAddress, onDisconnect, w
     <header className="flex justify-between items-center p-4 bg-gray-900">
       <button  onClick={onLogo}>
         <div className="text-white font-bold text-2xl flex items-center">
-          <Vote className="ml-1 mt-1.5 mr-2" size={35} /> | On Chain Vote
+          <Vote className="ml-1 mt-1.5 mr-2" size={35} /> | OVM
         </div>
       </button>
 

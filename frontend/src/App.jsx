@@ -406,7 +406,7 @@ const App = () => {
         })()}
       </main>
       <footer className="bg-gray-900 text-white text-center py-4">
-        © 2024 OnChainVote. All rights reserved.
+        © 2024 OVM | On-Chain Voting Machine. All rights reserved.
       </footer>
 
       {/* KYC Confirmation Prompt */}

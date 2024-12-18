@@ -92,6 +92,12 @@ Our voting logic is governed by Ethereum smart contracts, ensuring top-notch sec
    - Copy the **ABI**, **Bytecode**, and **Contract Address** for each contract.  
    - Place them in their respective directories.  
 
+3. **Note:**  
+   - While deploying `VotingSystem.sol`, set:  
+     - `_relayer` to the **admin's wallet address**.  
+     - `_VID_Address` to the **contract address** of the `VoterID.sol` contract.  
+
+
 ---
 
 ## 📝 **Notes**

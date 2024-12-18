@@ -39,7 +39,7 @@ Our voting logic is governed by Ethereum smart contracts, ensuring top-notch sec
 
 ---
 
-### 🌐 **Frontend Setup**
+## 🌐 **Frontend Setup**
 
 1. **Navigate to the frontend directory:**  
    ```bash
@@ -57,7 +57,7 @@ Our voting logic is governed by Ethereum smart contracts, ensuring top-notch sec
    - 🌐 **VITE_API_BASE_URL**: Backend server address (e.g., for local development: `127.0.0.1:5000`).
 
 
-### 🛠️ **Backend Setup**
+## 🛠️ **Backend Setup**
 
 1. **Create a `.env` file at the project root:**  
    Use the `.env.example` file as a reference. Populate the following variables:  
@@ -83,7 +83,7 @@ Our voting logic is governed by Ethereum smart contracts, ensuring top-notch sec
    ```
 
 
-### 📜 **Smart Contracts Deployment**
+## 📜 **Smart Contracts Deployment**
 
 1. **Deploy contracts**:  
    Use the smart contracts located in the `smart_contracts/contracts` folder. Deploy them via [Remix IDE](https://remix.ethereum.org/) (or your preferred tool).  
